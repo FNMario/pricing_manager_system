@@ -1,0 +1,92 @@
+#:kivy 2.2.1
+
+<FlatTextInput@TextInput>
+    multiline: False
+    write_tab: False
+    background_color:  (.13, .14, .19, 1)
+    cursor_color: (.7, .7, .7, 1)
+    font_context: 'Arial'
+    foreground_color: (1,0,0,1)
+    background_normal: ''
+    background_active: ''
+    foreground_color: (1,1,1,1)
+
+<LoginWindow>:
+
+    id: main_win
+    space_x: self.size[0]
+    space_y: self.size[1]
+    canvas.before:
+        Color:
+            rgba: (.13, .14, .19, 1)
+        Rectangle:
+            size: self.size
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: 10
+        size: root.size
+        BoxLayout:
+            size_hint_y: None
+            height: 50
+            canvas.before:
+                Color:
+                    rgba: (0, .69, .94, 1)
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+            Label:
+                text: "Sign in"
+                bold: True
+        BoxLayout:
+            orientation: 'vertical'
+            padding: main_win.space_x / 3, main_win.space_y*4/7
+            spacing: 20
+            Label:
+                id: lbl_info
+                text: ''
+                markup: True
+            BoxLayout:
+                orientation: 'vertical'
+                spacing: 5
+                size_hint_y: None
+                height: 80
+                
+                BoxLayout:
+                    orientation: 'horizontal'
+                    Image:
+                        source: '../media/icons/user_1.png'
+                        size_hint_x: None
+                        width: 16
+                    FlatTextInput:
+                        id: txt_username
+                        hint_text: "Username"
+                        focus: True
+                        on_text_validate: txt_password.focus = True
+                BoxLayout:
+                    orientation: 'vertical'
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        Image:
+                            source: '../media/icons/lock_1.png'
+                            size_hint_x: None
+                            width: 16
+                        FlatTextInput:
+                            id: txt_password
+                            hint_text: "Password"
+                            multiline: False
+                            password: True
+                            on_text_validate: root.btn_login_on_press()
+            Button:
+                id: btn_login
+                text: "Sign in"
+                font_size: 16
+                size_hint_y: None
+                height: 40
+                on_release: root.btn_login_on_press()
+                background_color: (0, .69, .94, 1)
+                background_normal: ''
+        
+
+
+        
+
