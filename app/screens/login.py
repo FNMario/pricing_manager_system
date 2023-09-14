@@ -1,5 +1,7 @@
 from kivy.app import App
 from kivy.uix.widget import Widget
+from kivy.core.window import WindowBase
+from kivy.config import Config
 import logging
 
 class LoginWindow(Widget):
@@ -17,18 +19,26 @@ class LoginWindow(Widget):
             lbl_info.text = "[color=66ff66]Logged in![/color]"
             logging.info('Logged in')
 
-        else: 
+        else:
             lbl_info.text = "[color=ff6666]Username and password do not match.[/color]"
-        
+
         password.text = ""
         username.focus = True
 
 
 class LoginApp(App):
     def build(self):
+        self.title = 'Pricing Manager'
+        self.icon = '../media/media/logo_big.png'
+        WindowBase.clearcolor = (.13, .14, .19, 1)
+        WindowBase.borderless = True
         return LoginWindow()
 
 
 if __name__ == '__main__':
     sa = LoginApp()
     sa.run()
+    Config.set('graphics', 'resizable', '0')
+    Config.set('graphics', 'width', '550')
+    Config.set('graphics', 'height', '400')
+    Config.write()

@@ -1,92 +1,69 @@
 #:kivy 2.2.1
+#:include my_widgets.kv
 
-<FlatTextInput@TextInput>
-    multiline: False
-    write_tab: False
-    background_color:  (.13, .14, .19, 1)
-    cursor_color: (.7, .7, .7, 1)
-    font_context: 'Arial'
-    foreground_color: (1,0,0,1)
-    background_normal: ''
-    background_active: ''
-    foreground_color: (1,1,1,1)
+<Button>:
+    font_size: 16
+    bold: True
+    color: (.13, .14, .19, 1)
+    size_hint_y: None
+    height: 40
 
 <LoginWindow>:
-
     id: main_win
     space_x: self.size[0]
     space_y: self.size[1]
-    canvas.before:
-        Color:
-            rgba: (.13, .14, .19, 1)
-        Rectangle:
-            size: self.size
     BoxLayout:
         orientation: 'vertical'
-        spacing: 10
         size: root.size
-        BoxLayout:
-            size_hint_y: None
-            height: 50
-            canvas.before:
-                Color:
-                    rgba: (0, .69, .94, 1)
-                Rectangle:
-                    size: self.size
-                    pos: self.pos
-            Label:
-                text: "Sign in"
-                bold: True
+        padding: 0,0,0,max((main_win.space_y-350)/4,0)
+        spacing: max((main_win.space_y-350)/10,10)
+        FloatLayout:
+            size_hint_y: .5
+            spacing: max((main_win.space_y-350)/4,0)
+            Button:
+                text:'X'
+                size_hint: None,None
+                size: 20,20
+                pos_hint: {"right":1,"top":1}
+                on_release: app.stop()
+            Image:
+                id: logo
+                source: '../media/images/logo_big.png'
+                fit_mode: 'contain'
+                pos_hint: {"x":0, "top":.8}
         BoxLayout:
             orientation: 'vertical'
-            padding: main_win.space_x / 3, main_win.space_y*4/7
+            padding: main_win.space_x/2 -150, 0, main_win.space_x/2 -150, max((main_win.space_y-250)/4,0)
             spacing: 20
             Label:
                 id: lbl_info
-                text: ''
+                text: ""
                 markup: True
+                font_size: 14
+                size_hint_y: None
+                padding: 0
+                height: 15
             BoxLayout:
                 orientation: 'vertical'
                 spacing: 5
                 size_hint_y: None
                 height: 80
-                
-                BoxLayout:
-                    orientation: 'horizontal'
-                    Image:
-                        source: '../media/icons/user_1.png'
-                        size_hint_x: None
-                        width: 16
-                    FlatTextInput:
-                        id: txt_username
-                        hint_text: "Username"
-                        focus: True
-                        on_text_validate: txt_password.focus = True
-                BoxLayout:
-                    orientation: 'vertical'
-                    BoxLayout:
-                        orientation: 'horizontal'
-                        Image:
-                            source: '../media/icons/lock_1.png'
-                            size_hint_x: None
-                            width: 16
-                        FlatTextInput:
-                            id: txt_password
-                            hint_text: "Password"
-                            multiline: False
-                            password: True
-                            on_text_validate: root.btn_login_on_press()
+                EnhancedTextInput:
+                    icon: '../media/icons/user_1.png'
+                    id: txt_username
+                    hint_text: "Username"
+                    focus: True
+                    _on_text_validate: lambda: setattr(txt_password, 'focus', True)
+                EnhancedTextInput:
+                    icon: '../media/icons/lock_1.png'
+                    id: txt_password
+                    hint_text: "Password"
+                    password: True
+                    eye_button: True
+                    _on_text_validate: root.btn_login_on_press
             Button:
                 id: btn_login
                 text: "Sign in"
-                font_size: 16
-                size_hint_y: None
-                height: 40
                 on_release: root.btn_login_on_press()
-                background_color: (0, .69, .94, 1)
-                background_normal: ''
-        
-
-
-        
-
+                # background_normal: 'atlas://data/images/defaulttheme/button_pressed'
+                # background_down: 'atlas://data/images/defaulttheme/button'
