@@ -1,0 +1,213 @@
+#:kivy 2.2.1
+#:include screens/my_widgets.kv
+
+<ManagePrices>:
+    id: main_win
+    space_x: self.size[0]
+    space_y: self.size[1]
+    BoxLayout:
+        orientation: 'vertical'
+        # size_hint: None, None
+        # width: 800
+        # height: main_win.space_y
+        size: main_win.size
+        pos_hint: {'right':1}
+        padding: main_win.space_x/2-450, 10
+        spacing: 10
+        # canvas.before:
+        #     Color: 
+        #         rgba: (1, 1, 1, .1)
+        #     Rectangle:
+        #         size: self.size
+        #         pos: self.pos
+        # Form
+        BoxLayout:
+            id: form_ly
+            orientation: 'vertical'
+            pos_hint: {'center_x':.5}
+            size_hint_y: None
+            height: 360
+            padding: 100,0
+            canvas.before:
+                Color: 
+                    rgba: (1, 1, 1, .4)
+                Line:
+                    rounded_rectangle: (self.pos[0],self.pos[1],self.size[0],self.size[1], 4)
+                    width: .5
+            # Product
+            TextField:
+                Icon:
+                    source: './media/icons/box.png'
+                TextInput:
+                    id: txt_product
+                    hint_text: "Product"
+                IconButton:
+                    on_press: root.btn_on_press()
+                    source: './media/icons/search_1.png'
+            BoxLayout:
+                orientation: 'horizontal'
+                # canvas.before:
+                    # Color: 
+                    #     rgba: (1, 0, 0, .5)
+                    # Rectangle:
+                    #     size: self.size
+                    #     pos: self.pos
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_x: .4
+                    # canvas.before:
+                    #     Color: 
+                    #         rgba: (0, 1, 0, .5)
+                    #     Rectangle:
+                    #         size: self.size
+                    #         pos: self.pos
+                    # Local code
+                    TextField:
+                        Icon:
+                            source: './media/icons/barcode.png'
+                        TextInput:
+                            id: txt_local_code
+                            hint_text: "Local code"
+                        IconButton:
+                            on_press: root.btn_on_press()
+                            source: './media/icons/right.png'
+                        IconButton:
+                            on_press: root.btn_on_press()
+                            source: './media/icons/double-right.png'
+                        IconButton:
+                            on_press: root.btn_on_press()
+                            source: './media/icons/search_1.png'
+                    # Supplier
+                    TextField:
+                        Icon:
+                            source: './media/icons/supplier.png'
+                        TextInput:
+                            id: txt_supplier
+                            hint_text: "Supplier"
+                        IconButton:
+                            on_press: root.btn_on_press()
+                            source: './media/icons/down.png'
+                    # Supplier's code
+                    TextField:
+                        Icon:
+                            source: './media/icons/barcode.png'
+                        TextInput:
+                            id: txt_supplier_code
+                            hint_text: "Supplier's code"
+                        IconButton:
+                            on_press: root.btn_on_press()
+                            source: './media/icons/search_1.png'
+                    # Quantity
+                    TextField:
+                        Icon:
+                            source: './media/icons/hashtag.png'
+                        TextInput:
+                            id: txt_quantity
+                            hint_text: "Quantity"
+                            input_filter: 'float'
+                        IconButton:
+                            on_press: root.btn_on_press()
+                            source: './media/icons/down.png'
+                    # Cost
+                    TextField:
+                        Icon:
+                            source: './media/icons/dollar.png'
+                        TextInput:
+                            id: txt_cost
+                            hint_text: "Cost"
+                            input_filter: 'float'
+                    # Earning
+                    TextField:
+                        Icon:
+                            source: './media/icons/earnings.png'
+                        TextInput:
+                            id: txt_earning
+                            hint_text: "Earning"
+                        BoxLayout:
+                            pos_hint: {'top':1.1}
+                            orientation: 'vertical'
+                            size_hint_x: None
+                            width: self.minimum_width
+                            IconButton:
+                                on_press: root.btn_on_press()
+                                pos_hint: {}
+                                source: './media/icons/plus_small.png'
+                                # size: 14,14
+                            IconButton:
+                                on_press: root.btn_on_press()
+                                pos_hint: {}
+                                source: './media/icons/minus_small.png'
+                                # size: 14,14
+                    # Section
+                    TextField:
+                        Icon:
+                            source: './media/icons/list.png'
+                        TextInput:
+                            id: txt_section
+                            hint_text: "Section"
+                        IconButton:
+                            on_press: root.btn_on_press()
+                            source: './media/icons/down.png'
+                    # Date
+                    TextField:
+                        Icon:
+                            source: './media/icons/calendar.png'
+                        TextInput:
+                            id: txt_date
+                            hint_text: "Date"
+                BoxLayout:
+                    size_hint_x: .6
+                    padding: 8
+                    # canvas.before:
+                    #     Color: 
+                    #         rgba: (0, 0, 1, .5)
+                    #     Rectangle:
+                    #         size: self.size
+                    #         pos: self.pos
+                    Image:
+                        # size_hint: .9, .9
+                        # pos_hint: {'center_x':.5, 'center_y':.5}
+                        source: 'media/images/DefaultBase.png'
+                        fit_mode: 'cover'
+        # Buttons
+        BoxLayout:
+            orientation: 'horizontal'
+            pos_hint: {'center_x':.5, 'center_y':.5}
+            size_hint_y: None
+            height: self.minimum_height
+            spacing:10
+            Button:
+                id: btn_save
+                text: "Save"
+                on_press: print(form_ly.size)
+            EmptyButton:
+                id: btn_add
+                text: "Add"
+                on_press: print("button add changes pressed")
+            EmptyButton:
+                id: btn_delete
+                text: "Delete"
+                on_press: print("button add changes pressed")
+            EmptyButton:
+                id: btn_replace
+                text: "Replace"
+                on_press: print("button add changes pressed")
+            EmptyButton:
+                id: btn_compare
+                text: "Compare"
+                on_press: print("button add changes pressed")
+            EmptyButton:
+                id: btn_end
+                text: "End"
+                on_press: print("button add changes pressed")
+
+        # Table
+        BoxLayout:
+            orientation: 'horizontal'
+            canvas.before:
+                Color: 
+                    rgba: (1, 1, 1, .1)
+                RoundedRectangle:
+                    size: self.size
+                    pos: self.pos
+                    radius: [8]

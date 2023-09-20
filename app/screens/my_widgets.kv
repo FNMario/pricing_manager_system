@@ -9,6 +9,17 @@
     background_normal: 'atlas://data/images/defaulttheme/button_pressed'
     background_down: 'atlas://data/images/defaulttheme/button'
 
+<EmptyButton@Button>:
+    background_normal: ''
+    background_down: 'atlas://data/images/defaulttheme/button_pressed'
+    background_color: (.13, .14, .19, 1)
+    color: (.2, .64, .81, 1)
+    canvas.before:
+        Color:
+            rgba: (.2, .64, .81, 1)
+        Line:
+            rounded_rectangle: (self.pos[0],self.pos[1],self.size[0],self.size[1], 4)
+            width: 2
 <TextInput>:
     font_size: 16
     background_normal: ''
@@ -32,6 +43,8 @@
     pos_hint: {'center_y':.5}
 
 <TextField@BoxLayout>:
+    size_hint_y: None
+    height: 40
     orientation: 'horizontal'
     spacing: 5
     padding: 2, 0, 4, 0
