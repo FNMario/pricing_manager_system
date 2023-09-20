@@ -1,64 +1,43 @@
 #:kivy 2.2.1
 
-<ImageButton@ButtonBehavior+Image>
-
-<EnhancedTextInput@Widget>:
-    icon: '../media/icons/edit_2.png'
-    text: text_field.text
-    hint_text: ""
+<Button>:
     font_size: 16
-    font_context: 'Arial'
-    password: False
-    password_mask: 'o'
-    eye_button: False
-    focus: text_field.focus
-    _on_text_validate: lambda: None
-    color: (.88, .88, .88, 1)
-    size: layout.size
-    pos: layout.pos
-    BoxLayout:
-        id: layout
-        orientation:'vertical'
-        size: root.size[0], 40
-        pos: root.pos
-        padding: [2,0,4,0]
-        canvas:
-            Color: 
-                rgba: root.color
-            Rectangle:
-                size: root.size[0],1
-                pos: root.pos[0], root.pos[1]
-        BoxLayout:
-            orientation: 'horizontal'
-            Image:
-                id: icon_image
-                source: root.icon
-                size_hint_x: None
-                width: 20
-            TextInput:
-                id: text_field
-                text: root.text
-                hint_text: root.hint_text
-                multiline: False
-                write_tab: False
-                background_color:  (0 ,0 ,0 , 0)
-                cursor_color: root.color
-                background_normal: ''
-                background_active: ''
-                foreground_color: root.color
-                font_context: root.font_context
-                font_size: root.font_size
-                password: root.password
-                password_mask: root.password_mask
-                focus: root.focus
-                on_text_validate: root._on_text_validate()
-            ImageButton:
-                source: '../media/icons/eye_on-off_1.png'
-                size_hint: None, 1
-                width: 16 if root.eye_button else 0
-                on_press: 
-                    text_field.password = False
-                    text_field.focus = False
-                on_release: 
-                    text_field.password = True
-                    text_field.focus = True
+    bold: True
+    color: (.13, .14, .19, 1)
+    size_hint_y: None
+    height: 40
+    background_normal: 'atlas://data/images/defaulttheme/button_pressed'
+    background_down: 'atlas://data/images/defaulttheme/button'
+
+<TextInput>:
+    font_size: 16
+    background_normal: ''
+    background_active: ''
+    foreground_color: (1, 1, 1, 1)
+    cursor_color: (1, 1, 1, 1)
+    multiline: False
+    write_tab: False
+    password_mask: "o"
+    background_color:  (0 ,0 ,0 , 0)
+
+
+<IconButton@ButtonBehavior+Image>:
+    size_hint: None, None
+    size: 18, 18
+    pos_hint: {'center_y':.5}
+
+<Icon@Image>:
+    size_hint: None, None
+    size: 20, 20
+    pos_hint: {'center_y':.5}
+
+<TextField@BoxLayout>:
+    orientation: 'horizontal'
+    spacing: 5
+    padding: 2, 0, 4, 0
+    canvas:
+        Color: 
+            rgba: (1, 1, 1, 1)
+        Rectangle:
+            size: root.size[0], 1
+            pos: root.pos[0], root.pos[1] + 4

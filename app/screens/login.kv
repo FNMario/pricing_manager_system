@@ -1,12 +1,6 @@
 #:kivy 2.2.1
 #:include my_widgets.kv
 
-<Button>:
-    font_size: 16
-    bold: True
-    color: (.13, .14, .19, 1)
-    size_hint_y: None
-    height: 40
 
 <LoginWindow>:
     id: main_win
@@ -15,25 +9,27 @@
     BoxLayout:
         orientation: 'vertical'
         size: root.size
-        padding: 0,0,0,max((main_win.space_y-350)/4,0)
-        spacing: max((main_win.space_y-350)/10,10)
+        padding: 0, 0, 0, max((main_win.space_y-350)/4, 0)
+        spacing: max((main_win.space_y-350)/10, 10)
         FloatLayout:
             size_hint_y: .5
-            spacing: max((main_win.space_y-350)/4,0)
-            Button:
-                text:'X'
-                size_hint: None,None
-                size: 20,20
-                pos_hint: {"right":1,"top":1}
-                on_release: app.stop()
+            spacing: max((main_win.space_y-350)/4, 0)
+            pading: 20
+            IconButton:
+                source: '../media/icons/cross_bold.png'
+                size: 14, 14
+                pos_hint: {}
+                pos: main_win.space_x-self.size[0]-4, main_win.space_y-self.size[1]-4
+                on_release: 
+                    app.stop()
             Image:
                 id: logo
                 source: '../media/images/logo_big.png'
                 fit_mode: 'contain'
-                pos_hint: {"x":0, "top":.8}
+                pos_hint: {'x':0, 'top':.8}
         BoxLayout:
             orientation: 'vertical'
-            padding: main_win.space_x/2 -150, 0, main_win.space_x/2 -150, max((main_win.space_y-250)/4,0)
+            padding: main_win.space_x/2-150, 0, main_win.space_x/2-150, max((main_win.space_y-250)/4,0)
             spacing: 20
             Label:
                 id: lbl_info
@@ -48,22 +44,35 @@
                 spacing: 5
                 size_hint_y: None
                 height: 80
-                EnhancedTextInput:
-                    icon: '../media/icons/user_1.png'
-                    id: txt_username
-                    hint_text: "Username"
-                    focus: True
-                    _on_text_validate: lambda: setattr(txt_password, 'focus', True)
-                EnhancedTextInput:
-                    icon: '../media/icons/lock_1.png'
-                    id: txt_password
-                    hint_text: "Password"
-                    password: True
-                    eye_button: True
-                    _on_text_validate: root.btn_login_on_press
+                TextField:
+                    Icon:
+                        source: '../media/icons/user_1.png'
+                    TextInput:
+                        id: txt_username
+                        hint_text: "Username"
+                        on_text_validate: 
+                            txt_password.focus = True
+                        focus: True
+                TextField:
+                    Icon:
+                        source: '../media/icons/lock_1.png'
+                    TextInput:
+                        id: txt_password
+                        hint_text: "Password"
+                        password: True
+                        on_text_validate: 
+                            root.btn_login_on_press()
+                    IconButton:
+                        source: '../media/icons/eye_on-off_1.png'
+                        on_press: 
+                            txt_password.password = False
+                            txt_password.focus = False
+                        on_release: 
+                            txt_password.password = True
+                            txt_password.focus = True
+
             Button:
                 id: btn_login
                 text: "Sign in"
-                on_release: root.btn_login_on_press()
-                # background_normal: 'atlas://data/images/defaulttheme/button_pressed'
-                # background_down: 'atlas://data/images/defaulttheme/button'
+                on_release: 
+                    root.btn_login_on_press()
