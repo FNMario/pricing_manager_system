@@ -9,6 +9,8 @@
     background_normal: 'atlas://data/images/defaulttheme/button_pressed'
     background_down: 'atlas://data/images/defaulttheme/button'
 
+<DoubleClickLabel>:
+
 <EmptyButton@Button>:
     background_normal: ''
     background_down: 'atlas://data/images/defaulttheme/button_pressed'
@@ -54,3 +56,34 @@
         Rectangle:
             size: root.size[0], 1
             pos: root.pos[0], root.pos[1] + 4
+
+<CheckBox>:
+    background_checkbox_normal: '../media/icons/square_2.png'
+    background_checkbox_down: '../media/icons/square_plus.png'
+
+
+<Header>:
+    canvas.before:
+        Color: 
+            rgba: (1, 1, 1, .1)
+        RoundedRectangle:
+            size: self.size
+            pos: self.pos
+            radius: [8]
+
+<Row>:
+    canvas.before:
+        Color: 
+            rgba: (.13, .14, .19, 1) if self.background else (0,0,0,0)
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+<DataTable>:
+    canvas.before:
+        Color: 
+            rgba: (1, 1, 1, .1)
+        RoundedRectangle:
+            size: self.size
+            pos: self.pos
+            radius: [8]
