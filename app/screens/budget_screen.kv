@@ -1,0 +1,205 @@
+#:kivy 2.2.1
+#:include my_widgets.kv
+
+<Budget>:
+    id: main_win
+    space_x: self.size[0]
+    space_y: self.size[1]
+    BoxLayout:
+        orientation: 'vertical'
+        # size_hint: None, None
+        # width: 800
+        # height: main_win.space_y
+        size: main_win.size
+        pos_hint: {'right':1}
+        padding: main_win.space_x/2-450, 10
+        spacing: 10
+        # Form
+        BoxLayout:
+            id: form_layout
+            orientation: 'vertical'
+            pos_hint: {'center_x':.5}
+            size_hint_y: None
+            height: 280
+            padding: 100,0
+            canvas.before:
+                Color: 
+                    rgba: (1, 1, 1, .4)
+                Line:
+                    rounded_rectangle: (self.pos[0],self.pos[1],self.size[0],self.size[1], 4)
+                    width: .5
+            # Product
+            TextField:
+                Icon:
+                    source: '../media/icons/box.png'
+                TextInput:
+                    id: txt_product
+                    hint_text: "Product"
+                    focus: True
+                    on_text_validate: 
+                        tbl_products.items = root.search_product()
+                    text_validate_unfocus: False
+                IconButton:
+                    source: '../media/icons/search_1.png'
+                    on_press: 
+                        tbl_products.items = root.search_product()
+                    on_release: 
+                        txt_product.focus = True
+            BoxLayout:
+                orientation: 'horizontal'
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_x: .4
+                    # Local code
+                    TextField:
+                        Icon:
+                            source: '../media/icons/barcode.png'
+                        TextInput:
+                            id: txt_local_code
+                            hint_text: "Local code"
+                            on_text_validate: 
+                                tbl_products.items = root.search_local_code()
+                            text_validate_unfocus: False
+                        IconButton:
+                            source: '../media/icons/search_1.png'
+                            on_press: 
+                                tbl_products.items = root.search_local_code()
+                            on_release: 
+                                txt_local_code.focus = True
+                    # Quantity
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        spacing: 10
+                        TextField:
+                            size_hint_x: 0.6
+                            Icon:
+                                source: '../media/icons/hashtag.png'
+                            InfoLabel:
+                                id: lbl_quantity
+                                text: "Quantity"
+                        TextField:
+                            size_hint_x: 0.4
+                            InfoLabel:
+                                id: lbl_unit
+                                text: "Unit"
+                    # Space
+                    Label:
+                        size_hint_y: None
+                        height: 20
+                    TextField:
+                        InfoLabel:
+                            id: lbl_category
+                            text: "VENTAS"
+                        IconButton:
+                            on_press: root.btn_on_press()
+                            source: '../media/icons/down.png'
+                        Label:
+                            size_hint_x: None
+                            width: 50
+                            text: ""
+                        Icon:
+                            source: '../media/icons/calendar.png'
+                        InfoLabel:
+                            id: lbl_date
+                            color: [1, 1, 1, .5]
+                            text: "00/00/0000"
+                    
+                    # Sell 1
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        spacing: 10
+                        TextField:
+                            size_hint_x: 0.5
+                            Icon:
+                                source: '../media/icons/dollar.png'
+                            InfoLabel:
+                                id: lbl_price_1
+                                text: "0.00"
+                        TextField:
+                            size_hint_x: 0.5
+                            InfoLabel:
+                                id: lbl_quantity_1
+                                text: "-"
+                    # Sell 2
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        spacing: 10
+                        TextField:
+                            size_hint_x: 0.5
+                            Icon:
+                                source: '../media/icons/dollar.png'
+                            InfoLabel:
+                                id: lbl_price_2
+                                text: "0.00"
+                        TextField:
+                            size_hint_x: 0.5
+                            InfoLabel:
+                                id: lbl_quantity_2
+                                text: "-"
+                    # Sell 3
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        spacing: 10
+                        TextField:
+                            size_hint_x: 0.5
+                            Icon:
+                                source: '../media/icons/dollar.png'
+                            InfoLabel:
+                                id: lbl_price_3
+                                text: "0.00"
+                        TextField:
+                            size_hint_x: 0.5
+                            InfoLabel:
+                                id: lbl_quantity_3
+                                text: "-"
+                # Image
+                BoxLayout:
+                    size_hint_x: .6
+                    padding: 8
+                    # canvas.before:
+                    #     Color: 
+                    #         rgba: (0, 0, 1, .5)
+                    #     Rectangle:
+                    #         size: self.size
+                    #         pos: self.pos
+                    Image:
+                        # size_hint: .9, .9
+                        # pos_hint: {'center_x':.5, 'center_y':.5}
+                        source: '../media/images/DefaultBase.png'
+                        fit_mode: 'cover'
+        # Buttons
+        BoxLayout:
+            orientation: 'horizontal'
+            pos_hint: {'center_x':.5, 'center_y':.5}
+            size_hint_y: None
+            height: self.minimum_height
+            spacing:10
+            padding: 200,0
+            # Save
+            Button:
+                id: btn_add
+                text: "Add"
+                on_press: print("button add changes pressed")
+            
+            # Clean
+            EmptyButton:
+                id: btn_clean
+                text: "Clean"
+                on_press: 
+                    root.clean_all()
+                on_release: 
+                    txt_product.focus = True
+        # Table
+        BoxLayout:
+            id: table_layout
+            orientation: 'horizontal'
+            ScrollView:
+                do_scroll_x: False
+                do_scroll_y: True
+                DataTable:
+                    id: tbl_products
+                    size_hint_y: None
+                    height: self.minimum_height
+                    header_background_color: [1,1,1,0.5]
+                    hint_sizes: [0.1,0.7,0.2]
+                    header: ["Local code", "Product", "Quantity"]

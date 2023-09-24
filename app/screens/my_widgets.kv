@@ -22,6 +22,7 @@
         Line:
             rounded_rectangle: (self.pos[0],self.pos[1],self.size[0],self.size[1], 4)
             width: 2
+
 <TextInput>:
     font_size: 16
     background_normal: ''
@@ -34,6 +35,42 @@
     background_color:  (0 ,0 ,0 , 0)
 
 
+
+<CategoryButton@ButtonBehavior+BoxLayout>:
+    active: False
+    text: cat_label.text
+    icon: cat_icon.source
+    screen_name: "none"
+    size_hint_y: None
+    height: 50 
+    padding: 15
+    spacing: 10
+    canvas:
+        Color: 
+            rgba: (1, 1, 1, .05) if root.active else (0,0,0,0)
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    Icon:
+        id: cat_icon
+        source: root.icon
+        size: 24,24
+    Label:
+        id: cat_label
+        text: root.text
+        halign: 'left'
+        valign: 'middle'
+        text_size: self.size
+        font_size: 18
+        color: (1,1,1,1) if root.active else (1,1,1,.5)
+
+<InfoLabel@Label>:
+    halign: 'left'
+    valign: 'middle'
+    text_size: self.size
+    size_hint_y: None
+    height: 40
+    
 <IconButton@ButtonBehavior+Image>:
     size_hint: None, None
     size: 18, 18
@@ -60,7 +97,6 @@
 <CheckBox>:
     background_checkbox_normal: '../media/icons/square_2.png'
     background_checkbox_down: '../media/icons/square_plus.png'
-
 
 <Header>:
     canvas.before:
