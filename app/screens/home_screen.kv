@@ -1,0 +1,120 @@
+#:kivy 2.2.1
+#:include my_widgets.kv
+#:include manage_prices_screen.kv
+#:include budget_screen.kv
+
+
+<HomeWindow>:
+    BoxLayout:
+        orientation: 'horizontal'
+        size: root.size
+        # Categories
+        BoxLayout:
+            id: categories_layout
+            orientation: 'vertical'
+            size_hint: None,None
+            size: 280, root.size[1]
+            pos_hint: {'center_y':0.5,'left':1}
+            spacing: 5
+            canvas.before:
+                Color: 
+                    rgba: (1, 1, 1, .5)
+                Rectangle:
+                    size: 2, self.size[1]
+                    pos: self.size[0], self.pos[1]
+            Image:
+                id: logo
+                source: '../media/images/logo_big.png'
+                fit_mode: 'contain'
+                size_hint_y: None
+                height: 130
+            # Buy
+            CategoryButton:
+                text: "Buy"
+                icon: '../media/icons/shopping_cart.png'
+                screen_name: "prices"
+                on_press: 
+                    root.change_category(self)
+            # Budgets
+            CategoryButton:
+                text: "Budgets"
+                icon: '../media/icons/form_1.png'
+                on_press: 
+                    root.change_category(self)
+            # Manage Prices
+            CategoryButton:
+                text: "Manage Prices"
+                icon: '../media/icons/edit_1.png'
+                screen_name: "manage"
+                on_press: 
+                    root.change_category(self)
+            # Print tables
+            CategoryButton:
+                text: "Print tables"
+                icon: '../media/icons/table_1.png'
+                on_press: 
+                    root.change_category(self)
+            # Settings
+            CategoryButton:
+                text: "Settings"
+                icon: '../media/icons/settings_1.png'
+                on_press: 
+                    root.change_category(self)
+            Label:
+                id: cat_space
+            # Log out
+            CategoryButton:
+                text: "Log out"
+                icon: '../media/icons/log_out.png'
+                height: 70
+                on_release: 
+                    app.stop()
+        # Home
+        BoxLayout:
+            orientation: 'vertical'
+            # Title bar
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint_y: None
+                height: 25
+                padding: 10,2,2,2
+                spacing: 4
+                canvas.before:
+                    Color: 
+                        rgba: (1, 1, 1, .05)
+                    Rectangle:
+                        size: self.size
+                        pos: self.pos
+                Label:
+                    id: lbl_title
+                    text: "TITLE"
+                    halign: 'left'
+                    valign: 'middle'
+                    text_size: self.size
+                    font_size: 16
+                IconButton:
+                    source: '../media/icons/minus.png'
+                    size: 14, 14
+                    on_release: 
+                        root.minimize()
+                IconButton:
+                    source: '../media/icons/square_2.png'
+                    size: 14, 14
+                    on_release: 
+                        root.maximize()
+                IconButton:
+                    source: '../media/icons/cross_bold.png'
+                    size: 14, 14
+                    on_release: 
+                        app.stop()
+            # Screen
+            ScreenManager:
+                id: main_screen
+                Screen:
+                    name: "none"
+                Screen:
+                    name: "prices"
+                    Budget
+                Screen:
+                    name: "manage"
+                    ManagePrices
