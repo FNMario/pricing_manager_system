@@ -36,9 +36,9 @@ class LoginApp(App):
 
 
 if __name__ == '__main__':
-    sa = LoginApp()
-    sa.run()
     Config.set('graphics', 'resizable', '0')
     Config.set('graphics', 'width', '550')
     Config.set('graphics', 'height', '400')
     Config.write()
+    sa = LoginApp()
+    sa.run()
