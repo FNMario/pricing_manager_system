@@ -31,7 +31,7 @@
             # Product
             TextField:
                 Icon:
-                    source: '../media/icons/box.png'
+                    source: './assets/icons/box.png'
                 TextInput:
                     id: txt_product
                     hint_text: "Product"
@@ -40,7 +40,7 @@
                         tbl_products.items = root.search_product()
                     text_validate_unfocus: False
                 IconButton:
-                    source: '../media/icons/search_1.png'
+                    source: './assets/icons/search_1.png'
                     on_press: 
                         tbl_products.items = root.search_product()
                     on_release: 
@@ -53,7 +53,7 @@
                     # Local code
                     TextField:
                         Icon:
-                            source: '../media/icons/barcode.png'
+                            source: './assets/icons/barcode.png'
                         TextInput:
                             id: txt_local_code
                             hint_text: "Local code"
@@ -61,7 +61,7 @@
                                 tbl_products.items = root.search_local_code()
                             text_validate_unfocus: False
                         IconButton:
-                            source: '../media/icons/search_1.png'
+                            source: './assets/icons/search_1.png'
                             on_press: 
                                 tbl_products.items = root.search_local_code()
                             on_release: 
@@ -73,7 +73,7 @@
                         TextField:
                             size_hint_x: 0.6
                             Icon:
-                                source: '../media/icons/hashtag.png'
+                                source: './assets/icons/hashtag.png'
                             InfoLabel:
                                 id: lbl_quantity
                                 text: "Quantity"
@@ -92,13 +92,13 @@
                             text: "VENTAS"
                         IconButton:
                             on_press: root.btn_on_press()
-                            source: '../media/icons/down.png'
+                            source: './assets/icons/down.png'
                         Label:
                             size_hint_x: None
                             width: 50
                             text: ""
                         Icon:
-                            source: '../media/icons/calendar.png'
+                            source: './assets/icons/calendar.png'
                         InfoLabel:
                             id: lbl_date
                             color: [1, 1, 1, .5]
@@ -111,7 +111,7 @@
                         TextField:
                             size_hint_x: 0.5
                             Icon:
-                                source: '../media/icons/dollar.png'
+                                source: './assets/icons/dollar.png'
                             InfoLabel:
                                 id: lbl_price_1
                                 text: "0.00"
@@ -127,7 +127,7 @@
                         TextField:
                             size_hint_x: 0.5
                             Icon:
-                                source: '../media/icons/dollar.png'
+                                source: './assets/icons/dollar.png'
                             InfoLabel:
                                 id: lbl_price_2
                                 text: "0.00"
@@ -143,7 +143,7 @@
                         TextField:
                             size_hint_x: 0.5
                             Icon:
-                                source: '../media/icons/dollar.png'
+                                source: './assets/icons/dollar.png'
                             InfoLabel:
                                 id: lbl_price_3
                                 text: "0.00"
@@ -165,7 +165,7 @@
                     Image:
                         # size_hint: .9, .9
                         # pos_hint: {'center_x':.5, 'center_y':.5}
-                        source: '../media/images/DefaultBase.png'
+                        source: './assets/images/DefaultBase.png'
                         fit_mode: 'cover'
         # Buttons
         BoxLayout:

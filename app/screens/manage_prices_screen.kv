@@ -31,13 +31,13 @@
             # Product
             TextField:
                 Icon:
-                    source: '../media/icons/box.png'
+                    source: './assets/icons/box.png'
                 TextInput:
                     id: txt_product
                     hint_text: "Product"
                     focus: True
                 IconButton:
-                    source: '../media/icons/search_1.png'
+                    source: './assets/icons/search_1.png'
                     on_press: 
                         tbl_products.items = root.search()
             BoxLayout:
@@ -48,39 +48,39 @@
                     # Local code
                     TextField:
                         Icon:
-                            source: '../media/icons/barcode.png'
+                            source: './assets/icons/barcode.png'
                         TextInput:
                             id: txt_local_code
                             hint_text: "Local code"
                         IconButton:
-                            source: '../media/icons/right.png'
+                            source: './assets/icons/right.png'
                             on_press: root.btn_on_press()
                         IconButton:
-                            source: '../media/icons/double-right.png'
+                            source: './assets/icons/double-right.png'
                             on_press: root.btn_on_press()
                         IconButton:
-                            source: '../media/icons/search_1.png'
+                            source: './assets/icons/search_1.png'
                             on_press: 
                                 tbl_products.items = root.search(10)
                     # Supplier
                     TextField:
                         Icon:
-                            source: '../media/icons/supplier.png'
+                            source: './assets/icons/supplier.png'
                         TextInput:
                             id: txt_supplier
                             hint_text: "Supplier"
                         IconButton:
                             on_press: root.btn_on_press()
-                            source: '../media/icons/down.png'
+                            source: './assets/icons/down.png'
                     # Supplier's code
                     TextField:
                         Icon:
-                            source: '../media/icons/barcode.png'
+                            source: './assets/icons/barcode.png'
                         TextInput:
                             id: txt_supplier_code
                             hint_text: "Supplier's code"
                         IconButton:
-                            source: '../media/icons/search_1.png'
+                            source: './assets/icons/search_1.png'
                             on_press: 
                                 tbl_products.items = root.search(1)
                     # Quantity
@@ -90,7 +90,7 @@
                         TextField:
                             size_hint_x: 0.6
                             Icon:
-                                source: '../media/icons/hashtag.png'
+                                source: './assets/icons/hashtag.png'
                             TextInput:
                                 id: txt_quantity
                                 hint_text: "Quantity"
@@ -103,14 +103,14 @@
                                 hint_text: "Unit"
                             IconButton:
                                 on_press: root.btn_on_press()
-                                source: '../media/icons/down.png'
+                                source: './assets/icons/down.png'
                     # Cost
                     BoxLayout:
                         orientation: 'horizontal'
                         spacing: 10
                         TextField:
                             Icon:
-                                source: '../media/icons/dollar.png'
+                                source: './assets/icons/dollar.png'
                             TextInput:
                                 id: txt_cost
                                 hint_text: "Cost"
@@ -150,7 +150,7 @@
                     # Earning
                     TextField:
                         Icon:
-                            source: '../media/icons/earnings.png'
+                            source: './assets/icons/earnings.png'
                         TextInput:
                             id: txt_earning
                             hint_text: "Earning"
@@ -163,33 +163,33 @@
                             IconButton:
                                 on_press: root.btn_on_press()
                                 pos_hint: {}
-                                source: '../media/icons/plus_small.png'
+                                source: './assets/icons/plus_small.png'
                                 # size: 14,14
                             IconButton:
                                 on_press: root.btn_on_press()
                                 pos_hint: {}
-                                source: '../media/icons/minus_small.png'
+                                source: './assets/icons/minus_small.png'
                                 # size: 14,14
                     # Section
                     TextField:
                         Icon:
-                            source: '../media/icons/list.png'
+                            source: './assets/icons/list.png'
                         TextInput:
                             id: txt_section
                             hint_text: "Section"
                         IconButton:
                             on_press: root.btn_on_press()
-                            source: '../media/icons/down.png'
+                            source: './assets/icons/down.png'
                     # Date
                     TextField:
                         Icon:
-                            source: '../media/icons/calendar.png'
+                            source: './assets/icons/calendar.png'
                         TextInput:
                             id: txt_date
                             hint_text: "Date"
                         IconButton:
                             on_press: root.btn_on_press()
-                            source: '../media/icons/refresh_date.png'
+                            source: './assets/icons/refresh_date.png'
                 # Image
                 BoxLayout:
                     size_hint_x: .6
@@ -203,7 +203,7 @@
                     Image:
                         # size_hint: .9, .9
                         # pos_hint: {'center_x':.5, 'center_y':.5}
-                        source: '../media/images/DefaultBase.png'
+                        source: './assets/images/DefaultBase.png'
                         fit_mode: 'cover'
         # Buttons
         BoxLayout:

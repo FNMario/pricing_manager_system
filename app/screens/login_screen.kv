@@ -16,7 +16,7 @@
             spacing: max((main_win.space_y-350)/4, 0)
             pading: 20
             IconButton:
-                source: '../media/icons/cross_bold.png'
+                source: './assets/icons/cross_bold.png'
                 size: 14, 14
                 pos_hint: {}
                 pos: main_win.space_x-self.size[0]-4, main_win.space_y-self.size[1]-4
@@ -24,7 +24,7 @@
                     app.stop()
             Image:
                 id: logo
-                source: '../media/images/logo_big.png'
+                source: './assets/images/logo_big.png'
                 fit_mode: 'contain'
                 pos_hint: {'x':0, 'top':.8}
         BoxLayout:
@@ -46,7 +46,7 @@
                 height: 80
                 TextField:
                     Icon:
-                        source: '../media/icons/user_1.png'
+                        source: './assets/icons/user_1.png'
                     TextInput:
                         id: txt_username
                         hint_text: "Username"
@@ -55,7 +55,7 @@
                         focus: True
                 TextField:
                     Icon:
-                        source: '../media/icons/lock_1.png'
+                        source: './assets/icons/lock_1.png'
                     TextInput:
                         id: txt_password
                         hint_text: "Password"
@@ -63,7 +63,7 @@
                         on_text_validate: 
                             root.btn_login_on_press()
                     IconButton:
-                        source: '../media/icons/eye_on-off_1.png'
+                        source: './assets/icons/eye_on-off_1.png'
                         on_press: 
                             txt_password.password = False
                             txt_password.focus = False

@@ -24,40 +24,40 @@
                     pos: self.size[0], self.pos[1]
             Image:
                 id: logo
-                source: '../media/images/logo_big.png'
+                source: './assets/images/logo_big.png'
                 fit_mode: 'contain'
                 size_hint_y: None
                 height: 130
             # Buy
             CategoryButton:
                 text: "Buy"
-                icon: '../media/icons/shopping_cart.png'
+                icon: './assets/icons/shopping_cart.png'
                 screen_name: "prices"
                 on_press: 
                     root.change_category(self)
             # Budgets
             CategoryButton:
                 text: "Budgets"
-                icon: '../media/icons/form_1.png'
+                icon: './assets/icons/form_1.png'
                 on_press: 
                     root.change_category(self)
             # Manage Prices
             CategoryButton:
                 text: "Manage Prices"
-                icon: '../media/icons/edit_1.png'
+                icon: './assets/icons/edit_1.png'
                 screen_name: "manage"
                 on_press: 
                     root.change_category(self)
             # Print tables
             CategoryButton:
                 text: "Print tables"
-                icon: '../media/icons/table_1.png'
+                icon: './assets/icons/table_1.png'
                 on_press: 
                     root.change_category(self)
             # Settings
             CategoryButton:
                 text: "Settings"
-                icon: '../media/icons/settings_1.png'
+                icon: './assets/icons/settings_1.png'
                 on_press: 
                     root.change_category(self)
             Label:
@@ -65,7 +65,7 @@
             # Log out
             CategoryButton:
                 text: "Log out"
-                icon: '../media/icons/log_out.png'
+                icon: './assets/icons/log_out.png'
                 height: 70
                 on_release: 
                     app.stop()
@@ -93,17 +93,17 @@
                     text_size: self.size
                     font_size: 16
                 IconButton:
-                    source: '../media/icons/minus.png'
+                    source: './assets/icons/minus.png'
                     size: 14, 14
                     on_release: 
                         root.minimize()
                 IconButton:
-                    source: '../media/icons/square_2.png'
+                    source: './assets/icons/square_2.png'
                     size: 14, 14
                     on_release: 
                         root.maximize()
                 IconButton:
-                    source: '../media/icons/cross_bold.png'
+                    source: './assets/icons/cross_bold.png'
                     size: 14, 14
                     on_release: 
                         app.stop()
