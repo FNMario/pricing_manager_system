@@ -1,5 +1,12 @@
 #:kivy 2.2.1
-#:include my_widgets.kv
+#:import TextField screens.widgets.textfield
+#:import Icon screens.widgets.icon
+#:import IconButton screens.widgets.iconbutton
+#:import InfoLabel screens.widgets.infolabel
+#:import FilledButton screens.widgets.filledbutton
+#:import EmptyButton screens.widgets.emptybutton
+#:import DataTable screens.widgets.datatable
+#:import DoubleClickLabel screens.widgets.doubleclicklabel
 
 <ManagePrices>:
     id: main_win
@@ -213,7 +220,7 @@
             height: self.minimum_height
             spacing:10
             # Save
-            Button:
+            FilledButton:
                 id: btn_save
                 text: "Save"
                 on_press: print(form_ly.size)

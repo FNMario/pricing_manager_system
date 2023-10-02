@@ -1,5 +1,9 @@
 #:kivy 2.2.1
-#:include my_widgets.kv
+#:include screens/widgets/widgets_styles.kv
+#:import IconButton screens.widgets.iconbutton
+#:import Icon screens.widgets.icon
+#:import TextField screens.widgets.textfield
+#:import FilledButton screens.widgets.filledbutton
 
 
 <LoginWindow>:
@@ -71,7 +75,7 @@
                             txt_password.password = True
                             txt_password.focus = True
 
-            Button:
+            FilledButton:
                 id: btn_login
                 text: "Sign in"
                 on_release: 

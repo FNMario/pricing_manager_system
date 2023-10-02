@@ -1,12 +1,11 @@
-from kivy.app import App
 from kivy.uix.widget import Widget
-from kivy.config import Config
-from kivy.core.window import WindowBase
-from my_widgets_.datatable import DataTable
 from kivy.uix.textinput import TextInput
+from kivy.lang import Builder
 import logging
 
-class Budget(Widget):
+Builder.load_file('screens/buy_screen.kv')
+
+class Buy(Widget):
 
     def search_product(self):
         return []
@@ -27,17 +26,3 @@ class Budget(Widget):
         self.ids.lbl_date.text = "00/00/0000"
         self.ids.tbl_products.items = []
         self.ids.tbl_products.update_table()
-
-class BudgetApp(App):
-    def build(self):
-        WindowBase.clearcolor = (.13, .14, .19, 1)
-        return Budget()
-
-
-if __name__ == '__main__':
-    Config.set('graphics', 'width', '1200')
-    Config.set('graphics', 'height', '800')
-    Config.write()
-    app = BudgetApp()
-    app.kv_file = 'budget_screen.kv'
-    app.run()

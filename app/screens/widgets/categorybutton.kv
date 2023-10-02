@@ -1,0 +1,29 @@
+#:kivy 2.2.1
+
+<CategoryButton>:
+    active: False
+    text: cat_label.text
+    icon: cat_icon.source
+    screen_name: "none"
+    size_hint_y: None
+    height: 50 
+    padding: 15
+    spacing: 10
+    canvas:
+        Color: 
+            rgba: (1, 1, 1, .05) if root.active else (0,0,0,0)
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    Icon:
+        id: cat_icon
+        source: root.icon
+        size: 24,24
+    Label:
+        id: cat_label
+        text: root.text
+        halign: 'left'
+        valign: 'middle'
+        text_size: self.size
+        font_size: 18
+        color: (1,1,1,1) if root.active else (1,1,1,.5)

@@ -1,0 +1,27 @@
+#:kivy 2.2.1
+
+<Header>:
+    canvas.before:
+        Color: 
+            rgba: (1, 1, 1, .1)
+        RoundedRectangle:
+            size: self.size
+            pos: self.pos
+            radius: [8]
+
+<Row>:
+    canvas.before:
+        Color: 
+            rgba: (.13, .14, .19, 1) if self.background else (0,0,0,0)
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+<DataTable>:
+    canvas.before:
+        Color: 
+            rgba: (1, 1, 1, .1)
+        RoundedRectangle:
+            size: self.size
+            pos: self.pos
+            radius: [8]

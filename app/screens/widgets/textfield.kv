@@ -1,0 +1,14 @@
+#:kivy 2.2.1
+
+<TextField>:
+    size_hint_y: None
+    height: 40
+    orientation: 'horizontal'
+    spacing: 5
+    padding: 2, 0, 4, 0
+    canvas:
+        Color: 
+            rgba: (1, 1, 1, 1)
+        Rectangle:
+            size: root.size[0], 1
+            pos: root.pos[0], root.pos[1] + 4

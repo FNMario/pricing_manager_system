@@ -1,8 +1,10 @@
 from kivy.uix.gridlayout import GridLayout
-# from kivy.graphics import Color, Rectangle
 from kivy.properties import ListProperty, BooleanProperty, NumericProperty
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.label import Label
+from kivy.lang.builder import Builder
+
+Builder.load_file('screens/widgets/datatable.kv')
 
 
 class Header(Label):
@@ -12,7 +14,7 @@ class Header(Label):
 class Row(Label):
     background = BooleanProperty('False')
     row = NumericProperty()
-    
+
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
             print(self.row)

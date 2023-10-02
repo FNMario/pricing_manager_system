@@ -1,7 +1,13 @@
 #:kivy 2.2.1
-#:include my_widgets.kv
+#:import TextField screens.widgets.textfield
+#:import Icon screens.widgets.icon
+#:import IconButton screens.widgets.iconbutton
+#:import InfoLabel screens.widgets.infolabel
+#:import FilledButton screens.widgets.filledbutton
+#:import EmptyButton screens.widgets.emptybutton
+#:import DataTable screens.widgets.datatable
 
-<Budget>:
+<Buy>:
     id: main_win
     space_x: self.size[0]
     space_y: self.size[1]
@@ -176,7 +182,7 @@
             spacing:10
             padding: 200,0
             # Save
-            Button:
+            FilledButton:
                 id: btn_add
                 text: "Add"
                 on_press: print("button add changes pressed")

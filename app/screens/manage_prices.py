@@ -1,11 +1,11 @@
 from kivy.app import App
+from kivy.core.window import Window
 from kivy.uix.widget import Widget
-from kivy.config import Config
-from kivy.core.window import WindowBase
-from my_widgets_.datatable import DataTable
-from my_widgets_.doubleclicklabel import DoubleClickLabel
 from kivy.uix.textinput import TextInput
+from kivy.lang import Builder
 import logging
+
+Builder.load_file('screens/manage_prices_screen.kv')
 
 class ManagePrices(Widget):
 
@@ -85,14 +85,5 @@ class ManagePrices(Widget):
 
 class PriceManagerApp(App):
     def build(self):
-        WindowBase.clearcolor = (.13, .14, .19, 1)
+        Window.clearcolor = (.13, .14, .19, 1)
         return ManagePrices()
-
-
-if __name__ == '__main__':
-    Config.set('graphics', 'width', '1200')
-    Config.set('graphics', 'height', '800')
-    Config.write()
-    app = PriceManagerApp()
-    app.kv_file = 'manage_prices_screen.kv'
-    app.run()

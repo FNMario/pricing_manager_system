@@ -1,7 +1,7 @@
 #:kivy 2.2.1
-#:include my_widgets.kv
-#:include manage_prices_screen.kv
-#:include budget_screen.kv
+#:include screens/widgets/widgets_styles.kv
+#:import CategoryButton screens.widgets.categorybutton
+#:import IconButton screens.widgets.iconbutton
 
 
 <HomeWindow>:
@@ -114,7 +114,7 @@
                     name: "none"
                 Screen:
                     name: "prices"
-                    Budget
+                    Buy
                 Screen:
                     name: "manage"
                     ManagePrices

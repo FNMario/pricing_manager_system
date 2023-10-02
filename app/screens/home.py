@@ -1,15 +1,19 @@
 from kivy.app import App
 from kivy.uix.widget import Widget
-from kivy.core.window import Window, WindowBase
+from kivy.core.window import Window
 from kivy.uix.screenmanager import NoTransition
+from kivy.lang import Builder
+
+from screens.buy import Buy
+from screens.manage_prices import ManagePrices
 
 import logging
 
-from manage_prices import ManagePrices
-from budgets import Budget
+Builder.load_file('screens/home_screen.kv')
 
 class HomeWindow(Widget):
-
+    maximized = False
+    
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.ids.main_screen.transition = NoTransition()
@@ -25,19 +29,20 @@ class HomeWindow(Widget):
             self.ids.main_screen.current = instance.screen_name
     
     def minimize(self):
-        WindowBase.minimize(self)
+        Window.minimize()
 
     def maximize(self):
-        WindowBase.maximize(self)
+        if self.maximized:
+            Window.restore()
+        else:
+            Window.maximize()
+        self.maximized = not self.maximized
 
 class HomeApp(App):
     def build(self):
+        Window.borderless = False
         Window.clearcolor = (.13, .14, .19, 1)
+        Window.size = (1200, 800)
+        Window.left = Window.left - (1200-550)/2
+        Window.top = Window.top - (800-400)/2
         return HomeWindow()
-
-
-if __name__ == '__main__':
-    app = HomeApp()
-    app.kv_file = 'home_screen.kv'
-    app.run()
-

@@ -1,11 +1,14 @@
 from kivy.app import App
 from kivy.uix.widget import Widget
-from kivy.core.window import WindowBase
-from kivy.config import Config
+from kivy.core.window import Window
+from kivy.lang import Builder
 import logging
 
+Builder.load_file('screens/login_screen.kv')
 class LoginWindow(Widget):
-
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+    
     def btn_login_on_press(self):
         logging.debug('btn_login pressed')
         username = self.ids.txt_username
@@ -27,18 +30,19 @@ class LoginWindow(Widget):
 
 
 class LoginApp(App):
+
     def build(self):
         self.title = 'Pricing Manager'
-        self.icon = '../media/media/logo_big.png'
-        WindowBase.clearcolor = (.13, .14, .19, 1)
-        WindowBase.borderless = True
+        self.icon = './assets/images/logo_big.png'
+        Window.clearcolor = (.13, .14, .19, 1)
+        Window.borderless = True
+        Window.size = (550, 400)
+        Window.left = Window.left + (1200-550)/2
+        Window.top = Window.top + (800-400)/2
         return LoginWindow()
 
 
 if __name__ == '__main__':
-    Config.set('graphics', 'resizable', '0')
-    Config.set('graphics', 'width', '550')
-    Config.set('graphics', 'height', '400')
-    Config.write()
-    sa = LoginApp()
-    sa.run()
+    app = LoginApp()
+    # app.kv_file = 'login_screen.kv'
+    app.run()
