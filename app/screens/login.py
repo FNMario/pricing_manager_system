@@ -19,8 +19,11 @@ class LoginWindow(Widget):
             lbl_info.text = "[color=ff6666]Username and password can not be empty.[/color]"
 
         elif username.text == "asd" and password.text == "asdf":
-            lbl_info.text = "[color=66ff66]Logged in![/color]"
+            # lbl_info.text = "[color=66ff66]Logged in![/color]"
+            lbl_info.text = ""
+            username.text = ""
             logging.info('Logged in')
+            self.parent.parent.parent.ids.main_screen_manager.current = "home"
 
         else:
             lbl_info.text = "[color=ff6666]Username and password do not match.[/color]"
@@ -44,5 +47,4 @@ class LoginApp(App):
 
 if __name__ == '__main__':
     app = LoginApp()
-    # app.kv_file = 'login_screen.kv'
     app.run()

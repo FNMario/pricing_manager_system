@@ -28,6 +28,12 @@ class HomeWindow(Widget):
             instance.active = True
             self.ids.main_screen.current = instance.screen_name
     
+    def log_out(self):
+        for child in self.ids.categories_layout.children:
+            child.active = False
+        self.ids.main_screen.current = "none"
+        self.parent.parent.parent.ids.main_screen_manager.current = "login"
+    
     def minimize(self):
         Window.minimize()
 

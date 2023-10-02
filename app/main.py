@@ -1,39 +1,25 @@
-# from kivy.app import App
-# from kivy.uix.screenmanager import ScreenManager, Screen
-# from kivy.lang import Builder
-# from kivy.uix.boxlayout import BoxLayout
-# from screens.widgets import DoubleClickLabel, DataTable
-# from screens import LoginWindow, HomeWindow, Budget, ManagePrices
-from screens.home import HomeApp
-from screens.login import LoginApp
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.core.window import Window
 
+from screens.home import HomeWindow
+from screens.login import LoginWindow
 
-# Builder.load_string("""""")
+class MainWindow(BoxLayout):
 
-# class MyApp(App):
-#     def build(self):
-#         # Create a ScreenManager
-#         sm = ScreenManager()
+    login_window = LoginWindow()
+    home_window = HomeWindow()
 
-#         # Create and add the login and home screens to the ScreenManager
-        
-#         login_screen = Screen(name="login")
-#         login_screen.add_widget(LoginWindow())
-#         sm.add_widget(login_screen)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-#         home_screen = Screen(name="home")
-#         home_screen.add_widget(HomeWindow())
-#         sm.add_widget(home_screen)
+        self.ids.login_screen.add_widget(self.login_window)
+        self.ids.home_screen.add_widget(self.home_window)
+        self.ids.login_screen.children[0].ids.txt_username.focus = True
+class MainApp(App):
+    def build(self):
+        Window.clearcolor = (.13, .14, .19, 1)
+        return MainWindow()
 
-#         return sm
-
-#     def switch_to_home_screen(self):
-#         # This method will be called when the login is successful
-#         self.root.current = "home"
-
-if __name__ == '__main__':
-    login = LoginApp()
-    login.run()
-    
-    home = HomeApp()
-    home.run()
+if __name__=='__main__':
+    MainApp().run()
