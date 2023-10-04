@@ -1,6 +1,7 @@
 from kivy.app import App
 from kivy.core.window import Window
 from kivy.uix.widget import Widget
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.textinput import TextInput
 from kivy.lang import Builder
 
@@ -120,7 +121,7 @@ class ManagePrices(Widget):
     def btn_clean_on_press(self):
         self.clean_forms(self.ids.form_layout)
         self.ids.tbl_products.items = []
-        self.ids.tbl_products.update_table()
+        self.ids.prices_tab.clean_prices()
 
     def clean_forms(self, parent):
         for child in parent.children:
@@ -135,3 +136,64 @@ class PriceManagerApp(App):
     def build(self):
         Window.clearcolor = (.13, .14, .19, 1)
         return ManagePrices()
+
+
+class PricesTab(BoxLayout):
+
+    no_data = [
+        ["0.00", "0.00", "0.00", "-"],
+        ["0.00", "0.00", "0.00", "-"],
+        ["0.00", "0.00", "0.00", "-"]
+    ]
+
+    def __init__(self, **kwargs):
+        super(PricesTab, self).__init__(**kwargs)
+        self.data = self.no_data
+
+    def on_touch_down(self, touch):
+        if self.collide_point(*touch.pos):
+            if self.height == 150:
+                self.blank()
+                self.height = 40
+                self.pos_hint = {'center_y': 0.05}
+            else:
+                self.load_data(self.data)
+                self.height = 150
+                self.pos_hint = {'center_y': 0.5}
+
+    def clean_prices(self):
+        self.load_data(
+            self.no_data
+        )
+
+    def blank(self):
+        self.load_data(
+            [
+                ["", "", "", ""],
+                ["", "", "", ""],
+                ["", "", "", ""]
+            ],
+            save_data=False
+        )
+
+    def load_data(self, data: list[list[str]], save_data=True):
+        if len(data):
+            assert len(data[0]) == 4
+            self.ids.lbl_price_V_1.text = data[0][0]
+            self.ids.lbl_price_D_1.text = data[0][1]
+            self.ids.lbl_price_M_1.text = data[0][2]
+            self.ids.lbl_quantity_1.text = data[0][3]
+        if len(data) >= 1:
+            assert len(data[1]) == 4
+            self.ids.lbl_price_V_2.text = data[1][0]
+            self.ids.lbl_price_D_2.text = data[1][1]
+            self.ids.lbl_price_M_2.text = data[1][2]
+            self.ids.lbl_quantity_2.text = data[1][3]
+        if len(data) >= 2:
+            assert len(data[2]) == 4
+            self.ids.lbl_price_V_3.text = data[2][0]
+            self.ids.lbl_price_D_3.text = data[2][1]
+            self.ids.lbl_price_M_3.text = data[2][2]
+            self.ids.lbl_quantity_3.text = data[2][3]
+        if save_data:
+            self.data = data

@@ -8,6 +8,104 @@
 #:import DataTable screens.widgets.datatable
 #:import DoubleClickLabel screens.widgets.doubleclicklabel
 
+<PricesTab>:
+    orientation: 'vertical'
+    size_hint_x: 0.9
+    size_hint_y: None
+    height: 150
+    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+    canvas.before:
+        Color:
+            rgba: (.13, .14, .19, .9)
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    # Category
+    TextField:
+        InfoLabel:
+            size_hint_x: 0.225
+            halign: 'center'
+            text: "VENTA"
+        InfoLabel:
+            size_hint_x: 0.225
+            halign: 'center'
+            text: "DESC"
+        InfoLabel:
+            size_hint_x: 0.225
+            halign: 'center'
+            text: "MAY"
+        InfoLabel:
+            size_hint_x: 0.325
+            halign: 'center'
+            text: "FRACCION"
+    
+    # Sell 1
+    BoxLayout:
+        orientation: 'horizontal'
+        spacing: 10
+        TextField:
+            size_hint_x: 0.225
+            InfoLabel:
+                id: lbl_price_V_1
+        TextField:
+            size_hint_x: 0.225
+            InfoLabel:
+                id: lbl_price_D_1
+        TextField:
+            size_hint_x: 0.225
+            InfoLabel:
+                id: lbl_price_M_1
+        TextField:
+            size_hint_x: 0.325
+            InfoLabel:
+                id: lbl_quantity_1
+    # Sell 2
+    BoxLayout:
+        orientation: 'horizontal'
+        spacing: 10
+        TextField:
+            size_hint_x: 0.225
+            InfoLabel:
+                id: lbl_price_V_2
+        TextField:
+            size_hint_x: 0.225
+            InfoLabel:
+                id: lbl_price_D_2
+        TextField:
+            size_hint_x: 0.225
+            InfoLabel:
+                id: lbl_price_M_2
+        TextField:
+            size_hint_x: 0.325
+            InfoLabel:
+                id: lbl_quantity_2
+    # Sell 3
+    BoxLayout:
+        orientation: 'horizontal'
+        spacing: 10
+        TextField:
+            size_hint_x: 0.225
+            InfoLabel:
+                id: lbl_price_V_3
+                text: ""
+        TextField:
+            size_hint_x: 0.225
+            InfoLabel:
+                id: lbl_price_D_3
+                text: ""
+        TextField:
+            size_hint_x: 0.225
+            InfoLabel:
+                id: lbl_price_M_3
+                text: ""
+        TextField:
+            size_hint_x: 0.325
+            InfoLabel:
+                id: lbl_quantity_3
+                text: ""
+
+
+
 <ManagePrices>:
     id: manage_prices_screen
     BoxLayout:
@@ -200,13 +298,16 @@
                             id: btn_refresh_date
                             on_press: root.btn_refresh_date_on_press()
                             source: './assets/icons/refresh_date.png'
-                # Image
-                AnchorLayout:
+                # Image + Prices tab
+                RelativeLayout:
                     size_hint_x: .6
                     padding: 8
                     Image:
                         source: './assets/images/DefaultBase.png'
                         fit_mode: 'cover'
+                        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                    PricesTab:
+                        id: prices_tab
         # Buttons
         BoxLayout:
             orientation: 'horizontal'
