@@ -3,85 +3,133 @@ from kivy.core.window import Window
 from kivy.uix.widget import Widget
 from kivy.uix.textinput import TextInput
 from kivy.lang import Builder
+
+from interface import find_per_local_code, find_per_product_name, find_per_suppliers_code, get_date, get_dollar_price, get_last_code
+
 import logging
 
 Builder.load_file('screens/manage_prices_screen.kv')
 
+
 class ManagePrices(Widget):
 
-    def btn_on_press(self):
-        print('button_pressed')
+    # Form
 
-    def check_press(self, instance):
-        print(instance)
-        print(instance.active)
-        
-    def search(self,quantity=49):
-        lista = [
-            (105, "Auriculares", 25, "Electrónica RST"),
-            (106, "Mouse", 30, "Informática UVW"),
-            (107, "Teclado", 35, "Informática UVW"),
-            (108, "Parlante", 40, "Electrónica RST"),
-            (109, "Impresora", 5, "Informática UVW"),
-            (110, "Tinta", 10, "Papelería ABC"),
-            (111, "Papel", 100, "Papelería ABC"),
-            (112, "Marcador", 50, "Papelería XYZ"),
-            (113, "Lámpara", 15, "Electrónica RST"),
-            (114, "Reloj", 20, "Joyería OPQ"),
-            (115, "Anillo", 10, "Joyería OPQ"),
-            (116, "Collar", 15, "Joyería OPQ"),
-            (117, "Pulsera", 20, "Joyería OPQ"),
-            (118, "Aretes", 25, "Joyería OPQ"),
-            (119, "Bolso", 10, "Moda GHI"),
-            (120, "Cartera", 15, "Moda GHI"),
-            (121, "Zapatos", 20, "Moda GHI"),
-            (122, "Camisa", 25, "Moda GHI"),
-            (123, "Pantalón", 30, "Moda GHI"),
-            (124, "Gorra", 10, "Deportes DEF"),
-            (125, "Pelota", 15, "Deportes DEF"),
-            (126, "Raqueta", 20, "Deportes DEF"),
-            (127, "Bicicleta", 5, "Deportes DEF"),
-            (128, "Casco", 10, "Deportes DEF"),
-            (129, "Libro", 50, "Librería LMN"),
-            (130, "Revista", 100, "Librería LMN"),
-            (131, "Periódico", 200, "Librería LMN"),
-            (132, "Mapa", 50, "Librería LMN"),
-            (133, "Calendario", 100,"Librería LMN"),
-            (134,"Chocolate",50,"Alimentos JKL"),
-            (135,"Galletas",100,"Alimentos JKL"),
-            (136,"Café",25,"Alimentos JKL"),
-            (137,"Té",25,"Alimentos JKL"),
-            (138,"Leche",50,"Alimentos JKL"),
-            (139,"Jabón",100,"Higiene FED"),
-            (140,"Shampoo",50,"Higiene FED"),
-            (141,"Crema dental",75,"Higiene FED"),
-            (142,"Desodoran asdf as fasef asef asf asef ase fasf asef as asea fwe fas ase faste",50,"Higiene FED"),
-            (143,"Toalla húmeda",100,"Higiene FED"), 
-            (144,"Vino tinto",25,"Bebidas CBA"), 
-            (145,"Vino blanco",25,"Bebidas CBA"), 
-            (146,"Cerveza",50,"Bebidas CBA"), 
-            (147,"Agua mineral",100,"Bebidas CBA"), 
-            (148,"Jugo de naranja",75,"Bebidas CBA"), 
-            (149,"Arroz blanco",50,"Granos ZYX"), 
-            (150,"Arroz integral",25,"Granos ZYX"), 
-            (151,"Lentejas",25,"Granos ZYX"), 
-            (152,"Garbanzos",25,"Granos ZYX"), 
-            (153,"Frijoles negros" ,50 ,"Granos ZYX"), 
-        ]
-        return lista[:quantity]
+    def btn_search_product_on_press(self):
+        self.ids.tbl_products.items = find_per_product_name(
+            self.ids.txt_product.text)
+
+    def btn_next_code_on_press(self):
+        local_code = self.ids.txt_local_code.text
+        if len(local_code) >= 4:
+            base = local_code[:4]
+            number = local_code[4:]
+            try:
+                number = str(int(number) + 1).zfill(3)
+            except ValueError:
+                number = '001'
+            local_code = base + number
+            self.ids.txt_local_code.text = local_code
+
+    def btn_new_code_on_press(self):
+        local_code = self.ids.txt_local_code.text
+        if len(local_code) >= 4:
+            base = local_code[:4]
+            number = str(int(get_last_code(base)[4:]) + 1)
+            local_code = base + number
+            self.ids.txt_local_code.text = local_code
+
+    def btn_search_local_code_on_press(self):
+        self.ids.tbl_products.items = find_per_local_code(
+            self.ids.txt_local_code.text)
+
+    def btn_search_suppliers_code_on_press(self):
+        self.ids.tbl_products.items = find_per_suppliers_code(
+            self.ids.txt_product.text)
+
+    def update_prices(self):
+        cost = self.ids.txt_cost.text
+        earning = self.ids.txt_earning.text
+        if cost and earning:
+            cost = float(cost)
+            earning = float(earning) / 100
+            price = cost * earning
+            print(price)
+
+    def calculate_cost(self, include: list[str] = ["iva", "dollar"]):
+        cost = self.ids.txt_cost.text
+        if cost:
+            cost = float(cost)
+            if "iva" in include:
+                cost = self.add_iva(cost)
+            if "dollar" in include:
+                cost = self.add_dollar(cost)
+            self.ids.txt_cost.text = str(round(cost, 6))
+
+    def add_iva(self, cost):
+        iva_active = self.ids.chk_iva.active
+        iva = 1 + self.ids.lbl_iva.value / 100
+        return cost * iva if iva_active else cost
+
+    def add_dollar(self, cost):
+        dollar_active = self.ids.chk_dollar.active
+        dollar = self.ids.lbl_dollar.value
+        return cost * dollar if dollar_active else cost
+
+    def change_iva(self):
+        pass
+
+    def get_dollar_price(self):
+        return get_dollar_price()
+
+    def change_dollar(self):
+        pass
+
+    def btn_earnings_plus_on_press(self):
+        earning = self.ids.txt_earning.text
+        if earning:
+            earning = str(int(earning) + 1)
+            self.ids.txt_earning.text = earning
+
+    def btn_earnings_minus_on_press(self):
+        earning = self.ids.txt_earning.text
+        if earning:
+            earning = str(int(earning) - 1)
+            self.ids.txt_earning.text = earning
+
+    def btn_refresh_date_on_press(self):
+        self.ids.txt_date.text = get_date()
+
+    # Buttons
+
+    def btn_save_on_press(self):
+        pass
+
+    def btn_add_on_press(self):
+        pass
+
+    def btn_delete_on_press(self):
+        pass
+
+    def btn_replace_on_press(self):
+        pass
+
+    def btn_compare_on_press(self):
+        pass
+
+    def btn_clean_on_press(self):
+        self.clean_forms(self.ids.form_layout)
+        self.ids.tbl_products.items = []
+        self.ids.tbl_products.update_table()
 
     def clean_forms(self, parent):
         for child in parent.children:
             if child.children:
                 self.clean_forms(child)
             else:
-                if isinstance(child, TextInput): 
+                if isinstance(child, TextInput):
                     child.text = ""
 
-    def clean_all(self):
-        self.clean_forms(self.ids.form_layout)
-        self.ids.tbl_products.items = []
-        self.ids.tbl_products.update_table()
 
 class PriceManagerApp(App):
     def build(self):
