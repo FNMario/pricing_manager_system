@@ -1,5 +1,5 @@
 from kivy.uix.gridlayout import GridLayout
-from kivy.properties import ListProperty, BooleanProperty, NumericProperty
+from kivy.properties import ListProperty, BooleanProperty, NumericProperty, ColorProperty
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.label import Label
 from kivy.lang.builder import Builder
@@ -12,12 +12,14 @@ class Header(Label):
 
 
 class Row(Label):
-    background = BooleanProperty('False')
+    background = BooleanProperty(False)
     row = NumericProperty()
+    selected_color = ColorProperty([.2, .8, .2, 1])
+    default_color = ColorProperty([1, 1, 1, 1])
 
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
-            print(self.row)
+            self.parent.update_selected_row(self.row)
 
 
 class DataTable(GridLayout):
@@ -26,21 +28,18 @@ class DataTable(GridLayout):
     checkboxes = BooleanProperty(False)
     items = ListProperty([])
     row = 0
+    selected_row = NumericProperty(0)
 
     def __init__(self, **kwargs):
         super(DataTable, self).__init__(**kwargs)
 
-        # Bind the 'on_header' event to update the table when the header changes
         self.bind(header=self.update_table)
         self.bind(items=self.update_table)
 
+        self.register_event_type('on_selected_row')
+
         # Initialize the table
         self.update_table()
-
-    # def on_kv_post(self,*args):
-    #     print(self.header)
-    #     print(self.hint_sizes)
-    #     print(self.checkboxes)
 
     def update_table(self, *args):
         self.clear_widgets()
@@ -76,6 +75,11 @@ class DataTable(GridLayout):
         for item in self.items:
             self.add_dato(item)
 
+        if len(self.items) > 0:
+            self.selected_row = 0
+        else:
+            self.selected_row = 0
+
     def add_dato(self, dato: tuple):
         # assert len(dato) == self.cols, f"len(dato):{len(dato)}, != {self.cols}"
 
@@ -97,9 +101,22 @@ class DataTable(GridLayout):
                     size_hint_x=hint_size,
                     size_hint_y=None,
                     height=20,
-                    # halign='left'
-                    # multiline = True,
                 )
             )
 
         self.row += 1
+
+    def update_selected_row(self, selected_row):
+        self.selected_row = selected_row
+        for child in self.children:
+            if isinstance(child, Row):
+                if child.row == selected_row:
+                    child.color = child.selected_color
+                    child.bold = True
+                else:
+                    child.color = child.default_color
+                    child.bold = False
+        self.dispatch('on_selected_row')
+
+    def on_selected_row(self, *args):
+        pass

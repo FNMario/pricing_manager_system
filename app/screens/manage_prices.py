@@ -131,6 +131,13 @@ class ManagePrices(Widget):
                 if isinstance(child, TextInput):
                     child.text = ""
 
+    # Table
+
+    def on_selected_row(self):
+        selected_row = self.ids.tbl_products.selected_row
+        print(self.ids.tbl_products.items[selected_row])
+
+    # TODO: decidir donde y como reducir los elementos recibidos
 
 class PriceManagerApp(App):
     def build(self):
