@@ -7,6 +7,7 @@
 #:import EmptyButton screens.widgets.emptybutton
 #:import DataTable screens.widgets.datatable
 #:import DoubleClickLabel screens.widgets.doubleclicklabel
+#:import SearchTextInput screens.widgets.searchtextinput
 
 <PricesTab>:
     orientation: 'vertical'
@@ -132,10 +133,11 @@
             TextField:
                 Icon:
                     source: './assets/icons/box.png'
-                TextInput:
+                SearchTextInput:
                     id: txt_product
                     hint_text: "Product"
                     focus: True
+                    table: tbl_products
                 IconButton:
                     id: btn_search_product
                     source: './assets/icons/search_1.png'
@@ -149,10 +151,11 @@
                     TextField:
                         Icon:
                             source: './assets/icons/barcode.png'
-                        TextInput:
+                        SearchTextInput:
                             id: txt_local_code
                             hint_text: "Local code"
                             on_text_validate: root.btn_search_local_code_on_press()
+                            table: tbl_products
                         IconButton:
                             id: btn_next_code
                             source: './assets/icons/right.png'
@@ -179,10 +182,11 @@
                     TextField:
                         Icon:
                             source: './assets/icons/barcode.png'
-                        TextInput:
+                        SearchTextInput:
                             id: txt_supplier_code
                             hint_text: "Supplier's code"
                             on_text_validate: root.btn_search_suppliers_code_on_press()
+                            table: tbl_products
                         IconButton:
                             id: btn_search_suppliers_code
                             source: './assets/icons/search_1.png'

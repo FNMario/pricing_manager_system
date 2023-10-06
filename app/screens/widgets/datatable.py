@@ -3,6 +3,9 @@ from kivy.properties import ListProperty, BooleanProperty, NumericProperty, Colo
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.label import Label
 from kivy.lang.builder import Builder
+from kivy.core.window import Window
+
+import logging
 
 Builder.load_file('screens/widgets/datatable.kv')
 
@@ -19,7 +22,7 @@ class Row(Label):
 
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
-            self.parent.update_selected_row(self.row)
+            self.parent.selected_row = self.row
 
 
 class DataTable(GridLayout):
@@ -35,11 +38,26 @@ class DataTable(GridLayout):
 
         self.bind(header=self.update_table)
         self.bind(items=self.update_table)
+        self.bind(selected_row=self.update_selected_row)
 
         self.register_event_type('on_selected_row')
 
         # Initialize the table
         self.update_table()
+
+        self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
+        self._keyboard.bind(on_key_down=self._on_keyboard_down)
+
+    def _keyboard_closed(self):
+        self._keyboard.unbind(on_key_down=self._on_keyboard_down)
+        self._keyboard = None
+
+    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
+        if keycode[1] == 'up':
+            self.selected_row = max(0, self.selected_row - 1)
+        elif keycode[1] == 'down':
+            self.selected_row = min(len(self.items) - 1, self.selected_row + 1)
+        return True
 
     def update_table(self, *args):
         self.clear_widgets()
@@ -75,10 +93,8 @@ class DataTable(GridLayout):
         for item in self.items:
             self.add_dato(item)
 
-        if len(self.items) > 0:
-            self.selected_row = 0
-        else:
-            self.selected_row = 0
+        self.selected_row = 0
+        self.update_selected_row()
 
     def add_dato(self, dato: tuple):
         # assert len(dato) == self.cols, f"len(dato):{len(dato)}, != {self.cols}"
@@ -106,11 +122,10 @@ class DataTable(GridLayout):
 
         self.row += 1
 
-    def update_selected_row(self, selected_row):
-        self.selected_row = selected_row
+    def update_selected_row(self, *args):
         for child in self.children:
             if isinstance(child, Row):
-                if child.row == selected_row:
+                if child.row == self.selected_row:
                     child.color = child.selected_color
                     child.bold = True
                 else:

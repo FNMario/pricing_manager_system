@@ -6,6 +6,7 @@
 #:import FilledButton screens.widgets.filledbutton
 #:import EmptyButton screens.widgets.emptybutton
 #:import DataTable screens.widgets.datatable
+#:import SearchTextInput screens.widgets.searchtextinput
 
 <Buy>:
     id: main_win
@@ -38,13 +39,14 @@
             TextField:
                 Icon:
                     source: './assets/icons/box.png'
-                TextInput:
+                SearchTextInput:
                     id: txt_product
                     hint_text: "Product"
                     focus: True
                     on_text_validate: 
                         tbl_products.items = root.search_product()
                     text_validate_unfocus: False
+                    table: tbl_products
                 IconButton:
                     source: './assets/icons/search_1.png'
                     on_press: 
@@ -60,12 +62,13 @@
                     TextField:
                         Icon:
                             source: './assets/icons/barcode.png'
-                        TextInput:
+                        SearchTextInput:
                             id: txt_local_code
                             hint_text: "Local code"
                             on_text_validate: 
                                 tbl_products.items = root.search_local_code()
                             text_validate_unfocus: False
+                            table: tbl_products
                         IconButton:
                             source: './assets/icons/search_1.png'
                             on_press: 
@@ -209,3 +212,4 @@
                     header_background_color: [1,1,1,0.5]
                     hint_sizes: [0.1,0.7,0.2]
                     header: ["Local code", "Product", "Quantity"]
+                    
