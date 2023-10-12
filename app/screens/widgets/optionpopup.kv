@@ -1,0 +1,32 @@
+#:kivy 2.2.1
+#:import TextField screens.widgets.textfield
+
+<OptionItem>
+    padding: 10, 0
+    spacing: 10
+    size_hint_y: None
+    height: 40
+    canvas.before:
+        Color:
+            rgba: (1, 1, 1, .1)
+        RoundedRectangle:
+            size: self.size
+            pos: self.pos
+            radius: [2]
+    Icon:
+        source: './assets/icons/plus_big.png'
+    InfoLabel:
+        size_hint_y: None
+        height: 40
+        text: root.text
+
+<OptionPopup>:
+    title: "Select an option"
+    title_align: 'center'
+    size_hint: None, None
+    size: 250, 80
+    BoxLayout:
+        id: bl_list
+        orientation: 'vertical'
+        spacing: 10
+        padding: 15, 10

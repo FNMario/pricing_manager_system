@@ -1,10 +1,13 @@
 from datetime import datetime as dt
 
+import datetime
+import random
 # Users
 
-def get_user_data(username):
+
+def login(username, password):
     # Call the database function to fetch user data
-    return "asdf"
+    return True
 
 
 def create_new_user(username, password):
@@ -17,6 +20,44 @@ def update_user_password(username, old_pass, new_pass):
 
 
 # Products
+
+def get_products_for_sale(product: str = None, local_code: str = None) -> list[str]:
+    products = [
+        ('AAC0001', 'ARGOLLA PARA CARTERA 45MM', '100.0 UC '),
+        ('AAL0001', 'ALAMBRE DE ALPACA 0.5 (5.5 MTS)', '500.0 G10'),
+        ('AAL0002', 'ALAMBRE DE ALPAKA 0.6 (4 MTS)', '500.0 G10'),
+        ('AAL0003', 'ALAMBRE DE ALPAKA 0.7 (3 MTS)', '500.0 G10'),
+        ('AAL0004', 'ALAMBRE DE ALPAKA 0.8(2.25 MTS)', '500.0 G10'),
+        ('AAL0005', 'ALAMBRE DE ALPAKA 1.0 (1.5 MTS)', '500.0 G10'),
+        ('AAL0006', 'ALAMBRE DE ALPAKA 1.2 (0.65 MTS)', '500.0 G10'),
+        ('AAL0007', 'ALAMBRE DE ALPAKA 1/2 CAÑA 2X1 (0.70 MTS)', '500.0 G10'),
+        ('AAL0008', 'ALAMBRE DE ALPAKA 1/2 CAÑA 3X1 ( MTS)', '500.0 G10'),
+        ('AAL0009', 'ALAMBRE ALUMINIO 1 MM (4.35 MTS)', '500.0 G10'),
+        ('AAL0010', 'ALAMBRE ALUMINIO 1.25 MM (2.9 MTS)', '500.0 G10'),
+        ('AAL0011', 'ALAMBRE ALUMINIO 1.5 MM (2.1 MTS)', '500.0 G10'),
+        ('AAL0012', 'ALAMBRE ALUMINIO 2 MM (1.23 MTS)', '500.0 G10'),
+        ('AAL0013', 'ALAMBRE ALUMINIO 2.5 MM (0.75 MTS)', '500.0 G10'),
+        ('AAL0014', 'ALAMBRE DE BRONCE 0.5 (5.5 MTS)', '500.0 G10'),
+        ('AAL0015', 'ALAMBRE DE BRONCE 0.6 (4 MTS)', '500.0 G10'),
+        ('AAL0016', 'ALAMBRE DE BRONCE 0.7 (3 MTS)', '500.0 G10'),
+        ('AAL0017', 'ALAMBRE DE BRONCE 0.8 (2.25 MTS)', '500.0 G10'),
+        ('AAL0018', 'ALAMBRE DE BRONCE 1.0 (1.5 MTS)', '500.0 G10'),
+        ('AAL0019', 'ALAMBRE FORRADO DE ARBORISTERIA NEG-BCO-VERDE NRO23 (3.8MTS EN 10GRS)', '500.0 G10'),
+        ('AAM0002', 'ARGOLLA METAL COMUN 4 MM NIKEL-BRONCE', '500.0 G10'),
+        ('AAM0003', 'ARGOLLA METAL COMUN 6 MM NIKEL-BRONCE', '500.0 G10'),
+        ('AAM0006', 'ARGOLLA METAL COMUN 8 MM NIKEL-BRONCE', '500.0 G10'),
+        ('AAM0007', 'ARGOLLA METAL COMUN 10 MM NIKEL-BRONCE', '500.0 G10'),
+        ('AAM0009', 'ARGOLLA METAL COMUN 12 MM NIKEL-BRONCE', '500.0 G10'),
+        ('AAM0013', 'ARGOLLA METAL COMUN 16 MM NIKEL-BRONCE', '500.0 G10'),
+        ('AAM0015', 'ARGOLLA METAL COMUN 18 MM NIKEL-BRONCE', '500.0 G10'),
+        ('AAM0017', 'ARGOLLA METAL COMUN 20 MM NIKEL-BRONCE', '500.0 G10'),
+        ('AAM0019', 'ARGOLLA METAL COMUN 25 MM NIKEL-BRONCE', '500.0 G10'),
+        ('AAM0021', 'ARGOLLA METAL COMUN 30 MM NIKEL-BRONCE', '500.0 G10'),
+    ]
+    if not product:
+        products = products[20:24]
+    return products
+
 
 def get_products() -> list:
     products = [
@@ -122,22 +163,47 @@ def get_last_code(base: str) -> str:
 # Prices
 
 def round_prices(prices):
-    return [(round(price), quantity) for price, quantity in prices]
+    return [(round(price_0), round(price_1), round(price_2)) for price_0, price_1, price_2 in prices]
 
 
-def get_price_of_product(product_code):
+def get_product_prices(product_code):
     # get prices
     prices = [
-        (250.25, "LOS 25 GRAMOS"),
-        (4000, "LOS 500 GRAMOS"),
-        (7000, "EL kILO"),
+        (250.25, 242, 225),
+        (4000, 3970, 3925),
+        (7000, 6800, 6500),
     ]
-    return round_prices(prices)
+    quantities = [
+        "LOS 25 GRAMOS",
+        "LOS 500 GRAMOS",
+        "EL kILO"
+    ]
+    date = dt.strftime(
+        dt.today() - datetime.timedelta(random.randrange(40)), "%d/%m/%Y")
+    return round_prices(prices), quantities, date
+
+
+def number_category(convert: str | int) -> int | str:
+
+    number_category = [
+        ("VENTAS", 0),
+        ("DESCUENTOS", 1),
+        ("MAYORISTA", 2),
+    ]
+    result = [n for c, n in number_category if c == convert]
+    if result:
+        return result[0]
+    result = [c for c, n in number_category if n == convert]
+    if result:
+        return result[0]
+    raise ValueError(f"Invalid input.\n Valid inputs: {number_category}")
 
 # External
 
+
 def get_date():
-    return dt.strftime(dt.today(),'%d/%m/%Y')
+    return dt.strftime(dt.today(), '%d/%m/%Y')
+
 
 def get_dollar_price():
     return 805.0
