@@ -30,6 +30,7 @@
                 height: 130
             # Buy
             CategoryButton:
+                id: btn_buy
                 text: "Buy"
                 icon: './assets/icons/shopping_cart.png'
                 screen_name: "prices"
@@ -37,12 +38,14 @@
                     root.change_category(self)
             # Budgets
             CategoryButton:
+                id: btn_budgets
                 text: "Budgets"
                 icon: './assets/icons/form_1.png'
                 on_press: 
                     root.change_category(self)
             # Manage Prices
             CategoryButton:
+                id: btn_manage_prices
                 text: "Manage Prices"
                 icon: './assets/icons/edit_1.png'
                 screen_name: "manage"
@@ -50,12 +53,14 @@
                     root.change_category(self)
             # Print tables
             CategoryButton:
+                id: btn_print_tables
                 text: "Print tables"
                 icon: './assets/icons/table_1.png'
                 on_press: 
                     root.change_category(self)
             # Settings
             CategoryButton:
+                id: btn_settings
                 text: "Settings"
                 icon: './assets/icons/settings_1.png'
                 on_press: 
@@ -64,6 +69,7 @@
                 id: cat_space
             # Log out
             CategoryButton:
+                id: btn_log_out
                 text: "Log out"
                 icon: './assets/icons/log_out.png'
                 height: 70
@@ -109,12 +115,14 @@
                         app.stop()
             # Screen
             ScreenManager:
-                id: main_screen
+                id: home_screen_manager
                 Screen:
                     name: "none"
                 Screen:
+                    id: buy_screen
                     name: "prices"
                     Buy
                 Screen:
+                    id: manage_prices_screen
                     name: "manage"
                     ManagePrices

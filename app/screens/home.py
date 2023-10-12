@@ -16,22 +16,22 @@ class HomeWindow(Widget):
     
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.ids.main_screen.transition = NoTransition()
+        self.ids.home_screen_manager.transition = NoTransition()
 
     def change_category(self,instance):
         if instance.active:
             instance.active = False
-            self.ids.main_screen.current = "none"
+            self.ids.home_screen_manager.current = "none"
         else:           
             for child in self.ids.categories_layout.children:
                 child.active = False
             instance.active = True
-            self.ids.main_screen.current = instance.screen_name
+            self.ids.home_screen_manager.current = instance.screen_name
     
     def log_out(self):
         for child in self.ids.categories_layout.children:
             child.active = False
-        self.ids.main_screen.current = "none"
+        self.ids.home_screen_manager.current = "none"
         self.parent.parent.parent.ids.main_screen_manager.current = "login"
     
     def minimize(self):
