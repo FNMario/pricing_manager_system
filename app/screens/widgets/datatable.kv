@@ -11,8 +11,9 @@
 
 <Row>:
     halign: 'left'
-    valign: 'top'
-    text_size: self.size
+    valign: 'center'
+    text_size: self.size[0], None
+    height: max(20, self.texture_size[1])
     selected_color: (.2, .64, .81, 1)
     canvas.before:
         Color: 
