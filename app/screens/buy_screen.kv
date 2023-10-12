@@ -144,7 +144,7 @@
                                     cursor_color: (0,0,0,1)
                                     on_text_validate: 
                                         sm_add_fraction_1.current = "btn"
-                                        root.add_item_to_budge(lbl_quantity_1.text ,self.text)
+                                        root.add_item_to_budge(0 ,self.text)
                     # Sell 2
                     BoxLayout:
                         orientation: 'horizontal'
@@ -186,7 +186,7 @@
                                     cursor_color: (0,0,0,1)
                                     on_text_validate: 
                                         sm_add_fraction_2.current = "btn"
-                                        root.add_item_to_budge(lbl_quantity_2.text ,self.text)
+                                        root.add_item_to_budge(1 ,self.text)
                     # Sell 3
                     BoxLayout:
                         orientation: 'horizontal'
@@ -228,7 +228,7 @@
                                     cursor_color: (0,0,0,1)
                                     on_text_validate: 
                                         sm_add_fraction_3.current = "btn"
-                                        root.add_item_to_budge(lbl_quantity_3.text ,self.text)
+                                        root.add_item_to_budge(2 ,self.text)
                 # Image
                 BoxLayout:
                     size_hint_x: 0.5

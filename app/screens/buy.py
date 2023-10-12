@@ -4,16 +4,18 @@ from kivy.properties import ObjectProperty
 from kivy.lang import Builder
 from screens.widgets.optionpopup import OptionPopup
 
-from interface import get_product_prices, get_products_for_sale, number_category
+from interface import format_numeric_economy, get_product_prices, get_products_for_sale, number_category
 
 import logging
-import time
 
 Builder.load_file('screens/buy_screen.kv')
 
 
 class Buy(Widget):
     searching_text_input = ObjectProperty()
+    prices = [0, 0, 0]
+    fractions = ['-', '-', '-']
+    category = 0
 
     # Form
 
@@ -34,16 +36,12 @@ class Buy(Widget):
         def select_fraction():
 
             def popup_exit(self):
-                if self.selected_option:
+                if self.selected_option in [0, 1, 2]:
                     enter_quantity(self.selected_option)
 
             popup = OptionPopup(
                 exit_focus=self.ids.txt_product,
-                options=[
-                    self.ids.lbl_quantity_1.text,
-                    self.ids.lbl_quantity_2.text,
-                    self.ids.lbl_quantity_3.text,
-                ]
+                options=[_ for _ in self.fractions if _ != '-']
             )
             popup.bind(on_dismiss=popup_exit)
             popup.open()
@@ -57,21 +55,13 @@ class Buy(Widget):
             ]
             input_quantity[fraction].current = "txt"
 
-            def popup_exit(self):
-                # if self.quantity > 0
-                # add_item_to_budge(self.quantity)
-                print('add_item')
-
-            # popup = OptionPopup()
-            # popup.bind(on_dismiss=popup_exit)
-            # popup.open()
-
         if fraction is None:
             select_fraction()
         else:
             enter_quantity(fraction)
 
-    def add_item_to_budge(self, fraction_string, quantity):
+    def add_item_to_budge(self, fraction, quantity):
+        fraction_string = self.fractions[fraction]
         if float(quantity) < 1 or fraction_string == '-':
             logging.info("Item not added")
             return
@@ -84,9 +74,10 @@ class Buy(Widget):
             except:
                 pass
         logging.info(
-            f"Item added: {total} {fraction_string.split(' ')[-1]}")
+            f"Item added: {total} {fraction_string.split(' ')[-1]} for ${float(self.prices[fraction][self.category]) * float(quantity)}")
 
     def btn_clean_on_press(self):
+        self.clean_variables()
         self.clean_forms(self.ids.form_layout)
         self.clean_labels()
         self.clean_table()
@@ -112,7 +103,11 @@ class Buy(Widget):
         self.ids.tbl_products.items = []
         self.ids.tbl_products.update_table()
 
-    # Table
+    def clean_variables(self):
+        self.prices = [0, 0, 0]
+        self.fractions = ['-', '-', '-']
+
+        # Table
 
     def on_selected_row(self):
         table = self.ids.tbl_products
@@ -121,21 +116,16 @@ class Buy(Widget):
             self.ids.txt_product.text = product[1]
             self.ids.txt_local_code.text = product[0]
             self.ids.lbl_quantity.text = product[2]
-            prices, quantities, date = get_product_prices(
+            self.prices, self.fractions, date = get_product_prices(
                 product_code=product[0])
-            category = number_category(self.ids.lbl_category.text)
-            self.ids.lbl_quantity_1.text = quantities[0]
-            self.ids.lbl_quantity_2.text = quantities[1]
-            self.ids.lbl_quantity_3.text = quantities[2]
+            self.ids.lbl_quantity_1.text = self.fractions[0]
+            self.ids.lbl_quantity_2.text = self.fractions[1]
+            self.ids.lbl_quantity_3.text = self.fractions[2]
             self.ids.lbl_price_1.text = format_numeric_economy(
-                prices[0][category])
+                self.prices[0][self.category])
             self.ids.lbl_price_2.text = format_numeric_economy(
-                prices[1][category])
+                self.prices[1][self.category])
             self.ids.lbl_price_3.text = format_numeric_economy(
-                prices[2][category])
+                self.prices[2][self.category])
             self.ids.lbl_date.text = date
             self.searching_text_input.select_all()
-
-
-def format_numeric_economy(price: float):
-    return f'{price:,.2f}'.replace(',', chr(0x2009)).replace('.', ',')

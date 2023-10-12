@@ -2,8 +2,9 @@ from datetime import datetime as dt
 
 import datetime
 import random
-# Users
 
+
+# Users
 
 def login(username, password):
     # Call the database function to fetch user data
@@ -181,6 +182,10 @@ def get_product_prices(product_code):
     date = dt.strftime(
         dt.today() - datetime.timedelta(random.randrange(40)), "%d/%m/%Y")
     return round_prices(prices), quantities, date
+
+
+def format_numeric_economy(price: float):
+    return f'{price:,.2f}'.replace(',', chr(0x2009))
 
 
 def number_category(convert: str | int) -> int | str:
