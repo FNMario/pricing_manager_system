@@ -127,8 +127,15 @@ class Buy(Widget):
             self.ids.lbl_quantity_1.text = quantities[0]
             self.ids.lbl_quantity_2.text = quantities[1]
             self.ids.lbl_quantity_3.text = quantities[2]
-            self.ids.lbl_price_1.text = str(prices[0][category])
-            self.ids.lbl_price_2.text = str(prices[1][category])
-            self.ids.lbl_price_3.text = str(prices[2][category])
+            self.ids.lbl_price_1.text = format_numeric_economy(
+                prices[0][category])
+            self.ids.lbl_price_2.text = format_numeric_economy(
+                prices[1][category])
+            self.ids.lbl_price_3.text = format_numeric_economy(
+                prices[2][category])
             self.ids.lbl_date.text = date
             self.searching_text_input.select_all()
+
+
+def format_numeric_economy(price: float):
+    return f'{price:,.2f}'.replace(',', chr(0x2009)).replace('.', ',')

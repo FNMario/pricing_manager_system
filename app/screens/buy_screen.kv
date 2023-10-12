@@ -7,6 +7,7 @@
 #:import EmptyButton screens.widgets.emptybutton
 #:import DataTable screens.widgets.datatable
 #:import SearchTextInput screens.widgets.searchtextinput
+#:import dp kivy.metrics.dp
 
 <Buy>:
     id: buy_screen
@@ -14,21 +15,21 @@
         orientation: 'vertical'
         size: buy_screen.size
         pos_hint: {'right':1}
-        padding: buy_screen.size[0]/2-450, 10
-        spacing: 10
+        padding: buy_screen.size[0]/2-dp(450), dp(10)
+        spacing: dp(10)
         # Form
         BoxLayout:
             id: form_layout
             orientation: 'vertical'
             pos_hint: {'center_x': .5}
             size_hint_y: None
-            height: 280
-            padding: 100, 0
+            height: dp(280)
+            padding: dp(100), dp(0)
             canvas.before:
                 Color: 
                     rgba: (1, 1, 1, .4)
                 Line:
-                    rounded_rectangle: (self.pos[0],self.pos[1],self.size[0],self.size[1], 4)
+                    rounded_rectangle: (self.pos[0],self.pos[1],self.size[0],self.size[1], dp(4))
                     width: .5
             # Product
             TextField:
@@ -49,9 +50,10 @@
                         root.btn_search_product_on_press()
             BoxLayout:
                 orientation: 'horizontal'
+                spacing: dp(8)
                 BoxLayout:
                     orientation: 'vertical'
-                    size_hint_x: .4
+                    size_hint_x: .5
                     # Local code
                     TextField:
                         Icon:
@@ -71,7 +73,7 @@
                     # Quantity
                     BoxLayout:
                         orientation: 'horizontal'
-                        spacing: 10
+                        spacing: dp(10)
                         TextField:
                             size_hint_x: 0.6
                             Icon:
@@ -82,7 +84,7 @@
                     # Space
                     Label:
                         size_hint_y: None
-                        height: 20
+                        height: dp(20)
                     TextField:
                         InfoLabel:
                             id: lbl_category
@@ -92,7 +94,7 @@
                             source: './assets/icons/down.png'
                         Label:
                             size_hint_x: None
-                            width: 50
+                            width: dp(50)
                             text: ""
                         Icon:
                             source: './assets/icons/calendar.png'
@@ -104,23 +106,23 @@
                     # Sell 1
                     BoxLayout:
                         orientation: 'horizontal'
-                        spacing: 10
+                        spacing: dp(10)
                         TextField:
-                            size_hint_x: 0.4
+                            size_hint_x: 0.45
                             Icon:
                                 source: './assets/icons/dollar.png'
                             InfoLabel:
                                 id: lbl_price_1
                                 text: "0.00"
                         TextField:
-                            size_hint_x: 0.6
+                            size_hint_x: 0.55
                             InfoLabel:
                                 id: lbl_quantity_1
                                 text: "-"
                         ScreenManager:
                             id: sm_add_fraction_1
                             size_hint_x: None
-                            width: 45
+                            width: dp(45)
                             Screen:
                                 name: "btn"
                                 AnchorLayout:
@@ -146,23 +148,23 @@
                     # Sell 2
                     BoxLayout:
                         orientation: 'horizontal'
-                        spacing: 10
+                        spacing: dp(10)
                         TextField:
-                            size_hint_x: 0.4
+                            size_hint_x: 0.45
                             Icon:
                                 source: './assets/icons/dollar.png'
                             InfoLabel:
                                 id: lbl_price_2
                                 text: "0.00"
                         TextField:
-                            size_hint_x: 0.6
+                            size_hint_x: 0.55
                             InfoLabel:
                                 id: lbl_quantity_2
                                 text: "-"
                         ScreenManager:
                             id: sm_add_fraction_2
                             size_hint_x: None
-                            width: 45
+                            width: dp(45)
                             Screen:
                                 name: "btn"
                                 AnchorLayout:
@@ -188,23 +190,23 @@
                     # Sell 3
                     BoxLayout:
                         orientation: 'horizontal'
-                        spacing: 10
+                        spacing: dp(10)
                         TextField:
-                            size_hint_x: 0.4
+                            size_hint_x: 0.45
                             Icon:
                                 source: './assets/icons/dollar.png'
                             InfoLabel:
                                 id: lbl_price_3
                                 text: "0.00"
                         TextField:
-                            size_hint_x: 0.6
+                            size_hint_x: 0.55
                             InfoLabel:
                                 id: lbl_quantity_3
                                 text: "-"
                         ScreenManager:
                             id: sm_add_fraction_3
                             size_hint_x: None
-                            width: 45
+                            width: dp(45)
                             Screen:
                                 name: "btn"
                                 AnchorLayout:
@@ -229,8 +231,7 @@
                                         root.add_item_to_budge(lbl_quantity_3.text ,self.text)
                 # Image
                 BoxLayout:
-                    size_hint_x: 0.6
-                    padding: 8
+                    size_hint_x: 0.5
                     Image:
                         source: './assets/images/DefaultBase.png'
                         fit_mode: 'cover'
@@ -240,8 +241,8 @@
             pos_hint: {'center_x':.5, 'center_y':.5}
             size_hint_y: None
             height: self.minimum_height
-            spacing: 10
-            padding: 200, 0
+            spacing: dp(10)
+            padding: dp(200), dp(0)
             # Save
             FilledButton:
                 id: btn_add_price
