@@ -1,5 +1,4 @@
-from kivy.app import App
-from kivy.uix.widget import Widget
+from kivy.uix.screenmanager import Screen
 from kivy.core.window import Window
 from kivy.uix.screenmanager import NoTransition
 from kivy.lang import Builder
@@ -12,7 +11,9 @@ import logging
 Builder.load_file('screens/home_screen.kv')
 
 
-class HomeWindow(Widget):
+class HomeWindow(Screen):
+    id = "home_screen"
+    name = "home"
     maximized = False
 
     def __init__(self, **kwargs):
@@ -62,8 +63,8 @@ class HomeWindow(Widget):
         for child in self.ids.categories_layout.children:
             child.active = False
         self.ids.home_screen_manager.current = "none"
-        self.parent.parent.parent.ids.main_screen_manager.current = "login"
-        self.parent.parent.parent.ids.login_screen.children[0].ids.txt_username.focus = True
+        self.parent.current = "login"
+        self.parent.get_screen("login").ids.txt_username.focus = True
 
     def minimize(self):
         Window.minimize()
@@ -74,13 +75,3 @@ class HomeWindow(Widget):
         else:
             Window.maximize()
         self.maximized = not self.maximized
-
-
-class HomeApp(App):
-    def build(self):
-        Window.borderless = False
-        Window.clearcolor = (.13, .14, .19, 1)
-        Window.size = (1200, 800)
-        Window.left = Window.left - (1200-550)/2
-        Window.top = Window.top - (800-400)/2
-        return HomeWindow()
