@@ -29,6 +29,10 @@ class Buy(Widget):
         code = self.ids.txt_local_code.text
         self.ids.tbl_products.items = get_products_for_sale(local_code=code)
 
+    def on_category_change(self, instance):
+        self.category = instance.selected_option
+        self.on_selected_row()
+
     # Buttons
 
     def btn_add_price_on_press(self, fraction: int = None):
@@ -107,7 +111,7 @@ class Buy(Widget):
         self.prices = [0, 0, 0]
         self.fractions = ['-', '-', '-']
 
-        # Table
+    # Table
 
     def on_selected_row(self):
         table = self.ids.tbl_products
@@ -128,4 +132,5 @@ class Buy(Widget):
             self.ids.lbl_price_3.text = format_numeric_economy(
                 self.prices[2][self.category])
             self.ids.lbl_date.text = date
+            self.searching_text_input.focus = True
             self.searching_text_input.select_all()
