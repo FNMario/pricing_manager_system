@@ -1,0 +1,31 @@
+#:kivy 2.2.1
+
+<Option>:
+    size_hint_y: None
+    height: 30
+    background_normal: ''
+    background_down: ''
+    background_color: (.17, .18, .23, 1)
+    color: (1, 1, 1, 1)
+
+<SelectOptionDropDown>:
+    BoxLayout:
+        orientation: 'horizontal'
+        padding: dp(5), dp(0)
+        spacing: dp(10)
+        size: root.size
+        pos: root.pos
+        Label:
+            id: lbl_option
+            text: root.text
+            color: (1, 1, 1, 1)
+            text_size: self.size
+            halign: 'left'
+            valign: 'middle'
+            size_hint_y: None
+            height: 40
+        Image:
+            source: root.icon
+            size_hint: None, None
+            size: dp(20), dp(20)
+            pos_hint: {'center_y':.5}
