@@ -1,6 +1,6 @@
 from kivy.app import App
 from kivy.core.window import Window
-from kivy.uix.widget import Widget
+from kivy.uix.screenmanager import Screen
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.textinput import TextInput
 from kivy.lang import Builder
@@ -12,7 +12,7 @@ import logging
 Builder.load_file('screens/manage_prices_screen.kv')
 
 
-class ManagePrices(Widget):
+class ManagePrices(Screen):
 
     # Form
 

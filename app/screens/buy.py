@@ -1,17 +1,17 @@
-from kivy.uix.widget import Widget
+from kivy.uix.screenmanager import Screen
 from kivy.uix.textinput import TextInput
 from kivy.properties import ObjectProperty
 from kivy.lang import Builder
 from screens.widgets.optionpopup import OptionPopup
 
-from interface import format_numeric_economy, get_product_prices, get_products_for_sale, number_category
+from interface import format_numeric_economy, get_product_prices, get_products_for_sale
 
 import logging
 
 Builder.load_file('screens/buy_screen.kv')
 
 
-class Buy(Widget):
+class Buy(Screen):
     searching_text_input = ObjectProperty()
     prices = [0, 0, 0]
     fractions = ['-', '-', '-']
