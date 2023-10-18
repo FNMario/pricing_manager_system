@@ -9,21 +9,27 @@
     color: (1, 1, 1, 1)
 
 <SelectOptionDropDown>:
+    text: txt_option.text
     BoxLayout:
         orientation: 'horizontal'
-        padding: dp(5), dp(0)
         spacing: dp(10)
         size: root.size
         pos: root.pos
-        Label:
-            id: lbl_option
+        TextInput:
+            id: txt_option
             text: root.text
+            hint_text: root.hint_text
             color: (1, 1, 1, 1)
+            multiline: False
+            readonly: root.readonly
             text_size: self.size
             halign: 'left'
-            valign: 'middle'
+            valign: 'bottom'
             size_hint_y: None
-            height: 40
+            height: 35
+            on_text: root.on_text_change()
+            on_text_validate: root.text_validate()
+            text_validate_unfocus: False
         Image:
             source: root.icon
             size_hint: None, None
