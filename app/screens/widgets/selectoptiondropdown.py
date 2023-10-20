@@ -63,7 +63,6 @@ class SelectOptionDropDown(Widget):
                 None, self.dropdown.children[0].children[-1].text)
         else:
             self.text = ''
-            # self.dispatch('on_press')
 
     def on_text_change(self):
         if self.dropdown:
@@ -74,4 +73,5 @@ class SelectOptionDropDown(Widget):
                 options = [s for s in self.options if re.match(pattern, s)]
                 self.create_dropdown(options)
             else:
-                self.create_dropdown(self.options)
+                if self.ids.txt_option.focus:
+                    self.create_dropdown(self.options)
