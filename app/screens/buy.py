@@ -92,6 +92,8 @@ class Buy(Screen):
                 self.clean_forms(child)
             else:
                 if isinstance(child, TextInput):
+                    if child.readonly:
+                        continue
                     child.text = ""
 
     def clean_labels(self):
