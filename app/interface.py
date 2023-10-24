@@ -161,18 +161,197 @@ def get_last_code(base: str) -> str:
     return base + '158'
 
 
+def get_ivas() -> list:
+    global _ivas
+    return _ivas
+
+
+def save_ivas(ivas: list) -> bool:
+    if not ivas:
+        return False
+    global _ivas
+    _ivas = ivas
+    return True
+
+
+def get_dollars() -> list:
+    global _dollars
+    return _dollars
+
+
+def save_dollars(dollars: list) -> bool:
+    if not dollars:
+        return False
+    global _dollars
+    _dollars = dollars
+    return True
+
+
+def get_suppliers() -> list:
+    global _suppliers
+    return _suppliers
+
+
+def save_suppliers(suppliers: list) -> bool:
+    if not suppliers:
+        return False
+    global _suppliers
+    _suppliers = suppliers
+    return True
+
+
+def get_fractions() -> list:
+    global _fractions
+    return _fractions
+
+
+def save_fractions(fractions: list) -> bool:
+    if not fractions:
+        return False
+    global _fractions
+    _fractions = fractions
+    return True
+
+
+def get_sections() -> list:
+    global _sections
+    return _sections
+
+
+def save_sections(sections: list) -> bool:
+    if not sections:
+        return False
+    global _sections
+    _sections = sections
+    return True
 # Prices
 
+
+def _apply_discount(earning_level, fraction, category):
+    discounts = [
+        [
+            [1, 0.97, 0.941],
+            [1, 0.95, 0.9025],
+            [1, 0.93, 0.8649],
+            [1, 0.92, 0.8464],
+            [1, 0.9, 0.81],
+            [1, 0.7, 0.63],
+            [1, 0.6, 0.54],
+        ],
+        [
+            [0.955, 0.9268, 0.899],
+            [0.926, 0.8799, 0.8345],
+            [0.926, 0.8646, 0.8011],
+            [0.9118, 0.8388, 0.7717],
+            [0.9, 0.8077, 0.7269],
+            [0.9, 0.63, 0.567],
+            [0.9, 0.54, 0.486],
+        ],
+        [
+            [0.9127, 0.8853, 0.8588],
+            [0.8574, 0.8145, 0.7738],
+            [0.8574, 0.7974, 0.7415],
+            [0.8306, 0.7641, 0.703],
+            [0.8044, 0.7239, 0.6515],
+            [0.8044, 0.567, 0.5103],
+            [0.8044, 0.486, 0.4374],
+        ]
+    ]
+
+    if category < 3 and earning_level < 7 and fraction < 3:
+        return discounts[category][earning_level][fraction]
+    else:
+        return None
+
+
+def calculate_prices_from_costs(quantity: float, unit: str, cost: float, earning: float = None, earning_level: int = None):
+
+    if earning:
+        if earning >= 0 and earning < 1.70:
+            earning_level = 0
+        elif earning < 2.00:
+            earning_level = 1
+        elif earning < 2.20:
+            earning_level = 2
+        elif earning < 2.50:
+            earning_level = 3
+        elif earning < 3.50:
+            earning_level = 4
+        elif earning < 4.50:
+            earning_level = 5
+        elif earning >= 4.50:
+            earning_level = 6
+        else:
+            raise (ValueError("earning must be bigger than 0"))
+    elif earning_level:
+        if earning_level not in range(7):
+            raise ValueError(
+                "Invalid earning level. It must be between 0 and 6")
+    else:
+        raise (TypeError("You must provide earning or earning_level"))
+
+    unitary_cost = cost / quantity
+
+    fractions = [0, 0, 0]
+    if unit == "U" or unit == "M":
+        fractions[0] = 1
+        fractions[1] = quantity
+        fractions[2] = 0
+    elif unit == "UC":
+        fractions[0] = 1
+        fractions[1] = 100
+        fractions[2] = 500
+    elif unit == "MC":
+        fractions[0] = 1
+        fractions[1] = 10
+        fractions[2] = 0
+    elif unit == "T":
+        fractions[0] = 1
+        fractions[1] = 10
+        fractions[2] = 0
+    elif unit == "G10":
+        fractions[0] = 10
+        fractions[1] = 100
+        fractions[2] = 500
+    elif unit == "G25":
+        fractions[0] = 25
+        fractions[1] = 100
+        fractions[2] = 500
+    elif unit == "Y":
+        fractions[0] = 1 / 0.914
+        fractions[1] = quantity
+        fractions[2] = 0
+    else:
+        fractions[0] = 1
+        fractions[1] = quantity
+        fractions[2] = 0
+
+    price = unitary_cost * earning
+
+    prices = [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+    ]
+
+    for category in range(3):
+        for fraction in range(3):
+            prices[fraction][category] = price * fractions[fraction] * \
+                _apply_discount(earning_level, fraction, category)
+
+    return prices, fractions
+
+
 def round_prices(prices):
-    return [(round(price_0), round(price_1), round(price_2)) for price_0, price_1, price_2 in prices]
+    return [[round(price_0), round(price_1), round(price_2)] for price_0, price_1, price_2 in prices]
 
 
 def get_product_prices(product_code):
     # get prices
     prices = [
-        (250.25, 242, 225),
-        (4000, 3970, 3925),
-        (7000, 6800, 6500),
+        [250.25, 242, 225],
+        [4000, 3970, 3925],
+        [7000, 6800, 6500],
     ]
     quantities = [
         "LOS 25 GRAMOS",
@@ -203,12 +382,93 @@ def number_category(convert: str | int) -> int | str:
         return result[0]
     raise ValueError(f"Invalid input.\n Valid inputs: {number_category}")
 
-# External
 
+# External
 
 def get_date():
     return dt.strftime(dt.today(), '%d/%m/%Y')
 
 
 def get_dollar_price():
-    return 805.0
+    global _dollars
+    return _dollars[0]
+
+
+# Listas temporales
+
+_dollars = [805, 385]
+
+_ivas = [10.5, 21.]
+
+_suppliers = [
+    "OTROS",
+    "A. MANIA",
+    "ALOE",
+    "BISANS",
+    "BISCUIT",
+    "COCO FIL",
+    "COTINA",
+    "EL BOLSERO",
+    "FERRETERIA",
+    "GATUVIA",
+    "IKORSO",
+    "JR",
+    "KAIZEN",
+    "KRAMIR",
+    "KREY",
+    "LAINO",
+    "MARIBELLA",
+    "MEIR GROUP",
+    "MERMIL",
+    "MONICA",
+    "MOSTACILLA",
+    "MUNDO A",
+    "NEPTUNO",
+    "OSCAR",
+    "PALACIO",
+    "PALAIS",
+    "PAW",
+    "PEGAMIL",
+    "SUSESSO",
+    "TELGOPOR",
+    "TURCO",
+    "UNIPOX",
+    "SANTERIA BELEN",
+    "SARQUIS Y SEPAG",
+    "MODA SHOP",
+    "PUNTO BIJOU",
+    "GERERDO",
+    "GASTON",
+]
+
+_sections = [
+    "ARMADOR",
+    "BRILLO",
+    "MERCERIA",
+    "LIBRERIA",
+    "ELECTRONICA",
+    "PEGAMENTOS",
+    "PLUMAS",
+    "AMAZONA",
+    "BOA",
+    "ESPIGADA",
+    "FAISAN CEBRA",
+    "FAISAN LADY",
+    "FLEX",
+    "RABO GA",
+    "INSTRUMENTO",
+]
+
+_fractions = [
+    (1, "U", "Unidades: x1u/Paquete Cerrado",
+        "Unidades", "x1u", "Paquete Cerrado", ""),
+    (2, "UC", "Unidades: x1u/x100u/", "Unidades", "x1u", "x100u", "x500u"),
+    (3, "G10", "Gramos: x10g/x100g/x500g", "Gramos", "x10g", "x100g", "x500g"),
+    (4, "G25", "Gramos: x25g/x100g/x500g", "Gramos", "x25g", "x100g", "x500g"),
+    (5, "M", "Metros: x1m/Paquete Cerrado",
+        "Metros", "x1m", "Paquete Cerrado", ""),
+    (6, "MX", "Metros: x1m/x10m", "Metros", "x1m", "x10m", ""),
+    (7, "Y", "Yardas: x1m/Paquete Cerrado",
+        "Yardas", "x1m", "Paquete Cerrado", ""),
+    (8, "T", "Tiras: x1/x10", "Yardas", "x1", "x10", ""),
+]

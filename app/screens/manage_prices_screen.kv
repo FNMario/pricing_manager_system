@@ -9,12 +9,15 @@
 #:import DoubleClickLabel screens.widgets.doubleclicklabel
 #:import SearchTextInput screens.widgets.searchtextinput
 
+<DatePicker>:
+    pHint: .25, .3
+
 <PricesTab>:
     orientation: 'vertical'
     size_hint_x: 0.9
     size_hint_y: None
-    height: 150
-    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+    height: dp(150) if not self.hidden else dp(40)
+    pos_hint: {'center_x': 0.5, 'center_y': 0.5} if not self.hidden else {'center_x': 0.5, 'center_y': 0.05}
     canvas.before:
         Color:
             rgba: (.13, .14, .19, .9)
@@ -39,96 +42,101 @@
             size_hint_x: 0.325
             halign: 'center'
             text: "FRACCION"
-    
     # Sell 1
     BoxLayout:
         orientation: 'horizontal'
-        spacing: 10
+        spacing: dp(10)
         TextField:
             size_hint_x: 0.225
             InfoLabel:
                 id: lbl_price_V_1
+                text: root.format_prices(root.prices[0][0]) if not root.hidden else ""
         TextField:
             size_hint_x: 0.225
             InfoLabel:
                 id: lbl_price_D_1
+                text: root.format_prices(root.prices[0][1]) if not root.hidden else ""
         TextField:
             size_hint_x: 0.225
             InfoLabel:
                 id: lbl_price_M_1
+                text: root.format_prices(root.prices[0][2]) if not root.hidden else ""
         TextField:
             size_hint_x: 0.325
             InfoLabel:
                 id: lbl_quantity_1
+                text: root.fractions[0] if not root.hidden else ""
     # Sell 2
     BoxLayout:
         orientation: 'horizontal'
-        spacing: 10
+        spacing: dp(10)
         TextField:
             size_hint_x: 0.225
             InfoLabel:
                 id: lbl_price_V_2
+                text: root.format_prices(root.prices[1][0]) if not root.hidden else ""
         TextField:
             size_hint_x: 0.225
             InfoLabel:
                 id: lbl_price_D_2
+                text: root.format_prices(root.prices[1][1]) if not root.hidden else ""
         TextField:
             size_hint_x: 0.225
             InfoLabel:
                 id: lbl_price_M_2
+                text: root.format_prices(root.prices[1][2]) if not root.hidden else ""
         TextField:
             size_hint_x: 0.325
             InfoLabel:
                 id: lbl_quantity_2
+                text: root.fractions[1] if not root.hidden else ""
     # Sell 3
     BoxLayout:
         orientation: 'horizontal'
-        spacing: 10
+        spacing: dp(10)
         TextField:
             size_hint_x: 0.225
             InfoLabel:
                 id: lbl_price_V_3
-                text: ""
+                text: root.format_prices(root.prices[2][0]) if not root.hidden else ""
         TextField:
             size_hint_x: 0.225
             InfoLabel:
                 id: lbl_price_D_3
-                text: ""
+                text: root.format_prices(root.prices[2][1]) if not root.hidden else ""
         TextField:
             size_hint_x: 0.225
             InfoLabel:
                 id: lbl_price_M_3
-                text: ""
+                text: root.format_prices(root.prices[2][2]) if not root.hidden else ""
         TextField:
             size_hint_x: 0.325
             InfoLabel:
                 id: lbl_quantity_3
-                text: ""
-
-
+                text: root.fractions[2] if not root.hidden else ""
 
 <ManagePrices>:
     id: manage_prices_screen
     BoxLayout:
         orientation: 'vertical'
         size: self.parent.size
-        pos_hint: {'right':1}
-        padding: self.parent.size[0]/2-450, 10
-        spacing: 10
+        pos_hint: {'right': 1}
+        padding: self.parent.size[0]/2-dp(450), dp(10)
+        spacing: dp(10)
         # Form
         BoxLayout:
             id: form_layout
             orientation: 'vertical'
-            pos_hint: {'center_x':.5}
+            pos_hint: {'center_x': 0.5}
             size_hint_y: None
-            height: 360
-            padding: 100,0
+            height: dp(360)
+            padding: dp(100), dp(0)
             canvas.before:
-                Color: 
-                    rgba: (1, 1, 1, .4)
+                Color:
+                    rgba: (1, 1, 1, 0.4)
                 Line:
-                    rounded_rectangle: (self.pos[0],self.pos[1],self.size[0],self.size[1], 4)
-                    width: .5
+                    rounded_rectangle: (self.pos[0], self.pos[1], self.size[0], self.size[1], dp(4))
+                    width: 0.5
             # Product
             TextField:
                 Icon:
@@ -137,16 +145,21 @@
                     id: txt_product
                     hint_text: "Product"
                     focus: True
+                    on_text_validate: root.btn_search_product_on_press()
+                    text_validate_unfocus: False
                     table: tbl_products
                 IconButton:
                     id: btn_search_product
                     source: './assets/icons/search_1.png'
-                    on_press: root.btn_search_product_on_press()
+                    on_release:
+                        txt_product.focus = True
+                        root.btn_search_product_on_press()
             BoxLayout:
                 orientation: 'horizontal'
+                spacing: dp(8)
                 BoxLayout:
                     orientation: 'vertical'
-                    size_hint_x: .4
+                    size_hint_x: 0.4
                     # Local code
                     TextField:
                         Icon:
@@ -155,6 +168,7 @@
                             id: txt_local_code
                             hint_text: "Local code"
                             on_text_validate: root.btn_search_local_code_on_press()
+                            text_validate_unfocus: False
                             table: tbl_products
                         IconButton:
                             id: btn_next_code
@@ -167,17 +181,20 @@
                         IconButton:
                             id: btn_search_local_code
                             source: './assets/icons/search_1.png'
-                            on_press: root.btn_search_local_code_on_press()
+                            on_release:
+                                txt_local_code.focus = True
+                                root.btn_search_local_code_on_press()
                     # Supplier
                     TextField:
                         Icon:
                             source: './assets/icons/supplier.png'
-                        TextInput:
-                            id: txt_supplier
+                        SelectOptionDropDown:
+                            id: sodd_supplier
+                            readonly: False
+                            icon: './assets/icons/down.png'
+                            options: root.get_suppliers()
                             hint_text: "Supplier"
-                        IconButton:
-                            id: cb_supliers
-                            source: './assets/icons/down.png'
+                            icon: './assets/icons/down.png'
                     # Supplier's code
                     TextField:
                         Icon:
@@ -186,15 +203,18 @@
                             id: txt_supplier_code
                             hint_text: "Supplier's code"
                             on_text_validate: root.btn_search_suppliers_code_on_press()
+                            text_validate_unfocus: False
                             table: tbl_products
                         IconButton:
                             id: btn_search_suppliers_code
                             source: './assets/icons/search_1.png'
-                            on_press: root.btn_search_suppliers_code_on_press()
+                            on_release:
+                                txt_supplier_code.focus = True
+                                root.btn_search_suppliers_code_on_press()
                     # Quantity
                     BoxLayout:
                         orientation: 'horizontal'
-                        spacing: 10
+                        spacing: dp(10)
                         TextField:
                             size_hint_x: 0.6
                             Icon:
@@ -203,19 +223,22 @@
                                 id: txt_quantity
                                 hint_text: "Quantity"
                                 input_filter: 'float'
+                                on_text: root.update_prices()
+                                on_text_validate: self.get_focus_next().focus = True
                         TextField:
                             size_hint_x: 0.4
-                            TextInput:
-                                size_hint_x: 0.5
-                                id: txt_unit
+                            SelectOptionDropDown:
+                                id: sodd_unit
+                                readonly: False
+                                icon: './assets/icons/down.png'
+                                options: root.get_units()
                                 hint_text: "Unit"
-                            IconButton:
-                                id: cb_unit
-                                source: './assets/icons/down.png'
+                                icon: './assets/icons/down.png'
+                                on_select: root.update_prices()
                     # Cost
                     BoxLayout:
                         orientation: 'horizontal'
-                        spacing: 10
+                        spacing: dp(7)
                         TextField:
                             Icon:
                                 source: './assets/icons/dollar.png'
@@ -224,39 +247,41 @@
                                 hint_text: "Cost"
                                 input_filter: 'float'
                                 on_text: root.update_prices()
-                                on_text_validate: root.calculate_cost()
+                                on_text_validate:
+                                    root.calculate_cost()
+                                    self.get_focus_next().focus = True
                         BoxLayout:
-                            pos_hint: {'top':1}
+                            pos_hint: {'top': 1}
                             orientation: 'vertical'
                             size_hint_x: None
-                            width: 16
+                            width: dp(16)
                             CheckBox:
                                 id: chk_iva
-                                on_state: root.calculate_cost(["iva"])
+                                on_state: root.change_iva_state()
                             CheckBox:
                                 id: chk_dollar
-                                on_state: root.calculate_cost(["dollar"])
+                                on_state: root.change_dollar_state()
                         BoxLayout:
-                            pos_hint: {'top':1}
+                            pos_hint: {'top': 1}
                             orientation: 'vertical'
                             size_hint_x: None
-                            width: 90
+                            width: dp(105)
                             DoubleClickLabel:
                                 id: lbl_iva
-                                value: 21
-                                text: "IVA ( " + self.value_string + "% )"
+                                value: 21.0 # TODO: root.get_iva_items()[]
+                                text: "IVA (" + self.value_string + "%)"
                                 font_size: 14
-                                halign: 'right'
+                                text_size: self.size
                                 pos_hint: {'left': 1}
-                                on_double_click: root.change_iva()
+                                on_double_click: root.change_iva(self)
                             DoubleClickLabel:
                                 id: lbl_dollar
                                 value: root.get_dollar_price()
                                 text: "Dollar ($" + self.value_string + ")"
                                 font_size: 14
-                                halign: 'right'
+                                text_size: self.size
                                 pos_hint: {'left': 1}
-                                on_double_click: root.change_dollar()
+                                on_double_click: root.change_dollar(self)
                     # Earning
                     TextField:
                         Icon:
@@ -266,8 +291,9 @@
                             hint_text: "Earning"
                             input_filter: 'int'
                             on_text: root.update_prices()
+                            on_text_validate: self.get_focus_next().focus = True
                         BoxLayout:
-                            pos_hint: {'top':1.1}
+                            pos_hint: {'top': 1.1}
                             orientation: 'vertical'
                             size_hint_x: None
                             width: self.minimum_width
@@ -285,12 +311,13 @@
                     TextField:
                         Icon:
                             source: './assets/icons/list.png'
-                        TextInput:
-                            id: txt_section
+                        SelectOptionDropDown:
+                            id: sodd_section
+                            readonly: False
+                            icon: './assets/icons/down.png'
+                            options: root.get_sections()
                             hint_text: "Section"
-                        IconButton:
-                            id: cb_section
-                            source: './assets/icons/down.png'
+                            icon: './assets/icons/down.png'
                     # Date
                     TextField:
                         Icon:
@@ -300,12 +327,16 @@
                             hint_text: "Date"
                         IconButton:
                             id: btn_refresh_date
+                            on_press: root.show_calendar()
+                            source: './assets/icons/calendar.png'
+                        IconButton:
+                            id: btn_refresh_date
                             on_press: root.btn_refresh_date_on_press()
                             source: './assets/icons/refresh_date.png'
                 # Image + Prices tab
                 RelativeLayout:
-                    size_hint_x: .6
-                    padding: 8
+                    size_hint_x: 0.6
+                    padding: dp(8)
                     Image:
                         source: './assets/images/DefaultBase.png'
                         fit_mode: 'cover'
@@ -315,10 +346,10 @@
         # Buttons
         BoxLayout:
             orientation: 'horizontal'
-            pos_hint: {'center_x':.5, 'center_y':.5}
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
             size_hint_y: None
             height: self.minimum_height
-            spacing:10
+            spacing: dp(10)
             # Save
             FilledButton:
                 id: btn_save
@@ -361,7 +392,7 @@
                     id: tbl_products
                     size_hint_y: None
                     height: self.minimum_height
-                    header_background_color: [1,1,1,0.5]
-                    hint_sizes: [0.2,0.4,0.2,0.2]
+                    header_background_color: (1, 1, 1, 0.5)
+                    hint_sizes: [0.1, 0.6, 0.1, 0.2]
                     header: ["Local code", "Product", "Quantity", "Provider"]
                     on_selected_row: root.on_selected_row()
