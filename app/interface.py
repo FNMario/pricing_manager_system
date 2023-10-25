@@ -4,7 +4,11 @@ import datetime
 import random
 
 
+class DatabaseError(Exception):
+    pass
+
 # Users
+
 
 def login(username, password):
     # Call the database function to fetch user data
@@ -161,42 +165,47 @@ def get_last_code(base: str) -> str:
     return base + '158'
 
 
-def alter_product(**kwargs):
-    print(kwargs)
-
-
-def alter_cost(**kwargs):
-    print(kwargs)
-
-
 def save_product(data: dict):
     units = {f[1]: f[0] for f in get_fractions()}
     sections = get_sections()
     suppliers = get_suppliers()
 
-    # db.alter_product(
-    alter_product(
-        product=data['product'],
-        local_code=data['local_code'],
-        quantity=data['quantity'],
-        unit=units[data['unit']],
-        section=sections[data['section']]
-    )
+    new_product = {
+        'description': data['product'],
+        'code_id': data['local_code'],
+        'quantity': data['quantity'],
+        'fraction_id': units[data['unit']],
+        'section_id': sections[data['section']]
+    }
 
-    # db.alter_cost(
-    alter_cost(
-        product_id=data['local_code'],
-        supplier=suppliers[data['supplier']],
-        supplier_code=data['supplier_code'],
-        cost=data['cost'],
-        surcharge=data['surcharge'],
-        date=data['date'],
-        dollar=data['dollar']
-    )
+    new_cost = {
+        'product_id': data['local_code'],
+        'supplier_id': suppliers[data['supplier']],
+        'supplier_code': data['supplier_code'],
+        'cost': data['cost'],
+        'surcharge': data['surcharge'],
+        'date': data['date'],
+        'dollar_price': data['dollar']
+    }
 
+    # old_product = db.get_product(code_id=new_product['code_id'])
 
-def add_product(product: dict):
-    pass
+    # if not old_product:
+    #     db.add_product(new_product)
+    #     db.add_cost(new_cost)
+    #     return
+
+    # if old_product['quantity'] != new_product['quantity'] or old_product['fraction_id'] != new_product['fraction_id']:
+    #     raise DatabaseError("quantity and/or fraction doesn't match with product code. Try new code or replace it")
+    # else:
+    #     db.alter_product(new_product)
+
+    #     old_cost = db.get_cost(product_id=cost['product_id'], supplier_id=cost['supplier_id'])
+    
+    #     if not old_cost:
+    #         db.add_cost(new_cost)
+    #     else:
+    #         db.alter_cost(new_cost)
 
 
 # Settings and tables
