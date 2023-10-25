@@ -286,13 +286,13 @@
                                 text_size: self.size
                                 pos_hint: {'left': 1}
                                 on_double_click: root.change_dollar(self)
-                    # Earning
+                    # Surcharge
                     TextField:
                         Icon:
-                            source: './assets/icons/earnings.png'
+                            source: './assets/icons/surcharges.png'
                         TextInput:
-                            id: txt_earning
-                            hint_text: "Earning"
+                            id: txt_surcharge
+                            hint_text: "Surcharge"
                             input_filter: 'int'
                             on_text: root.update_prices()
                             on_text_validate: self.get_focus_next().focus = True
@@ -302,13 +302,13 @@
                             size_hint_x: None
                             width: self.minimum_width
                             IconButton:
-                                id: btn_earnings_plus
-                                on_press: root.btn_earnings_plus_on_press()
+                                id: btn_surcharges_plus
+                                on_press: root.btn_surcharges_plus_on_press()
                                 pos_hint: {}
                                 source: './assets/icons/plus_small.png'
                             IconButton:
-                                id: btn_earnings_minus
-                                on_press: root.btn_earnings_minus_on_press()
+                                id: btn_surcharges_minus
+                                on_press: root.btn_surcharges_minus_on_press()
                                 pos_hint: {}
                                 source: './assets/icons/minus_small.png'
                     # Section

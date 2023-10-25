@@ -63,20 +63,20 @@ class ManagePrices(Screen):
 
     def update_prices(self):
         cost = self.ids.txt_cost.text
-        earning = self.ids.txt_earning.text
+        surcharge = self.ids.txt_surcharge.text
         quantity = self.ids.txt_quantity.text
         unit = self.ids.optxt_unit.text
 
-        if not cost or not earning or not quantity or not unit:
+        if not cost or not surcharge or not quantity or not unit:
             self.ids.prices_tab.clean_prices()
             return
 
         cost = float(cost)
-        earning = float(earning) / 100
+        surcharge = float(surcharge) / 100
         quantity = float(quantity)
 
         prices, fractions = calculate_prices_from_costs(
-            quantity, unit, cost, earning)
+            quantity, unit, cost, surcharge)
         self.ids.prices_tab.prices = prices
         self.ids.prices_tab.fractions = [f'{fr} {unit}' for fr in fractions]
 
@@ -133,19 +133,19 @@ class ManagePrices(Screen):
         instance.text = f"IVA ({instance.value}%)"
         instance.text = f"Dollar (${instance.value})"
 
-    def btn_earnings_plus_on_press(self):
-        earning = self.ids.txt_earning.text
-        if earning:
-            earning = str(int(earning) + 1)
-            self.ids.txt_earning.text = earning
+    def btn_surcharges_plus_on_press(self):
+        surcharge = self.ids.txt_surcharge.text
+        if surcharge:
+            surcharge = str(int(surcharge) + 1)
+            self.ids.txt_surcharge.text = surcharge
         else:
-            self.ids.txt_earning.text = "1"
+            self.ids.txt_surcharge.text = "1"
 
-    def btn_earnings_minus_on_press(self):
-        earning = self.ids.txt_earning.text
-        if earning:
-            earning = str(int(earning) - 1)
-            self.ids.txt_earning.text = earning
+    def btn_surcharges_minus_on_press(self):
+        surcharge = self.ids.txt_surcharge.text
+        if surcharge:
+            surcharge = str(int(surcharge) - 1)
+            self.ids.txt_surcharge.text = surcharge
 
     def show_calendar(self):
         datePicker = CustomDatePicker()
@@ -160,14 +160,14 @@ class ManagePrices(Screen):
             'local_code': self.ids.txt_local_code.text,
             'supplier': self.ids.optxt_supplier.text,
             'supplier_code': self.ids.txt_supplier_code.text,
-            'quantity': self.ids.txt_quantity.text,
+            'quantity': float(self.ids.txt_quantity.text),
             'unit': self.ids.optxt_unit.text,
-            'cost': self.ids.txt_cost.text,
-            'earning': self.ids.txt_earning.text,
+            'cost': float(self.ids.txt_cost.text),
+            'surcharge': int(self.ids.txt_surcharge.text),
             'section': self.ids.optxt_section.text,
             'date': self.ids.txt_date.text,
-            'iva': self.ids.lbl_iva.value,
-            'dollar': self.ids.lbl_dollar.value,
+            'iva': float(self.ids.lbl_iva.value),
+            'dollar': float(self.ids.lbl_dollar.value),
         }
         return data
 
@@ -180,7 +180,7 @@ class ManagePrices(Screen):
             'quantity': self.ids.txt_quantity,
             'unit': self.ids.optxt_unit,
             'cost': self.ids.txt_cost,
-            'earning': self.ids.txt_earning,
+            'surcharge': self.ids.txt_surcharge,
             'section': self.ids.optxt_section,
             'date': self.ids.txt_date,
             'iva': self.ids.lbl_iva,
@@ -196,7 +196,7 @@ class ManagePrices(Screen):
     def btn_save_on_press(self):
         data = self.current_data()
         required_fields = ['product', 'local_code', 'supplier', 'quantity',
-                           'unit', 'cost', 'earning', 'section', 'date']
+                           'unit', 'cost', 'section', 'date']
         for field, value in data.items():
             if field in required_fields and not value:
                 logging.error('There are empty fields')

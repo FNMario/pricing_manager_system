@@ -189,7 +189,7 @@ def save_product(data: dict):
         supplier=suppliers[data['supplier']],
         supplier_code=data['supplier_code'],
         cost=data['cost'],
-        earning=data['earning'],
+        surcharge=data['surcharge'],
         date=data['date'],
         dollar=data['dollar']
     )
@@ -269,7 +269,7 @@ def save_sections(sections: list) -> bool:
 
 # Prices
 
-def _apply_discount(earning_level, fraction, category):
+def _apply_discount(surcharge_level, fraction, category):
     discounts = [
         [
             [1, 0.97, 0.941],
@@ -300,37 +300,37 @@ def _apply_discount(earning_level, fraction, category):
         ]
     ]
 
-    if category < 3 and earning_level < 7 and fraction < 3:
-        return discounts[category][earning_level][fraction]
+    if category < 3 and surcharge_level < 7 and fraction < 3:
+        return discounts[category][surcharge_level][fraction]
     else:
         return None
 
 
-def calculate_prices_from_costs(quantity: float, unit: str, cost: float, earning: float = None, earning_level: int = None):
+def calculate_prices_from_costs(quantity: float, unit: str, cost: float, surcharge: float = None, surcharge_level: int = None):
 
-    if earning:
-        if earning >= 0 and earning < 1.70:
-            earning_level = 0
-        elif earning < 2.00:
-            earning_level = 1
-        elif earning < 2.20:
-            earning_level = 2
-        elif earning < 2.50:
-            earning_level = 3
-        elif earning < 3.50:
-            earning_level = 4
-        elif earning < 4.50:
-            earning_level = 5
-        elif earning >= 4.50:
-            earning_level = 6
+    if surcharge:
+        if surcharge >= 0 and surcharge < 1.70:
+            surcharge_level = 0
+        elif surcharge < 2.00:
+            surcharge_level = 1
+        elif surcharge < 2.20:
+            surcharge_level = 2
+        elif surcharge < 2.50:
+            surcharge_level = 3
+        elif surcharge < 3.50:
+            surcharge_level = 4
+        elif surcharge < 4.50:
+            surcharge_level = 5
+        elif surcharge >= 4.50:
+            surcharge_level = 6
         else:
-            raise (ValueError("earning must be bigger than 0"))
-    elif earning_level:
-        if earning_level not in range(7):
+            raise (ValueError("Surcharge must be bigger than 0"))
+    elif surcharge_level:
+        if surcharge_level not in range(7):
             raise ValueError(
-                "Invalid earning level. It must be between 0 and 6")
+                "Invalid surcharge level. It must be between 0 and 6")
     else:
-        raise (TypeError("You must provide earning or earning_level"))
+        raise (TypeError("You must provide surcharge or surcharge_level"))
 
     unitary_cost = cost / quantity
 
@@ -368,7 +368,7 @@ def calculate_prices_from_costs(quantity: float, unit: str, cost: float, earning
         fractions[1] = quantity
         fractions[2] = 0
 
-    price = unitary_cost * earning
+    price = unitary_cost * surcharge
 
     prices = [
         [0, 0, 0],
@@ -379,7 +379,7 @@ def calculate_prices_from_costs(quantity: float, unit: str, cost: float, earning
     for category in range(3):
         for fraction in range(3):
             prices[fraction][category] = price * fractions[fraction] * \
-                _apply_discount(earning_level, fraction, category)
+                _apply_discount(surcharge_level, fraction, category)
 
     return prices, fractions
 
