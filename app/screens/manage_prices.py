@@ -5,7 +5,7 @@ from kivy.properties import BooleanProperty, ListProperty
 from kivy.lang import Builder
 from KivyCalendar import DatePicker
 
-from interface import add_product, calculate_prices_from_costs, find_per_local_code, find_per_product_name, find_per_suppliers_code, format_numeric_economy, get_date, get_dollar_price, get_dollars, get_fractions, get_ivas, get_last_code, get_sections, get_suppliers, save_product
+from interface import calculate_prices_from_costs, find_per_local_code, find_per_product_name, find_per_suppliers_code, format_numeric_economy, get_date, get_dollar_price, get_dollars, get_fractions, get_ivas, get_last_code, get_sections, get_suppliers, save_product
 
 import logging
 
@@ -154,24 +154,24 @@ class ManagePrices(Screen):
     def btn_refresh_date_on_press(self):
         self.ids.txt_date.text = get_date()
 
-    def current_data(self) -> list:
+    def current_data(self) -> dict:
         data = {
             'product': self.ids.txt_product.text,
             'local_code': self.ids.txt_local_code.text,
             'supplier': self.ids.optxt_supplier.text,
             'supplier_code': self.ids.txt_supplier_code.text,
-            'quantity': float(self.ids.txt_quantity.text),
+            'quantity': float(self.ids.txt_quantity.text) if self.ids.txt_quantity.text else 0,
             'unit': self.ids.optxt_unit.text,
-            'cost': float(self.ids.txt_cost.text),
-            'surcharge': int(self.ids.txt_surcharge.text),
+            'cost': float(self.ids.txt_cost.text) if self.ids.txt_cost.text else 0,
+            'surcharge': int(self.ids.txt_surcharge.text)/100 if self.ids.txt_surcharge.text else 0,
             'section': self.ids.optxt_section.text,
             'date': self.ids.txt_date.text,
-            'iva': float(self.ids.lbl_iva.value),
-            'dollar': float(self.ids.lbl_dollar.value),
+            'iva': float(self.ids.lbl_iva.value) if self.ids.lbl_iva.value else 0,
+            'dollar': float(self.ids.lbl_dollar.value) if self.ids.lbl_dollar.value else 0,
         }
         return data
 
-    def get_fields(self) -> list:
+    def get_fields(self) -> dict:
         fields = {
             'product': self.ids.txt_product,
             'local_code': self.ids.txt_local_code,
