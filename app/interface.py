@@ -161,6 +161,47 @@ def get_last_code(base: str) -> str:
     return base + '158'
 
 
+def alter_product(**kwargs):
+    print(kwargs)
+
+
+def alter_cost(**kwargs):
+    print(kwargs)
+
+
+def save_product(data: dict):
+    units = {f[1]: f[0] for f in get_fractions()}
+    sections = get_sections()
+    suppliers = get_suppliers()
+
+    # db.alter_product(
+    alter_product(
+        product=data['product'],
+        local_code=data['local_code'],
+        quantity=data['quantity'],
+        unit=units[data['unit']],
+        section=sections[data['section']]
+    )
+
+    # db.alter_cost(
+    alter_cost(
+        product_id=data['local_code'],
+        supplier=suppliers[data['supplier']],
+        supplier_code=data['supplier_code'],
+        cost=data['cost'],
+        earning=data['earning'],
+        date=data['date'],
+        dollar=data['dollar']
+    )
+
+
+def add_product(product: dict):
+    pass
+
+
+# Settings and tables
+
+
 def get_ivas() -> list:
     global _ivas
     return _ivas
@@ -187,9 +228,9 @@ def save_dollars(dollars: list) -> bool:
     return True
 
 
-def get_suppliers() -> list:
+def get_suppliers() -> dict:
     global _suppliers
-    return _suppliers
+    return {key: value for value, key in enumerate(_suppliers)}
 
 
 def save_suppliers(suppliers: list) -> bool:
@@ -200,7 +241,7 @@ def save_suppliers(suppliers: list) -> bool:
     return True
 
 
-def get_fractions() -> list:
+def get_fractions() -> dict:
     global _fractions
     return _fractions
 
@@ -213,9 +254,9 @@ def save_fractions(fractions: list) -> bool:
     return True
 
 
-def get_sections() -> list:
+def get_sections() -> dict:
     global _sections
-    return _sections
+    return {key: value for value, key in enumerate(_sections)}
 
 
 def save_sections(sections: list) -> bool:
@@ -224,8 +265,9 @@ def save_sections(sections: list) -> bool:
     global _sections
     _sections = sections
     return True
-# Prices
 
+
+# Prices
 
 def _apply_discount(earning_level, fraction, category):
     discounts = [
@@ -347,7 +389,6 @@ def round_prices(prices):
 
 
 def get_product_prices(product_code):
-    # get prices
     prices = [
         [250.25, 242, 225],
         [4000, 3970, 3925],

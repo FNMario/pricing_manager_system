@@ -5,7 +5,7 @@ from kivy.properties import BooleanProperty, ListProperty
 from kivy.lang import Builder
 from KivyCalendar import DatePicker
 
-from interface import calculate_prices_from_costs, find_per_local_code, find_per_product_name, find_per_suppliers_code, format_numeric_economy, get_date, get_dollar_price, get_dollars, get_fractions, get_ivas, get_last_code, get_sections, get_suppliers
+from interface import calculate_prices_from_costs, find_per_local_code, find_per_product_name, find_per_suppliers_code, format_numeric_economy, get_date, get_dollar_price, get_dollars, get_fractions, get_ivas, get_last_code, get_sections, get_suppliers, save_product
 
 import logging
 
@@ -65,7 +65,7 @@ class ManagePrices(Screen):
         cost = self.ids.txt_cost.text
         earning = self.ids.txt_earning.text
         quantity = self.ids.txt_quantity.text
-        unit = self.ids.sodd_unit.text
+        unit = self.ids.optxt_unit.text
 
         if not cost or not earning or not quantity or not unit:
             self.ids.prices_tab.clean_prices()
@@ -154,13 +154,59 @@ class ManagePrices(Screen):
     def btn_refresh_date_on_press(self):
         self.ids.txt_date.text = get_date()
 
+    def current_data(self) -> list:
+        data = {
+            'product': self.ids.txt_product.text,
+            'local_code': self.ids.txt_local_code.text,
+            'supplier': self.ids.optxt_supplier.text,
+            'supplier_code': self.ids.txt_supplier_code.text,
+            'quantity': self.ids.txt_quantity.text,
+            'unit': self.ids.optxt_unit.text,
+            'cost': self.ids.txt_cost.text,
+            'earning': self.ids.txt_earning.text,
+            'section': self.ids.optxt_section.text,
+            'date': self.ids.txt_date.text,
+            'iva': self.ids.lbl_iva.value,
+            'dollar': self.ids.lbl_dollar.value,
+        }
+        return data
+
+    def get_fields(self) -> list:
+        fields = {
+            'product': self.ids.txt_product,
+            'local_code': self.ids.txt_local_code,
+            'supplier': self.ids.optxt_supplier,
+            'supplier_code': self.ids.txt_supplier_code,
+            'quantity': self.ids.txt_quantity,
+            'unit': self.ids.optxt_unit,
+            'cost': self.ids.txt_cost,
+            'earning': self.ids.txt_earning,
+            'section': self.ids.optxt_section,
+            'date': self.ids.txt_date,
+            'iva': self.ids.lbl_iva,
+            'dollar': self.ids.lbl_dollar,
+        }
+        return fields
+    
+    def all_upper_case(self, instance):
+        instance.text = instance.text.upper()
+
     # Buttons
 
     def btn_save_on_press(self):
-        pass
+        data = self.current_data()
+        required_fields = ['product', 'local_code', 'supplier', 'quantity',
+                           'unit', 'cost', 'earning', 'section', 'date']
+        for field, value in data.items():
+            if field in required_fields and not value:
+                logging.error('There are empty fields')
+                self.get_fields()[field].focus = True
+                return
+        save_product(data)
+        self.clean_form()
 
     def btn_add_on_press(self):
-        pass
+        print(self.doll.value)
 
     def btn_delete_on_press(self):
         pass
@@ -172,17 +218,20 @@ class ManagePrices(Screen):
         pass
 
     def btn_clean_on_press(self):
-        self.clean_forms(self.ids.form_layout)
+        self.clean_form()
         self.ids.tbl_products.items = []
-        self.ids.prices_tab.clean_prices()
 
-    def clean_forms(self, parent):
-        for child in parent.children:
-            if child.children:
-                self.clean_forms(child)
-            else:
-                if isinstance(child, TextInput):
-                    child.text = ""
+    def clean_form(self):
+        def clean_text_input(parent):
+            for child in parent.children:
+                if child.children:
+                    clean_text_input(child)
+                else:
+                    if isinstance(child, TextInput):
+                        child.text = ""
+
+        clean_text_input(self.ids.form_layout)
+        self.ids.prices_tab.clean_prices()
 
     # Table
 

@@ -148,6 +148,7 @@
                     on_text_validate: root.btn_search_product_on_press()
                     text_validate_unfocus: False
                     table: tbl_products
+                    on_text: root.all_upper_case(self)
                 IconButton:
                     id: btn_search_product
                     source: './assets/icons/search_1.png'
@@ -170,6 +171,7 @@
                             on_text_validate: root.btn_search_local_code_on_press()
                             text_validate_unfocus: False
                             table: tbl_products
+                            on_text: root.all_upper_case(self)
                         IconButton:
                             id: btn_next_code
                             source: './assets/icons/right.png'
@@ -189,12 +191,13 @@
                         Icon:
                             source: './assets/icons/supplier.png'
                         SelectOptionDropDown:
-                            id: sodd_supplier
+                            id: optxt_supplier
                             readonly: False
                             icon: './assets/icons/down.png'
                             options: root.get_suppliers()
                             hint_text: "Supplier"
                             icon: './assets/icons/down.png'
+                            on_text: root.all_upper_case(self)
                     # Supplier's code
                     TextField:
                         Icon:
@@ -228,13 +231,14 @@
                         TextField:
                             size_hint_x: 0.4
                             SelectOptionDropDown:
-                                id: sodd_unit
+                                id: optxt_unit
                                 readonly: False
                                 icon: './assets/icons/down.png'
                                 options: root.get_units()
                                 hint_text: "Unit"
                                 icon: './assets/icons/down.png'
                                 on_select: root.update_prices()
+                                on_text: root.all_upper_case(self)
                     # Cost
                     BoxLayout:
                         orientation: 'horizontal'
@@ -312,12 +316,13 @@
                         Icon:
                             source: './assets/icons/list.png'
                         SelectOptionDropDown:
-                            id: sodd_section
+                            id: optxt_section
                             readonly: False
                             icon: './assets/icons/down.png'
                             options: root.get_sections()
                             hint_text: "Section"
                             icon: './assets/icons/down.png'
+                            on_text: root.all_upper_case(self)
                     # Date
                     TextField:
                         Icon:
@@ -325,6 +330,7 @@
                         TextInput:
                             id: txt_date
                             hint_text: "Date"
+                            on_text_validate: root.btn_refresh_date_on_press()
                         IconButton:
                             id: btn_refresh_date
                             on_press: root.show_calendar()
@@ -354,7 +360,7 @@
             FilledButton:
                 id: btn_save
                 text: "Save"
-                on_press: root.btn_save_on_press()
+                on_release: root.btn_save_on_press()
             # Add
             EmptyButton:
                 id: btn_add
