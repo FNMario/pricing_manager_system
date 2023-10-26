@@ -1,0 +1,53 @@
+#:kivy 2.2.1
+
+<MessageBox>:
+    size_hint: None, None
+    size: dp(500), dp(220)
+    auto_dismiss: False
+    BoxLayout:
+        orientation: 'vertical'
+        canvas.before:
+            Color: 
+                rgba: (.13, .14, .19, 1)
+            Rectangle:
+                size: self.size
+                pos: self.pos
+        Label:
+            id: lbl_title
+            text: "Title"
+            pos_hint: {'center_x': 0.5}
+            size_hint_x: 0.9
+            size_hint_y: None
+            height: dp(40)
+            font_size: 20
+            text_size: self.size
+            valign: 'middle'
+            canvas.before:
+                Color: 
+                    rgba: (1, 1, 1, .1)
+                Rectangle:
+                    size: root.size[0], self.size[1]
+                    pos: root.pos[0], self.pos[1]
+        BoxLayout:
+            orientation: 'horizontal'
+            padding: 0, 0, dp(10), 0
+            Image:
+                id: icon_image
+                size_hint_x: .25
+            Label:
+                id: lbl_message
+                text: "Message"
+                font_size: 16
+                size_hint_x: .75
+                text_size: self.size
+                valign: 'middle'
+        BoxLayout:
+            id: buttons_layout
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: dp(60)
+            padding: dp(10)
+            spacing: dp(10)
+
+        
+                
