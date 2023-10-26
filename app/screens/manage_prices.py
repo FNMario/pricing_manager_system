@@ -5,7 +5,7 @@ from kivy.properties import BooleanProperty, ListProperty
 from kivy.lang import Builder
 from KivyCalendar import DatePicker
 
-from interface import calculate_prices_from_costs, find_per_local_code, find_per_product_name, find_per_suppliers_code, format_numeric_economy, get_date, get_dollar_price, get_dollars, get_fractions, get_ivas, get_last_code, get_sections, get_suppliers, save_product
+from interface import calculate_prices_from_costs, delete_product, find_per_local_code, find_per_product_name, find_per_suppliers_code, format_numeric_economy, get_date, get_dollar_price, get_dollars, get_fractions, get_ivas, get_last_code, get_sections, get_suppliers, save_product
 
 import logging
 
@@ -187,7 +187,7 @@ class ManagePrices(Screen):
             'dollar': self.ids.lbl_dollar,
         }
         return fields
-    
+
     def all_upper_case(self, instance):
         instance.text = instance.text.upper()
 
@@ -212,10 +212,35 @@ class ManagePrices(Screen):
         self.btn_save_on_press()
 
     def btn_delete_on_press(self):
-        pass
+        data = self.current_data()
+
+        if not data['local_code']:
+            logging.error('Local code cannot be empty')
+            self.get_fields()['local_code'].focus = True
+            return
+
+        try:
+            delete_product(data)
+            self.clean_form()
+        except Exception as e:
+            logging.error(e)
 
     def btn_replace_on_press(self):
-        pass
+        data = self.current_data()
+
+        required_fields = ['product', 'local_code', 'supplier', 'quantity',
+                           'unit', 'cost', 'surcharge', 'section', 'date']
+        for field, value in data.items():
+            if field in required_fields and not value:
+                logging.error('There are empty fields')
+                self.get_fields()[field].focus = True
+                return
+        try:
+            delete_product(data, all_costs=True)
+            save_product(data)
+            self.clean_form()
+        except Exception as e:
+            logging.error(e)
 
     def btn_compare_on_press(self):
         pass

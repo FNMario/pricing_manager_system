@@ -201,11 +201,19 @@ def save_product(data: dict):
     #     db.alter_product(new_product)
 
     #     old_cost = db.get_cost(product_id=cost['product_id'], supplier_id=cost['supplier_id'])
-    
+
     #     if not old_cost:
     #         db.add_cost(new_cost)
     #     else:
     #         db.alter_cost(new_cost)
+
+
+def delete_product(data: dict, all_costs: bool = False):
+    print('product', data, 'deleted')
+    # db.delete_cost(product_id=data['local_code'], supplier_id=cost['supplier_id'])
+    # costs = db.get_cost(product_id=data['local_code'])
+    # if not costs:
+    #     db.delete_product(code_id=data['local_code'])
 
 
 # Settings and tables
