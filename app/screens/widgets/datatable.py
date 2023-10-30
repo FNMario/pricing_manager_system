@@ -20,7 +20,7 @@ class Row(Label):
     selected_color = ColorProperty([.2, .8, .2, 1])
     default_color = ColorProperty([1, 1, 1, 1])
 
-    def on_touch_down(self, touch):
+    def on_touch_up(self, touch):
         if self.collide_point(*touch.pos):
             self.parent.selected_row = self.row
 

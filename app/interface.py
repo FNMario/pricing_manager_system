@@ -66,100 +66,10 @@ def get_products_for_sale(product: str = None, local_code: str = None) -> list[s
     return products
 
 
-def get_products() -> list:
-    products = [
-        (105, "Auriculares", 25, "Electrónica RST"),
-        (106, "Mouse", 30, "Informática UVW"),
-        (107, "Teclado", 35, "Informática UVW"),
-        (108, "Parlante", 40, "Electrónica RST"),
-        (109, "Impresora", 5, "Informática UVW"),
-        (110, "Tinta", 10, "Papelería ABC"),
-        (111, "Papel", 100, "Papelería ABC"),
-        (112, "Marcador", 50, "Papelería XYZ"),
-        (113, "Lámpara", 15, "Electrónica RST"),
-        (114, "Reloj", 20, "Joyería OPQ"),
-        (115, "Anillo", 10, "Joyería OPQ"),
-        (116, "Collar", 15, "Joyería OPQ"),
-        (117, "Pulsera", 20, "Joyería OPQ"),
-        (118, "Aretes", 25, "Joyería OPQ"),
-        (119, "Bolso", 10, "Moda GHI"),
-        (120, "Cartera", 15, "Moda GHI"),
-        (121, "Zapatos", 20, "Moda GHI"),
-        (122, "Camisa", 25, "Moda GHI"),
-        (123, "Pantalón", 30, "Moda GHI"),
-        (124, "Gorra", 10, "Deportes DEF"),
-        (125, "Pelota", 15, "Deportes DEF"),
-        (126, "Raqueta", 20, "Deportes DEF"),
-        (127, "Bicicleta", 5, "Deportes DEF"),
-        (128, "Casco", 10, "Deportes DEF"),
-        (129, "Libro", 50, "Librería LMN"),
-        (130, "Revista", 100, "Librería LMN"),
-        (131, "Periódico", 200, "Librería LMN"),
-        (132, "Mapa", 50, "Librería LMN"),
-        (133, "Calendario", 100, "Librería LMN"),
-        (134, "Chocolate", 50, "Alimentos JKL"),
-        (135, "Galletas", 100, "Alimentos JKL"),
-        (136, "Café", 25, "Alimentos JKL"),
-        (137, "Té", 25, "Alimentos JKL"),
-        (138, "Leche", 50, "Alimentos JKL"),
-        (139, "Jabón", 100, "Higiene FED"),
-        (140, "Shampoo", 50, "Higiene FED"),
-        (141, "Crema dental", 75, "Higiene FED"),
-        (142, "Desodoran asdf as fasef asef asf asef ase fasf asef as asea fwe fas ase faste", 50, "Higiene FED"),
-        (143, "Toalla húmeda", 100, "Higiene FED"),
-        (144, "Vino tinto", 25, "Bebidas CBA"),
-        (145, "Vino blanco", 25, "Bebidas CBA"),
-        (146, "Cerveza", 50, "Bebidas CBA"),
-        (147, "Agua mineral", 100, "Bebidas CBA"),
-        (148, "Jugo de naranja", 75, "Bebidas CBA"),
-        (149, "Arroz blanco", 50, "Granos ZYX"),
-        (150, "Arroz integral", 25, "Granos ZYX"),
-        (151, "Lentejas", 25, "Granos ZYX"),
-        (152, "Garbanzos", 25, "Granos ZYX"),
-        (153, "Frijoles negros", 50, "Granos ZYX"),
-    ]
-    return products
+def get_products(**kwargs) -> list:
+    global _list_of_products_with_costs
 
-
-def find_per_product_name(text: str) -> list:
-    products = [
-        (105, "Auriculares", 25, "Electrónica RST"),
-        (106, "Mouse", 30, "Informática UVW"),
-        (107, "Teclado", 35, "Informática UVW"),
-        (108, "Parlante", 40, "Electrónica RST"),
-        (109, "Impresora", 5, "Informática UVW"),
-        (110, "Tinta", 10, "Papelería ABC"),
-        (111, "Papel", 100, "Papelería ABC"),
-        (112, "Marcador", 50, "Papelería XYZ"),
-        (113, "Lámpara", 15, "Electrónica RST"),
-        (114, "Reloj", 20, "Joyería OPQ"),
-        (138, "Leche", 50, "Alimentos JKL"),
-        (139, "Jabón", 100, "Higiene FED"),
-        (140, "Shampoo", 50, "Higiene FED"),
-        (141, "Crema dental", 75, "Higiene FED"),
-        (142, "Desodoran asdf as fasef asef asf asef ase fasf asef as asea fwe fas ase faste", 50, "Higiene FED"),
-        (143, "Toalla húmeda", 100, "Higiene FED"),
-        (144, "Vino tinto", 25, "Bebidas CBA"),
-        (145, "Vino blanco", 25, "Bebidas CBA"),
-        (146, "Cerveza", 50, "Bebidas CBA"),
-    ]
-    return products
-
-
-def find_per_local_code(text: str) -> list:
-    products = [
-        (147, "Agua mineral", 100, "Bebidas CBA"),
-        (148, "Jugo de naranja", 75, "Bebidas CBA"),
-        (149, "Arroz blanco", 50, "Granos ZYX"),
-        (150, "Arroz integral", 25, "Granos ZYX"),
-    ]
-    return products
-
-
-def find_per_suppliers_code(text: str) -> list:
-    products = [
-        (114, "Reloj", 20, "Joyería OPQ"),
-    ]
+    products = _list_of_products_with_costs  # db.get_complete_items(**kwargs)
     return products
 
 
@@ -241,10 +151,12 @@ def delete_product(data: dict, all_costs: bool = False):
         suppliers = get_suppliers(reverse=False)
         for cost in costs:
             message += f"\n- Supplier: {suppliers[cost[2]]:0>15}, Cost: ${cost[4]} "
+        buttons = ["Delete all", "Cancel"] if all_costs else [
+            "Delete all", "Only this one", "Cancel"]
         msg = MessageBox(
             message=message,
             kind='question',
-            buttons=["Delete all", "Only this one", "Cancel"],
+            buttons=buttons,
             on_close=answer_clicked
         )
     elif len(costs) == 1:
@@ -316,9 +228,12 @@ def save_fractions(fractions: list) -> bool:
     return True
 
 
-def get_sections() -> dict:
+def get_sections(reverse: bool = True) -> dict:
     global _sections
-    return {key: value for value, key in enumerate(_sections)}
+    if reverse:
+        return {key: value for value, key in enumerate(_sections)}
+    else:
+        return {key: value for key, value in enumerate(_sections)}
 
 
 def save_sections(sections: list) -> bool:
@@ -370,7 +285,7 @@ def _apply_discount(surcharge_level, fraction, category):
 
 def calculate_prices_from_costs(quantity: float, unit: str, cost: float, surcharge: float = None, surcharge_level: int = None):
 
-    if surcharge:
+    if surcharge is not None:
         if surcharge >= 0 and surcharge < 1.70:
             surcharge_level = 0
         elif surcharge < 2.00:
@@ -387,7 +302,7 @@ def calculate_prices_from_costs(quantity: float, unit: str, cost: float, surchar
             surcharge_level = 6
         else:
             raise (ValueError("Surcharge must be bigger than 0"))
-    elif surcharge_level:
+    elif surcharge_level is not None:
         if surcharge_level not in range(7):
             raise ValueError(
                 "Invalid surcharge level. It must be between 0 and 6")
@@ -574,4 +489,67 @@ _fractions = [
     (7, "Y", "Yardas: x1m/Paquete Cerrado",
         "Yardas", "x1m", "Paquete Cerrado", ""),
     (8, "T", "Tiras: x1/x10", "Yardas", "x1", "x10", ""),
+]
+
+_list_of_products_with_costs = [
+    ('ALAMBRE DE ALPAKA 1/2 CAÑA 2X1 (0.70 MTS)', 'AAL0007', 'BISCUIT', None,
+     500.0, 'G10', 570.0, 2.51, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
+    ('ALAMBRE DE ALPAKA 1/2 CAÑA 3X1 ( MTS)', 'AAL0008', 'BISCUIT', None, 500.0,
+     'G10', 570.0, 2.51, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
+    ('BUZIO GRANDE MARRON  X 500GR.', 'ABU0008', 'MOSTACILLA', 'AS27261',
+     270.0, 'UC ', 0.0, 0.0, 'ARMADOR', datetime.date(2019, 8, 16), 58.5, None),
+    ('BUZIO MARRON POR 500 GRS. (80 UNID. APROX.)', 'ABU0009', 'MOSTACILLA', None,
+     80.0, 'UC ', 0.0, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 58.5, None),
+    ('CASCABEL 16MM MULTICOLOR', 'ACA4006', 'ALOE', None, 200.0, 'UC ',
+     0.0, 0.0, 'ARMADOR', datetime.date(2019, 8, 16), 58.5, None),
+    ('CAPUCHON DORADOS 10MM', 'ACC0006', 'JR', None, 1000.0, 'UC ',
+     1596.0, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
+    ('CADENA CHICA COD T110-35', 'ACM0008', 'JR', 'T110-35', 10.0, 'M  ',
+     57.323, 2.55, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
+    ('CADENA SHANEL PLANO 1.2 MM', 'ACM0062', 'KREY', '1532195-96', 10.0,
+     'M  ', 0.0, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
+    ('CADENA SHANEL PLANO 1.0 MM', 'ACM0064', 'KREY', '1532197-98', 10.0,
+     'M  ', 0.0, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
+    ('CADENA SHANEL TRIPLE PLANA GRANDE JR', 'ACM0092', 'JR', 'TS20-110/2DC',
+     10.0, 'M  ', 399.0, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
+    ('FUNDICION', 'AFA0000', 'JR', None, 250.0, 'G10', 399.0,
+     2.5, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
+    ('FILIGRANA BUHO', 'AFI0001', 'JR', 'HU-9051', 10.0, 'U  ',
+     399.0, 2.35, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
+    ('FUNDICION PORTA DIJE Nº 22', 'AFP0010', 'JR', None, 89.0, 'U  ',
+     285.285, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
+    ('FUNDICION SEPARADOR Nº 03 C', 'AFS1011', 'JR', 'W-454', 52.0, 'U  ',
+     228.095, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
+    ('FUNDICION SEPARADOR Nº 28', 'AFS1055', 'JR', 'W-325', 61.0, 'U  ',
+     342.475, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
+    ('MOSQUETON P/LLAVERO REDONDEADO 33 MM', 'AGM0018', 'IKORSO', 'SWK20-N', 100.0,
+     'UC ', 1425.0, 2.5, 'ARMADOR', datetime.date(2018, 10, 18), 37.5, None),
+    ('OJOS TURCOS ENGANCHADOS X 10MTS.', 'AOT1002', 'JR', None, 10.0,
+     'M  ', 2394.0, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
+    ('PIEDRA ACRILICA POR KG.', 'APA0001', 'ALOE', '379', 500.0, 'G10',
+     171.3635, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 58.5, None),
+    ('PIEDRA ACRILICA POR KG.', 'APA0001', 'ALOE', '415', 500.0, 'G10',
+     171.3635, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 58.5, None),
+    ('PIEDRA ACRILICA FORMA. CHUPETE. MAMADERA. ETC.', 'APA0002', 'JR', None,
+     500.0, 'G10', 399.0, 3.0, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
+    ('PIEDRA ACRILICA CAIREL GOTA PLANA  DE COLORES METALIZADOS', 'APA0004', 'JR',
+     'S1785', 500.0, 'G10', 399.0, 3.0, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
+    ('PERLA ACRILICA 3 MM', 'APE0001', 'PALACIO', None, 500.0, 'G10',
+     0.0, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 58.5, None),
+    ('PERLA ACRILICA 4 MM', 'APE0002', 'PALACIO', None, 500.0, 'G10',
+     0.0, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 58.5, None),
+    ('PERLA ACRILICA 6 MM', 'APE0003', 'PALACIO', None, 500.0, 'G10',
+     0.0, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 58.5, None),
+    ('PERLA PLASTICA 8 MM', 'APE0004', 'PALACIO', None, 500.0, 'G10',
+     0.0, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 58.5, None),
+    ('PERLA PLASTTICA Nº10 X 500GRS.', 'APE0005', 'PALACIO', None, 500.0,
+     'G10', 0.0, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 58.5, None),
+    ('PERLA JAPONESA POR KG', 'APE1005', 'PAW', None, 500.0, 'G10',
+     456.0, 2.6, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
+    ('PERLA JAPONESA CIEGA POR KG 8MM', 'APE1006', 'PAW', None, 500.0,
+     'G10', 456.0, 2.6, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
+    ('PELOTA METAL 4 MM', 'APM0002', 'JR', 'NIK X KG.', 6000.0, 'UC ',
+     1197.0, 2.5, 'ARMADOR', datetime.date(2019, 8, 24), 57.0, None),
+    ('PELOTA METAL 4 MM', 'APM0002', 'JR', 'NIK X KG.', 6000.0, 'UC ',
+     798.0, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None)
 ]

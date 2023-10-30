@@ -1,11 +1,11 @@
 from kivy.uix.screenmanager import Screen
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.textinput import TextInput
-from kivy.properties import BooleanProperty, ListProperty
+from kivy.properties import BooleanProperty, ListProperty, ObjectProperty
 from kivy.lang import Builder
 from KivyCalendar import DatePicker
 
-from interface import calculate_prices_from_costs, delete_product, find_per_local_code, find_per_product_name, find_per_suppliers_code, format_numeric_economy, get_date, get_dollar_price, get_dollars, get_fractions, get_ivas, get_last_code, get_sections, get_suppliers, save_product
+from interface import calculate_prices_from_costs, delete_product, format_numeric_economy, get_date, get_dollar_price, get_dollars, get_fractions, get_ivas, get_last_code, get_products, get_sections, get_suppliers, save_product
 
 import logging
 
@@ -13,12 +13,18 @@ Builder.load_file('screens/manage_prices_screen.kv')
 
 
 class ManagePrices(Screen):
+    products = ListProperty()
+    searching_text_input = ObjectProperty()
+
+    def __init__(self, **kw):
+        super(ManagePrices, self).__init__(**kw)
+        self.bind(products=self.update_table_items)
 
     # Form
 
     def btn_search_product_on_press(self):
-        self.ids.tbl_products.items = find_per_product_name(
-            self.ids.txt_product.text)
+        self.searching_text_input = self.ids.txt_product
+        self.products = get_products(product_id=self.ids.txt_product.text)
 
     def btn_next_code_on_press(self):
         local_code = self.ids.txt_local_code.text
@@ -41,16 +47,16 @@ class ManagePrices(Screen):
             self.ids.txt_local_code.text = local_code
 
     def btn_search_local_code_on_press(self):
-        self.ids.tbl_products.items = find_per_local_code(
-            self.ids.txt_local_code.text)
+        self.searching_text_input = self.ids.txt_local_code
+        self.products = get_products(local_code=self.ids.txt_local_code.text)
 
     def get_suppliers(self):
         suppliers = get_suppliers()
         return suppliers
 
     def btn_search_suppliers_code_on_press(self):
-        self.ids.tbl_products.items = find_per_suppliers_code(
-            self.ids.txt_product.text)
+        self.searching_text_input = self.ids.txt_supplier_code
+        self.products = get_products(supplier_code=self.ids.txt_product.text)
 
     def get_units(self):
         fractions = get_fractions()
@@ -204,7 +210,8 @@ class ManagePrices(Screen):
                 return
         try:
             save_product(data)
-            self.clean_form()
+            self.searching_text_input.focus = True
+            self.searching_text_input.select_all()
         except Exception as e:
             logging.error(e)
 
@@ -221,7 +228,9 @@ class ManagePrices(Screen):
 
         try:
             delete_product(data)
-            self.clean_form()
+            selected_row = self.ids.tbl_products.selected_row
+            self.products.pop(selected_row)
+            self.ids.tbl_products.selected_row = selected_row
         except Exception as e:
             logging.error(e)
 
@@ -238,7 +247,7 @@ class ManagePrices(Screen):
         try:
             delete_product(data, all_costs=True)
             save_product(data)
-            self.clean_form()
+            self.btn_clean_on_press()
         except Exception as e:
             logging.error(e)
 
@@ -247,7 +256,7 @@ class ManagePrices(Screen):
 
     def btn_clean_on_press(self):
         self.clean_form()
-        self.ids.tbl_products.items = []
+        self.products = []
 
     def clean_form(self):
         def clean_text_input(parent):
@@ -263,13 +272,28 @@ class ManagePrices(Screen):
 
     # Table
 
+    def update_table_items(self, instance, items):
+        self.ids.tbl_products.items = [
+            (p[1], p[0], f"{p[4]} {p[5]}", p[2]) for p in items]
+
     def on_selected_row(self):
         table = self.ids.tbl_products
         if table.items:
-            selected_row = table.selected_row
-            print(table.items[selected_row])
+            item = self.products[table.selected_row]
+            item = list(map(lambda val: '' if val is None else str(val), item))
+            self.ids.txt_product.text = item[0]
+            self.ids.txt_local_code.text = item[1]
+            self.ids.optxt_supplier.text = item[2]
+            self.ids.txt_supplier_code.text = item[3]
+            self.ids.txt_quantity.text = item[4]
+            self.ids.optxt_unit.text = item[5]
+            self.ids.txt_cost.text = item[6]
+            self.ids.txt_surcharge.text = str(round(float(item[7]) * 100))
+            self.ids.optxt_section.text = item[8]
+            self.ids.txt_date.text = item[9]
 
-    # TODO: decidir donde y como reducir los elementos recibidos
+            self.searching_text_input.focus = True
+            self.searching_text_input.select_all()
 
 
 class PricesTab(BoxLayout):

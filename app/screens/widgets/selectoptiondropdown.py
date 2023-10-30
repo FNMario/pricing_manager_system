@@ -68,7 +68,7 @@ class SelectOptionDropDown(Widget):
         if self.dropdown:
             self.dropdown.dismiss()
         if not self.readonly:
-            if self.text:
+            if self.text and self.ids.txt_option.focus:
                 pattern = f'^{self.text.upper()}.*$'
                 options = [s for s in self.options if re.match(pattern, s)]
                 self.create_dropdown(options)
