@@ -1,3 +1,5 @@
+import logging
+from screens.widgets.messagebox import MessageBox
 from datetime import datetime as dt
 
 import datetime
@@ -209,11 +211,51 @@ def save_product(data: dict):
 
 
 def delete_product(data: dict, all_costs: bool = False):
-    print('product', data, 'deleted')
-    # db.delete_cost(product_id=data['local_code'], supplier_id=cost['supplier_id'])
-    # costs = db.get_cost(product_id=data['local_code'])
-    # if not costs:
-    #     db.delete_product(code_id=data['local_code'])
+
+    def answer_clicked(answer):
+        print(f'Perform action? {answer}')
+        if answer == "Delete all" or answer == "Delete":
+            try:
+                # db.delete_cost(product_id=data['local_code'])
+                # db.delete_product(code_id=data['local_code'])
+                pass
+            except Exception as e:
+                logging.error(e)
+        elif answer == "Only this one":
+            try:
+                # db.delete_cost(product_id=data['local_code'], supplier_id=cost['supplier_id'])
+                pass
+            except Exception as e:
+                logging.error(e)
+            pass
+        else:
+            logging.error("Canceled by the user")
+
+    costs = [
+        (21, 'AAM0002', 12, None, 335.8117, datetime.date(2019, 8, 16), 2.53, 60.0),
+        (22, 'AAM0002', 12, None, 133.0, datetime.date(2019, 8, 16), 3.0, 60.0),
+        (23, 'AAM0002', 21, None, 455.0, datetime.date(2019, 8, 16), 2.8, 58.5)
+    ]  # db.get_cost(product_id=data['local_code'])
+    if len(costs) > 1:
+        message = f"There are {len(costs)} suppliers for this products:"
+        suppliers = get_suppliers(reverse=False)
+        for cost in costs:
+            message += f"\n- Supplier: {suppliers[cost[2]]:0>15}, Cost: ${cost[4]} "
+        msg = MessageBox(
+            message=message,
+            kind='question',
+            buttons=["Delete all", "Only this one", "Cancel"],
+            on_close=answer_clicked
+        )
+    elif len(costs) == 1:
+        msg = MessageBox(
+            message=f"Are you sure you want to delete it?",
+            kind='question',
+            buttons=["Delete", "Cancel"],
+            on_close=answer_clicked
+        )
+    else:
+        answer_clicked("Delete all")
 
 
 # Settings and tables
@@ -245,9 +287,12 @@ def save_dollars(dollars: list) -> bool:
     return True
 
 
-def get_suppliers() -> dict:
+def get_suppliers(reverse: bool = True) -> dict:
     global _suppliers
-    return {key: value for value, key in enumerate(_suppliers)}
+    if reverse:
+        return {key: value for value, key in enumerate(_suppliers)}
+    else:
+        return {key: value for key, value in enumerate(_suppliers)}
 
 
 def save_suppliers(suppliers: list) -> bool:

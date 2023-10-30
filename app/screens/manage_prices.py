@@ -213,9 +213,9 @@ class ManagePrices(Screen):
 
     def btn_delete_on_press(self):
         data = self.current_data()
-
+        logging.info(f"Deleting product {data}")
         if not data['local_code']:
-            logging.error('Local code cannot be empty')
+            logging.error("Local code cannot be empty")
             self.get_fields()['local_code'].focus = True
             return
 
