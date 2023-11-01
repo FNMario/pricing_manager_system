@@ -2,7 +2,7 @@
 
 <Header>:
     canvas.before:
-        Color: 
+        Color:
             rgba: (1, 1, 1, .1)
         RoundedRectangle:
             size: self.size
@@ -16,15 +16,16 @@
     height: max(20, self.texture_size[1])
     selected_color: (.2, .64, .81, 1)
     canvas.before:
-        Color: 
+        Color:
             rgba: (.13, .14, .19, 1) if self.background else (0,0,0,0)
         Rectangle:
             size: self.size
             pos: self.pos
 
 <DataTable>:
+    orientation: 'vertical'
     canvas.before:
-        Color: 
+        Color:
             rgba: (1, 1, 1, .1)
         RoundedRectangle:
             size: self.size

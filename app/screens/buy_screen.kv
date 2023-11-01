@@ -89,7 +89,7 @@
                     TextField:
                         # Category
                         SelectOptionDropDown:
-                            id: sodd_category
+                            id: optxt_category
                             icon: './assets/icons/down.png'
                             text: "VENTAS"
                             options: ["VENTAS", "DESCUENTOS", "MAYORISTA"]
@@ -262,17 +262,9 @@
                 on_press: root.btn_clean_on_press()
                 on_release: txt_product.focus = True
         # Table
-        BoxLayout:
-            id: table_layout
-            orientation: 'vertical'
-            ScrollView:
-                do_scroll_x: False
-                do_scroll_y: True
-                DataTable:
-                    id: tbl_products
-                    size_hint_y: None
-                    height: self.minimum_height
-                    header_background_color: (1, 1, 1, 0.5)
-                    hint_sizes: (0.1, 0.7, 0.2)
-                    header: ["Local code", "Product", "Quantity"]
-                    on_selected_row: root.on_selected_row()
+        DataTable:
+            id: tbl_products
+            header_background_color: (1, 1, 1, 0.5)
+            hint_sizes: (0.1, 0.7, 0.2)
+            header: ["Local code", "Product", "Quantity"]
+            on_selected_row: root.on_selected_row()

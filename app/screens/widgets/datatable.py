@@ -1,7 +1,9 @@
-from kivy.uix.gridlayout import GridLayout
 from kivy.properties import ListProperty, BooleanProperty, NumericProperty, ColorProperty
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.gridlayout import GridLayout
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.label import Label
+from kivy.uix.scrollview import ScrollView
 from kivy.lang.builder import Builder
 from kivy.core.window import Window
 
@@ -11,7 +13,18 @@ Builder.load_file('screens/widgets/datatable.kv')
 
 
 class Header(Label):
-    pass
+
+    def on_touch_up(self, touch):
+        if self.collide_point(*touch.pos) and not touch.is_mouse_scrolling:
+            root = self.parent.parent
+            index = root.header.index(self.text)
+            raw_items_dict = {row: item for row, item in enumerate(root.items)}
+            sorted_items_dict = dict(
+                sorted(raw_items_dict.items(), key=lambda x: x[1][index]))
+            root.row = 0
+            root.body_layout.clear_widgets()
+            for row, item in sorted_items_dict.items():
+                root.add_dato(item, row)
 
 
 class Row(Label):
@@ -21,12 +34,12 @@ class Row(Label):
     default_color = ColorProperty([1, 1, 1, 1])
 
     def on_touch_up(self, touch):
-        if self.collide_point(*touch.pos):
-            self.parent.selected_row = self.row
+        if self.collide_point(*touch.pos) and not touch.is_mouse_scrolling:
+            self.parent.parent.parent.selected_row = self.row
 
 
-class DataTable(GridLayout):
-    header = ListProperty(["prueba"])
+class DataTable(BoxLayout):
+    header = ListProperty(["Title"])
     hint_sizes = ListProperty([])
     checkboxes = BooleanProperty(False)
     items = ListProperty([])
@@ -62,7 +75,11 @@ class DataTable(GridLayout):
     def update_table(self, *args):
         self.clear_widgets()
         self.row = 0
-        self.cols = len(self.header) + int(self.checkboxes)
+        self.header_layout = GridLayout()
+        self.header_layout.cols = len(self.header) + int(self.checkboxes)
+        self.body_layout = GridLayout(size_hint_y=None)
+        self.body_layout.bind(minimum_height=self.body_layout.setter('height'))
+        self.body_layout.cols = self.header_layout.cols
 
         # add checkbox "all"
         if self.checkboxes:
@@ -78,7 +95,7 @@ class DataTable(GridLayout):
                         child.active = checkbox.active
             checkbox_all.bind(active=on_checkbox_active)
 
-            self.add_widget(checkbox_all)
+            self.header_layout.add_widget(checkbox_all)
 
         for hint_size, header_item in zip(self.hint_sizes, self.header):
             header_label = Header(
@@ -88,20 +105,34 @@ class DataTable(GridLayout):
                 size_hint_x=hint_size,
                 height=30,
             )
-            self.add_widget(header_label)
+            self.header_layout.add_widget(header_label)
+
+        self.header_layout.size_hint_y = None
+        try:
+            self.header_layout.height = self.header_layout.children[0].height
+        except:
+            pass
+        self.add_widget(self.header_layout)
 
         for item in self.items:
             self.add_dato(item)
 
+        scroll = ScrollView(
+            do_scroll_x=False,
+            do_scroll_y=True,
+        )
+        scroll.add_widget(self.body_layout)
+        self.add_widget(scroll)
+
         self.selected_row = 0
         self.update_selected_row()
 
-    def add_dato(self, dato: tuple):
+    def add_dato(self, dato: tuple, row: list = None):
         # assert len(dato) == self.cols, f"len(dato):{len(dato)}, != {self.cols}"
 
         # add checkbox
         if self.checkboxes:
-            self.add_widget(
+            self.body_layout.add_widget(
                 CheckBox(
                     size_hint=(None, None),
                     height=20,
@@ -109,9 +140,9 @@ class DataTable(GridLayout):
                 )
             )
         for hint_size, item in zip(self.hint_sizes, dato):
-            self.add_widget(
+            self.body_layout.add_widget(
                 Row(
-                    row=self.row,
+                    row=row if row else self.row,
                     text=str(item),
                     background=bool(self.row % 2 == 1),
                     size_hint_x=hint_size,
@@ -123,7 +154,7 @@ class DataTable(GridLayout):
         self.row += 1
 
     def update_selected_row(self, *args):
-        for child in self.children:
+        for child in self.body_layout.children:
             if isinstance(child, Row):
                 if child.row == self.selected_row:
                     child.color = child.selected_color
