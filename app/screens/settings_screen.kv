@@ -1,0 +1,285 @@
+#:kivy 2.2.1
+#:import IconButton screens.widgets.iconbutton
+#:import InfoLabel screens.widgets.infolabel
+#:import FilledButton screens.widgets.filledbutton
+#:import EmptyButton screens.widgets.emptybutton
+#:import TextField screens.widgets.textfield
+#:import DataTable screens.widgets.datatable
+
+<IconButton_@IconButton>:
+    size: dp(25), dp(25)
+<Table@DataTable>:
+    size_hint_x: 0.98
+    pos_hint: {'center_x': 0.5}
+    size_hint_y: None
+    height: dp(150)
+
+<Title@Label>:
+    font_size: 20
+    bold: True
+    color: (.13, .14, .19, 1)
+    halign: 'center'
+    valign: 'middle'
+    text_size: self.size
+    size_hint_y: None
+    height: dp(30)
+    canvas.before:
+        Color:
+            rgba: (.2, .64, .81, 1)#(.49, .77, .87, 1)
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+<Space@Label>:
+    text: ""
+<SettingsScreen>:
+    ScrollView:
+        do_scroll_x: False
+        do_scroll_y: True
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: self.minimum_height
+            spacing: dp(20)
+            # Fractions
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(5)
+                Title:
+                    text: "Fractions"
+                Table:
+                    id: tbl_data
+                    hint_sizes: [0.15, 0.25, 1, 0.5, 0.5, 0.5, 0.5]
+                    header: ["id", "Alias", "Description", "Unit", "Fraction 1", "Fraction 2", "Fraction 3"]
+                    on_selected_row: root.on_selected_row()
+                # Form
+                BoxLayout:
+                    id: form_layout
+                    orientation: 'horizontal'
+                    size_hint_y: None
+                    height: dp(50)
+                    padding: dp(10), 0
+                    spacing: dp(10)
+                    TextField:
+                        size_hint_x: None
+                        width: dp(30)
+                        TextInput:
+                            id: txt_id
+                            hint_text: "id"
+                            disabled: True
+                    TextField:
+                        size_hint_x: 0.25
+                        TextInput:
+                            id: txt_alias
+                            hint_text: "Alias"
+                    TextField:
+                        size_hint_x: 1
+                        TextInput:
+                            id: txt_description
+                            hint_text: "Description"
+                    TextField:
+                        size_hint_x: 0.5
+                        TextInput:
+                            id: txt_unit
+                            hint_text: "Unit"
+                    TextField:
+                        size_hint_x: 0.5
+                        TextInput:
+                            id: txt_fraction_1
+                            hint_text: "Fraction 1"
+                            input_filter: 'float'
+                    TextField:
+                        size_hint_x: 0.5
+                        TextInput:
+                            id: txt_fraction_2
+                            hint_text: "Fraction 2"
+                            input_filter: 'float'
+                    TextField:
+                        size_hint_x: 0.5
+                        TextInput:
+                            id: txt_fraction_3
+                            hint_text: "Fraction 3"
+                            input_filter: 'float'
+                    IconButton_:
+                        source: './assets/icons/save-disk_c.png'
+                        # on_press:
+                    IconButton_:
+                        source: './assets/icons/big-plus_c.png'
+                        # on_press:
+                    IconButton_:
+                        source: './assets/icons/big-cross_c.png'
+                        # on_press:
+            # Supliers
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(5)
+                Title:
+                    text: "Suppliers"
+                Table:
+                    id: tbl_data
+                    hint_sizes: [0.2, 1, 1, 0.8, 0.8]
+                    header: ["id", "Name", "Phone", "Email", "Address"]
+                    on_selected_row: root.on_selected_row()
+                # Form
+                BoxLayout:
+                    id: form_layout
+                    orientation: 'horizontal'
+                    size_hint_y: None
+                    height: dp(50)
+                    padding: dp(10), 0
+                    spacing: dp(10)
+                    TextField:
+                        size_hint_x: None
+                        width: dp(30)
+                        TextInput:
+                            id: txt_id
+                            hint_text: "id"
+                            disabled: True
+                    TextField:
+                        size_hint_x: 1
+                        TextInput:
+                            id: txt_alias
+                            hint_text: "Name"
+                    TextField:
+                        size_hint_x: 0.8
+                        TextInput:
+                            id: txt_description
+                            hint_text: "Phone"
+                    TextField:
+                        size_hint_x: 1
+                        TextInput:
+                            id: txt_description
+                            hint_text: "Email"
+                    TextField:
+                        size_hint_x: 0.8
+                        TextInput:
+                            id: txt_unit
+                            hint_text: "Address"
+                    IconButton_:
+                        source: './assets/icons/save-disk_c.png'
+                        # on_press:
+                    IconButton_:
+                        source: './assets/icons/big-plus_c.png'
+                        # on_press:
+                    IconButton_:
+                        source: './assets/icons/big-cross_c.png'
+                        # on_press:
+            # Sections
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(5)
+                Title:
+                    text: "Sections"
+                Table:
+                    id: tbl_data
+                    hint_sizes: [0.1, 1]
+                    header: ["id", "Name"]
+                    on_selected_row: root.on_selected_row()
+                # Form
+                BoxLayout:
+                    id: form_layout
+                    orientation: 'horizontal'
+                    size_hint_y: None
+                    height: dp(50)
+                    padding: dp(10), 0
+                    spacing: dp(10)
+                    TextField:
+                        size_hint_x: None
+                        width: dp(30)
+                        TextInput:
+                            id: txt_id
+                            hint_text: "id"
+                            disabled: True
+                    TextField:
+                        size_hint_x: 1
+                        TextInput:
+                            id: txt_alias
+                            hint_text: "Name"
+                    IconButton_:
+                        source: './assets/icons/save-disk_c.png'
+                        # on_press:
+                    IconButton_:
+                        source: './assets/icons/big-plus_c.png'
+                        # on_press:
+                    IconButton_:
+                        source: './assets/icons/big-cross_c.png'
+                        # on_press:
+                    Space
+            # Iva
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(5)
+                Title:
+                    text: "IVA"
+                Table:
+                    id: tbl_data
+                    header: ["IVA"]
+                    on_selected_row: root.on_selected_row()
+                # Form
+                BoxLayout:
+                    id: form_layout
+                    orientation: 'horizontal'
+                    size_hint_y: None
+                    height: dp(50)
+                    padding: dp(10), 0
+                    spacing: dp(10)
+                    TextField:
+                        TextInput:
+                            id: txt_iva
+                            hint_text: "IVA"
+                            input_filter: 'float'
+                    IconButton_:
+                        source: './assets/icons/save-disk_c.png'
+                        # on_press:
+                    IconButton_:
+                        source: './assets/icons/big-plus_c.png'
+                        # on_press:
+                    IconButton_:
+                        source: './assets/icons/big-cross_c.png'
+                        # on_press:
+                    Space:
+                        size_hint_x: 3
+            # Dollar
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(5)
+                Title:
+                    text: "Dollar"
+                Table:
+                    id: tbl_data
+                    header: ["Dollar"]
+                    on_selected_row: root.on_selected_row()
+                # Form
+                BoxLayout:
+                    id: form_layout
+                    orientation: 'horizontal'
+                    size_hint_y: None
+                    height: dp(50)
+                    padding: dp(10), 0
+                    spacing: dp(10)
+                    TextField:
+                        TextInput:
+                            id: txt_dollar
+                            hint_text: "Dollar"
+                            input_filter: 'float'
+                    IconButton_:
+                        source: './assets/icons/save-disk_c.png'
+                        # on_press:
+                    IconButton_:
+                        source: './assets/icons/big-plus_c.png'
+                        # on_press:
+                    IconButton_:
+                        source: './assets/icons/big-cross_c.png'
+                        # on_press:
+                    Space:
+                        size_hint_x: 3

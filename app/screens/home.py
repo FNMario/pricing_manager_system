@@ -5,6 +5,7 @@ from kivy.lang import Builder
 
 from screens.buy import Buy
 from screens.manage_prices import ManagePrices
+from screens.settings_screen import SettingsScreen
 
 import logging
 
