@@ -79,8 +79,8 @@ def get_last_code(base: str) -> str:
 
 def save_product(data: dict):
     units = {f[1]: f[0] for f in get_fractions()}
-    sections = get_sections()
-    suppliers = get_suppliers()
+    sections = {key: value for value, key in get_sections()}
+    suppliers = {_[1]: _[0] for _ in get_suppliers()}
 
     new_product = {
         'description': data['product'],
@@ -148,7 +148,7 @@ def delete_product(data: dict, all_costs: bool = False):
     ]  # db.get_cost(product_id=data['local_code'])
     if len(costs) > 1:
         message = f"There are {len(costs)} suppliers for this products:"
-        suppliers = get_suppliers(reverse=False)
+        suppliers = {_[0]: _[1] for _ in get_suppliers()}
         for cost in costs:
             message += f"\n- Supplier: {suppliers[cost[2]]:0>15}, Cost: ${cost[4]} "
         buttons = ["Delete all", "Cancel"] if all_costs else [
@@ -188,7 +188,8 @@ def save_ivas(ivas: list) -> bool:
 
 def get_dollars() -> list:
     global _dollars
-    return _dollars
+    dollar_now = get_dollar_price()
+    return [dollar_now] + _dollars
 
 
 def save_dollars(dollars: list) -> bool:
@@ -199,12 +200,9 @@ def save_dollars(dollars: list) -> bool:
     return True
 
 
-def get_suppliers(reverse: bool = True) -> dict:
+def get_suppliers() -> dict:
     global _suppliers
-    if reverse:
-        return {key: value for value, key in enumerate(_suppliers)}
-    else:
-        return {key: value for key, value in enumerate(_suppliers)}
+    return _suppliers
 
 
 def save_suppliers(suppliers: list) -> bool:
@@ -228,12 +226,9 @@ def save_fractions(fractions: list) -> bool:
     return True
 
 
-def get_sections(reverse: bool = True) -> dict:
+def get_sections() -> dict:
     global _sections
-    if reverse:
-        return {key: value for value, key in enumerate(_sections)}
-    else:
-        return {key: value for key, value in enumerate(_sections)}
+    return _sections
 
 
 def save_sections(sections: list) -> bool:
@@ -311,39 +306,14 @@ def calculate_prices_from_costs(quantity: float, unit: str, cost: float, surchar
 
     unitary_cost = cost / quantity
 
-    fractions = [0, 0, 0]
-    if unit == "U" or unit == "M":
-        fractions[0] = 1
-        fractions[1] = quantity
-        fractions[2] = 0
-    elif unit == "UC":
-        fractions[0] = 1
-        fractions[1] = 100
-        fractions[2] = 500
-    elif unit == "MC":
-        fractions[0] = 1
-        fractions[1] = 10
-        fractions[2] = 0
-    elif unit == "T":
-        fractions[0] = 1
-        fractions[1] = 10
-        fractions[2] = 0
-    elif unit == "G10":
-        fractions[0] = 10
-        fractions[1] = 100
-        fractions[2] = 500
-    elif unit == "G25":
-        fractions[0] = 25
-        fractions[1] = 100
-        fractions[2] = 500
-    elif unit == "Y":
-        fractions[0] = 1 / 0.914
-        fractions[1] = quantity
-        fractions[2] = 0
-    else:
-        fractions[0] = 1
-        fractions[1] = quantity
-        fractions[2] = 0
+    try:
+        fractions_list = get_fractions()
+        fraction_index = [_[1].strip() for _ in fractions_list].index(unit.strip())
+        fractions = list(fractions_list[fraction_index][4:7])
+        str_unit = fractions_list[fraction_index][3]
+    except ValueError:
+        fractions = [1, -1, 0]
+        str_unit = unit
 
     price = unitary_cost * surcharge
 
@@ -355,10 +325,12 @@ def calculate_prices_from_costs(quantity: float, unit: str, cost: float, surchar
 
     for category in range(3):
         for fraction in range(3):
+            if fractions[fraction] == -1:
+                fractions[fraction] = quantity
             prices[fraction][category] = price * fractions[fraction] * \
                 _apply_discount(surcharge_level, fraction, category)
 
-    return prices, fractions
+    return prices, fractions, str_unit
 
 
 def round_prices(prices):
@@ -385,22 +357,6 @@ def format_numeric_economy(price: float):
     return f'{price:,.2f}'.replace(',', chr(0x2009))
 
 
-def number_category(convert: str | int) -> int | str:
-
-    number_category = [
-        ("VENTAS", 0),
-        ("DESCUENTOS", 1),
-        ("MAYORISTA", 2),
-    ]
-    result = [n for c, n in number_category if c == convert]
-    if result:
-        return result[0]
-    result = [c for c, n in number_category if n == convert]
-    if result:
-        return result[0]
-    raise ValueError(f"Invalid input.\n Valid inputs: {number_category}")
-
-
 # External
 
 def get_date():
@@ -408,87 +364,86 @@ def get_date():
 
 
 def get_dollar_price():
-    global _dollars
-    return _dollars[0]
+    return 835
 
 
 # Listas temporales
 
-_dollars = [805, 385]
+_dollars = [800, 900]
 
 _ivas = [10.5, 21.]
 
 _suppliers = [
-    "OTROS",
-    "A. MANIA",
-    "ALOE",
-    "BISANS",
-    "BISCUIT",
-    "COCO FIL",
-    "COTINA",
-    "EL BOLSERO",
-    "FERRETERIA",
-    "GATUVIA",
-    "IKORSO",
-    "JR",
-    "KAIZEN",
-    "KRAMIR",
-    "KREY",
-    "LAINO",
-    "MARIBELLA",
-    "MEIR GROUP",
-    "MERMIL",
-    "MONICA",
-    "MOSTACILLA",
-    "MUNDO A",
-    "NEPTUNO",
-    "OSCAR",
-    "PALACIO",
-    "PALAIS",
-    "PAW",
-    "PEGAMIL",
-    "SUSESSO",
-    "TELGOPOR",
-    "TURCO",
-    "UNIPOX",
-    "SANTERIA BELEN",
-    "SARQUIS Y SEPAG",
-    "MODA SHOP",
-    "PUNTO BIJOU",
-    "GERERDO",
-    "GASTON",
+    (0, "OTROS", "", "", ""),
+    (1, "A. MANIA", "", "", ""),
+    (2, "ALOE", "", "", ""),
+    (3, "BISANS", "", "", ""),
+    (4, "BISCUIT", "", "", ""),
+    (5, "COCO FIL", "", "", ""),
+    (6, "COTINA", "", "", ""),
+    (7, "EL BOLSERO", "", "", ""),
+    (8, "FERRETERIA", "", "", ""),
+    (9, "GATUVIA", "", "", ""),
+    (10, "IKORSO", "", "", ""),
+    (11, "JR", "", "", ""),
+    (12, "KAIZEN", "", "", ""),
+    (13, "KRAMIR", "", "", ""),
+    (14, "KREY", "", "", ""),
+    (15, "LAINO", "", "", ""),
+    (16, "MARIBELLA", "", "", ""),
+    (17, "MEIR GROUP", "", "", ""),
+    (18, "MERMIL", "", "", ""),
+    (19, "MONICA", "", "", ""),
+    (20, "MOSTACILLA", "", "", ""),
+    (21, "MUNDO A", "", "", ""),
+    (22, "NEPTUNO", "", "", ""),
+    (23, "OSCAR", "", "", ""),
+    (24, "PALACIO", "", "", ""),
+    (25, "PALAIS", "", "", ""),
+    (26, "PAW", "", "", ""),
+    (27, "PEGAMIL", "", "", ""),
+    (28, "SUSESSO", "", "", ""),
+    (29, "TELGOPOR", "", "", ""),
+    (30, "TURCO", "", "", ""),
+    (31, "UNIPOX", "", "", ""),
+    (32, "SANTERIA BELEN", "", "", ""),
+    (33, "SARQUIS Y SEPAG", "", "", ""),
+    (34, "MODA SHOP", "", "", ""),
+    (35, "PUNTO BIJOU", "", "", ""),
+    (36, "GERERDO", "", "", ""),
+    (37, "GASTON", "", "", ""),
 ]
 
 _sections = [
-    "ARMADOR",
-    "BRILLO",
-    "MERCERIA",
-    "LIBRERIA",
-    "ELECTRONICA",
-    "PEGAMENTOS",
-    "PLUMAS",
-    "AMAZONA",
-    "BOA",
-    "ESPIGADA",
-    "FAISAN CEBRA",
-    "FAISAN LADY",
-    "FLEX",
-    "RABO GA",
-    "INSTRUMENTO",
+    (0, "ARMADOR"),
+    (1, "BRILLO"),
+    (2, "MERCERIA"),
+    (3, "LIBRERIA"),
+    (4, "ELECTRONICA"),
+    (5, "PEGAMENTOS"),
+    (6, "PLUMAS"),
+    (7, "AMAZONA"),
+    (8, "BOA"),
+    (9, "ESPIGADA"),
+    (10, "FAISAN CEBRA"),
+    (11, "FAISAN LADY"),
+    (12, "FLEX"),
+    (13, "RABO GA"),
+    (14, "INSTRUMENTO"),
 ]
 
 _fractions = [
-    (1, "U", "Unidades: x1u/Paquete Cerrado",
-        "Unidades", "x1u", "Paquete Cerrado", ""),
-    (2, "UC", "Unidades: x1u/x100u/", "Unidades", "x1u", "x100u", "x500u"),
-    (3, "G10", "Gramos: x10g/x100g/x500g", "Gramos", "x10g", "x100g", "x500g"),
-    (4, "G25", "Gramos: x25g/x100g/x500g", "Gramos", "x25g", "x100g", "x500g"),
-    (5, "M", "Metros: x1m/Paquete Cerrado",
-        "Metros", "x1m", "Paquete Cerrado", ""),
-    (6, "MX", "Metros: x1m/x10m", "Metros", "x1m", "x10m", ""),
-    (7, "Y", "Yardas: x1m/Paquete Cerrado",
-        "Yardas", "x1m", "Paquete Cerrado", ""),
-    (8, "T", "Tiras: x1/x10", "Yardas", "x1", "x10", ""),
+    (1, "U  ", "Unidades: x1u/Paquete Cerrado",
+        "Unidades", 1, -1, 0),
+    (2, "UC ", "Unidades: x1u/x100u/", "Unidades", 1, 100, 500),
+    (3, "G10", "Gramos: x10g/x100g/x500g", "Gramos", 10, 100, 500),
+    (4, "G25", "Gramos: x25g/x100g/x500g", "Gramos", 25, 100, 500),
+    (5, "M  ", "Metros: x1m/Paquete Cerrado",
+        "Metros", 1, -1, 0),
+    (6, "MC ", "Metros: x1m/x10m", "Metros", 1, 10, 0),
+    (7, "Y  ", "Yardas: x1m/Paquete Cerrado",
+        "Yardas", 1.0936, -1, 0),
+    (8, "T  ", "Tiras: x1/x10", "Yardas", 1, 10, 0),
 ]
 
 _list_of_products_with_costs = [

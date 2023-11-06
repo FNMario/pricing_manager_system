@@ -51,7 +51,7 @@ class ManagePrices(Screen):
         self.products = get_products(local_code=self.ids.txt_local_code.text)
 
     def get_suppliers(self):
-        suppliers = get_suppliers()
+        suppliers = [_[1] for _ in get_suppliers()]
         return suppliers
 
     def btn_search_suppliers_code_on_press(self):
@@ -60,11 +60,11 @@ class ManagePrices(Screen):
 
     def get_units(self):
         fractions = get_fractions()
-        units = [line[1] for line in fractions]
+        units = [_[1] for _ in fractions]
         return units
 
     def get_sections(self):
-        sections = get_sections()
+        sections = [_[1] for _ in get_sections()]
         return sections
 
     def update_prices(self):
@@ -81,10 +81,10 @@ class ManagePrices(Screen):
         surcharge = float(surcharge) / 100
         quantity = float(quantity)
 
-        prices, fractions = calculate_prices_from_costs(
+        prices, fractions, str_unit = calculate_prices_from_costs(
             quantity, unit, cost, surcharge)
         self.ids.prices_tab.prices = prices
-        self.ids.prices_tab.fractions = [f'{fr} {unit}' for fr in fractions]
+        self.ids.prices_tab.fractions = [f'{fr} {str_unit}' for fr in fractions]
 
     def calculate_cost(self):
         cost = self.ids.txt_cost.text
@@ -205,7 +205,7 @@ class ManagePrices(Screen):
                            'unit', 'cost', 'section', 'date']
         for field, value in data.items():
             if field in required_fields and not value:
-                logging.error('There are empty fields')
+                logging.error(f"{field} field can not be null")
                 self.get_fields()[field].focus = True
                 return
         try:
