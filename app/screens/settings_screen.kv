@@ -53,10 +53,11 @@
                     id: tbl_data
                     hint_sizes: [0.15, 0.25, 1, 0.5, 0.5, 0.5, 0.5]
                     header: ["id", "Alias", "Description", "Unit", "Fraction 1", "Fraction 2", "Fraction 3"]
-                    on_selected_row: root.on_selected_row()
+                    items: root.get_fractions_items()
+                    on_selected_row: root.on_selected_row(lyt_form_fractions, self.items[self.selected_row])
                 # Form
                 BoxLayout:
-                    id: form_layout
+                    id: lyt_form_fractions
                     orientation: 'horizontal'
                     size_hint_y: None
                     height: dp(50)
@@ -110,7 +111,7 @@
                         # on_press:
                     IconButton_:
                         source: './assets/icons/big-cross_c.png'
-                        # on_press:
+                        on_press: root.clear_form(lyt_form_fractions)
             # Supliers
             BoxLayout:
                 orientation: 'vertical'
@@ -123,10 +124,11 @@
                     id: tbl_data
                     hint_sizes: [0.2, 1, 1, 0.8, 0.8]
                     header: ["id", "Name", "Phone", "Email", "Address"]
-                    on_selected_row: root.on_selected_row()
+                    items: root.get_suppliers_items()
+                    on_selected_row: root.on_selected_row(lyt_form_suppliers, self.items[self.selected_row])
                 # Form
                 BoxLayout:
-                    id: form_layout
+                    id: lyt_form_suppliers
                     orientation: 'horizontal'
                     size_hint_y: None
                     height: dp(50)
@@ -167,7 +169,7 @@
                         # on_press:
                     IconButton_:
                         source: './assets/icons/big-cross_c.png'
-                        # on_press:
+                        on_press: root.clear_form(lyt_form_suppliers)
             # Sections
             BoxLayout:
                 orientation: 'vertical'
@@ -180,10 +182,11 @@
                     id: tbl_data
                     hint_sizes: [0.1, 1]
                     header: ["id", "Name"]
-                    on_selected_row: root.on_selected_row()
+                    items: root.get_sections_items()
+                    on_selected_row: root.on_selected_row(lyt_form_sections, self.items[self.selected_row])
                 # Form
                 BoxLayout:
-                    id: form_layout
+                    id: lyt_form_sections
                     orientation: 'horizontal'
                     size_hint_y: None
                     height: dp(50)
@@ -209,77 +212,82 @@
                         # on_press:
                     IconButton_:
                         source: './assets/icons/big-cross_c.png'
-                        # on_press:
+                        on_press: root.clear_form(lyt_form_sections)
                     Space
-            # Iva
+            # dollar and iva
             BoxLayout:
-                orientation: 'vertical'
                 size_hint_y: None
                 height: self.minimum_height
-                spacing: dp(5)
-                Title:
-                    text: "IVA"
-                Table:
-                    id: tbl_data
-                    header: ["IVA"]
-                    on_selected_row: root.on_selected_row()
-                # Form
+                spacing: dp(10)
+                # Iva
                 BoxLayout:
-                    id: form_layout
-                    orientation: 'horizontal'
+                    orientation: 'vertical'
                     size_hint_y: None
-                    height: dp(50)
-                    padding: dp(10), 0
-                    spacing: dp(10)
-                    TextField:
-                        TextInput:
-                            id: txt_iva
-                            hint_text: "IVA"
-                            input_filter: 'float'
-                    IconButton_:
-                        source: './assets/icons/save-disk_c.png'
-                        # on_press:
-                    IconButton_:
-                        source: './assets/icons/big-plus_c.png'
-                        # on_press:
-                    IconButton_:
-                        source: './assets/icons/big-cross_c.png'
-                        # on_press:
-                    Space:
-                        size_hint_x: 3
-            # Dollar
-            BoxLayout:
-                orientation: 'vertical'
-                size_hint_y: None
-                height: self.minimum_height
-                spacing: dp(5)
-                Title:
-                    text: "Dollar"
-                Table:
-                    id: tbl_data
-                    header: ["Dollar"]
-                    on_selected_row: root.on_selected_row()
-                # Form
+                    height: self.minimum_height
+                    spacing: dp(5)
+                    Title:
+                        text: "IVA"
+                    Table:
+                        id: tbl_data
+                        header: ["IVA"]
+                        items: root.get_iva_items()
+                        on_selected_row: root.on_selected_row(lyt_form_iva, self.items[self.selected_row])
+                    # Form
+                    BoxLayout:
+                        id: lyt_form_iva
+                        orientation: 'horizontal'
+                        size_hint_y: None
+                        height: dp(50)
+                        padding: dp(10), 0
+                        spacing: dp(10)
+                        TextField:
+                            TextInput:
+                                id: txt_iva
+                                hint_text: "IVA"
+                                input_filter: 'float'
+                        IconButton_:
+                            source: './assets/icons/save-disk_c.png'
+                            # on_press:
+                        IconButton_:
+                            source: './assets/icons/big-plus_c.png'
+                            # on_press:
+                        IconButton_:
+                            source: './assets/icons/big-cross_c.png'
+                            on_press: root.clear_form(lyt_form_iva)
+                        Space:
+                # Dollar
                 BoxLayout:
-                    id: form_layout
-                    orientation: 'horizontal'
+                    orientation: 'vertical'
                     size_hint_y: None
-                    height: dp(50)
-                    padding: dp(10), 0
-                    spacing: dp(10)
-                    TextField:
-                        TextInput:
-                            id: txt_dollar
-                            hint_text: "Dollar"
-                            input_filter: 'float'
-                    IconButton_:
-                        source: './assets/icons/save-disk_c.png'
-                        # on_press:
-                    IconButton_:
-                        source: './assets/icons/big-plus_c.png'
-                        # on_press:
-                    IconButton_:
-                        source: './assets/icons/big-cross_c.png'
-                        # on_press:
-                    Space:
-                        size_hint_x: 3
+                    height: self.minimum_height
+                    spacing: dp(5)
+                    Title:
+                        text: "Dollar"
+                    Table:
+                        id: tbl_data
+                        header: ["Dollar"]
+                        items: root.get_dollar_items()
+                        on_selected_row: root.on_selected_row(lyt_form_dollar, self.items[self.selected_row])
+                    # Form
+                    BoxLayout:
+                        id: lyt_form_dollar
+                        orientation: 'horizontal'
+                        size_hint_y: None
+                        height: dp(50)
+                        padding: dp(10), 0
+                        spacing: dp(10)
+                        TextField:
+                            TextInput:
+                                id: txt_dollar
+                                hint_text: "Dollar"
+                                input_filter: 'float'
+                        IconButton_:
+                            source: './assets/icons/save-disk_c.png'
+                            # on_press:
+                        IconButton_:
+                            source: './assets/icons/big-plus_c.png'
+                            # on_press:
+                        IconButton_:
+                            source: './assets/icons/big-cross_c.png'
+                            on_press: root.clear_form(lyt_form_dollar)
+                        Space:

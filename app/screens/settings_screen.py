@@ -1,8 +1,8 @@
 from kivy.uix.screenmanager import Screen
-from kivy.uix.boxlayout import BoxLayout
-from kivy.properties import StringProperty, ListProperty, BooleanProperty
+from kivy.uix.textinput import TextInput
+from screens.widgets.textfield import TextField
 from kivy.lang import Builder
-from interface import get_dollars, get_ivas, get_sections, get_suppliers, save_dollars, save_ivas
+from interface import get_dollars, get_fractions, get_ivas, get_sections, get_suppliers
 
 import logging
 
@@ -17,21 +17,9 @@ class SettingsScreen(Screen):
     def __init__(self, **kwargs):
         super(SettingsScreen, self).__init__(**kwargs)
 
-    def get_iva_items(self):
-        ivas = get_ivas()
-        ivas = [str(_) for _ in ivas]
-        return ivas
-
-    def set_iva_items(self, instance):
-        result = save_ivas([float(_) for _ in instance.tmp_items])
-        instance.successful_save = result
-
-    def get_dollar_items(self):
-        return get_dollars()
-
-    def set_dollar_items(self, instance):
-        result = save_dollars([float(_) for _ in instance.tmp_items])
-        instance.successful_save = result
+    def get_fractions_items(self):
+        fractions = get_fractions()
+        return fractions
 
     def get_suppliers_items(self):
         suppliers = get_suppliers()
@@ -40,3 +28,29 @@ class SettingsScreen(Screen):
     def get_sections_items(self):
         sections = get_sections()
         return sections
+
+    def get_iva_items(self):
+        ivas = get_ivas()
+        ivas = list(map(lambda x: (str(x),), ivas))
+        return ivas
+
+    def get_dollar_items(self):
+        dollars = get_dollars()
+        dollars = list(map(lambda x: (str(x),), dollars))
+        return dollars
+
+    def on_selected_row(self, form, item):
+        counter = -1
+        for field in form.children:
+            if isinstance(field, TextField):
+                for widget in field.children:
+                    if isinstance(widget, TextInput):
+                        widget.text = str(item[counter])
+                        counter -= 1
+
+    def clear_form(self, form):
+        for field in form.children:
+            if isinstance(field, TextField):
+                for widget in field.children:
+                    if isinstance(widget, TextInput):
+                        widget.text = ""

@@ -97,6 +97,11 @@ class DataTable(BoxLayout):
 
             self.header_layout.add_widget(checkbox_all)
 
+        try:
+            assert(len(self.hint_sizes) == len(self.header))
+        except:
+            self.hint_sizes = self.hint_sizes + [1] * (len(self.header) - len(self.hint_sizes))
+
         for hint_size, header_item in zip(self.hint_sizes, self.header):
             header_label = Header(
                 text=header_item,
