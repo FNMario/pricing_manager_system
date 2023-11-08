@@ -178,12 +178,15 @@ def get_ivas() -> list:
     return _ivas
 
 
-def save_ivas(ivas: list) -> bool:
-    if not ivas:
-        return False
+def save_ivas(iva: float, row: int = -1) -> bool:
     global _ivas
-    _ivas = ivas
-    return True
+    if 0 < row and row < len(_ivas):
+        _ivas[row] = float(iva)
+        return True
+    else:
+        _ivas.append(iva)
+        return True
+    return False
 
 
 def get_dollars() -> list:
@@ -192,51 +195,129 @@ def get_dollars() -> list:
     return [dollar_now] + _dollars
 
 
-def save_dollars(dollars: list) -> bool:
-    if not dollars:
-        return False
+def save_dollars(dollar: float, row: int = -1) -> bool:
     global _dollars
-    _dollars = dollars
-    return True
+    if 0 < row and row < len(_dollars):
+        _dollars[row] = float(dollar)
+        return True
+    else:
+        _dollars.append(dollar)
+        return True
+    return False
 
 
-def get_suppliers() -> dict:
+def get_suppliers() -> list[tuple]:
     global _suppliers
     return _suppliers
 
 
-def save_suppliers(suppliers: list) -> bool:
-    if not suppliers:
-        return False
+def save_supplier(supplier: dict) -> bool:
     global _suppliers
-    _suppliers = suppliers
-    return True
+    assert 'name' in supplier, "program_error."
+    assert supplier['name'], "Name cannot be empty"
+    assert 'phone' in supplier, "program_error."
+    assert 'email' in supplier, "program_error."
+    assert 'address' in supplier, "program_error."
+    if 'id' in supplier:
+        assert supplier['id'], "id cannot be empty"
+        id = int(supplier.pop('id'))
+        # db.save_in_table(table='suppliers', id=id, data=supplier)
+        _suppliers[id] = (
+            id,
+            supplier['name'],
+            supplier['phone'],
+            supplier['email'],
+            supplier['address'],
+        )
+        return True
+    else:
+        # db.save_in_table(table='suppliers', data=supplier)
+        _suppliers.append((
+            _suppliers[-1][0] + 1,
+            supplier['name'],
+            supplier['phone'],
+            supplier['email'],
+            supplier['address'],
+        ))
+        return True
+    return False
 
 
-def get_fractions() -> dict:
+def get_fractions() -> list[tuple]:
     global _fractions
     return _fractions
 
 
-def save_fractions(fractions: list) -> bool:
-    if not fractions:
-        return False
+def save_fraction(fraction: dict) -> bool:
     global _fractions
-    _fractions = fractions
-    return True
+    assert 'name' in fraction, "program_error."
+    assert fraction['name'], "Name cannot be empty"
+    assert 'description' in fraction, "program_error."
+    assert 'unit' in fraction, "program_error."
+    assert 'fraction_1' in fraction, "program_error."
+    fraction['fraction_1'] = 0 if not fraction['fraction_1'] else float(
+        fraction['fraction_1'])
+    assert 'fraction_2' in fraction, "program_error."
+    fraction['fraction_2'] = 0 if not fraction['fraction_2'] else float(
+        fraction['fraction_2'])
+    assert 'fraction_3' in fraction, "program_error."
+    fraction['fraction_3'] = 0 if not fraction['fraction_3'] else float(
+        fraction['fraction_3'])
+    if 'id' in fraction:
+        assert fraction['id'], "id cannot be empty"
+        id = int(fraction.pop('id'))
+        # db.save_in_table(table='fractions', id=id, data=fraction)
+        _fractions[id-1] = (
+            id,
+            fraction['name'],
+            fraction['description'],
+            fraction['unit'],
+            fraction['fraction_1'],
+            fraction['fraction_2'],
+            fraction['fraction_3'],
+        )
+        return True
+    else:
+        # db.save_in_table(table='fractions', data=fraction)
+        _fractions.append((
+            _fractions[-1][0] + 1,
+            fraction['name'],
+            fraction['description'],
+            fraction['unit'],
+            fraction['fraction_1'],
+            fraction['fraction_2'],
+            fraction['fraction_3'],
+        ))
+        return True
+    return False
 
 
-def get_sections() -> dict:
+def get_sections() -> list[tuple]:
     global _sections
     return _sections
 
 
-def save_sections(sections: list) -> bool:
-    if not sections:
-        return False
+def save_section(section: dict) -> bool:
     global _sections
-    _sections = sections
-    return True
+    assert 'name' in section, "program_error."
+    assert section['name'], "Name cannot be empty"
+    if 'id' in section:
+        assert section['id'], "id cannot be empty"
+        id = int(section.pop('id'))
+        # db.save_in_table(table='sections', id=id, data=section)
+        _sections[id] = (
+            id,
+            section['name'],
+        )
+        return True
+    else:
+        # db.save_in_table(table='sections', data=section)
+        _sections.append((
+            _sections[-1][0] + 1,
+            section['name'],
+        ))
+        return True
+    return False
 
 
 # Prices
@@ -308,7 +389,8 @@ def calculate_prices_from_costs(quantity: float, unit: str, cost: float, surchar
 
     try:
         fractions_list = get_fractions()
-        fraction_index = [_[1].strip() for _ in fractions_list].index(unit.strip())
+        fraction_index = [_[1].strip()
+                          for _ in fractions_list].index(unit.strip())
         fractions = list(fractions_list[fraction_index][4:7])
         str_unit = fractions_list[fraction_index][3]
     except ValueError:
