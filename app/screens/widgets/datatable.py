@@ -24,7 +24,7 @@ class Header(Label):
             root.row = 0
             root.body_layout.clear_widgets()
             for row, item in sorted_items_dict.items():
-                root.add_dato(item, row)
+                root.add_item(item, row)
 
 
 class Row(Label):
@@ -90,17 +90,16 @@ class DataTable(BoxLayout):
             )
 
             def on_checkbox_active(checkbox, value):
-                for child in self.children:
+                for child in self.body_layout.children:
                     if isinstance(child, CheckBox):
                         child.active = checkbox.active
             checkbox_all.bind(active=on_checkbox_active)
 
             self.header_layout.add_widget(checkbox_all)
 
-        try:
-            assert(len(self.hint_sizes) == len(self.header))
-        except:
-            self.hint_sizes = self.hint_sizes + [1] * (len(self.header) - len(self.hint_sizes))
+        if len(self.hint_sizes) < len(self.header):
+            self.hint_sizes = self.hint_sizes + \
+                [1] * (len(self.header) - len(self.hint_sizes))
 
         for hint_size, header_item in zip(self.hint_sizes, self.header):
             header_label = Header(
@@ -120,20 +119,22 @@ class DataTable(BoxLayout):
         self.add_widget(self.header_layout)
 
         for item in self.items:
-            self.add_dato(item)
+            self.add_item(item)
 
-        scroll = ScrollView(
+        self.scroll = ScrollView(
             do_scroll_x=False,
             do_scroll_y=True,
+            effect_cls="ScrollEffect"
         )
-        scroll.add_widget(self.body_layout)
-        self.add_widget(scroll)
+        self.scroll.add_widget(self.body_layout)
+        self.add_widget(self.scroll)
 
         self.selected_row = 0
         self.update_selected_row()
 
-    def add_dato(self, dato: tuple, row: list = None):
-        # assert len(dato) == self.cols, f"len(dato):{len(dato)}, != {self.cols}"
+    def add_item(self, item: tuple, row: list = None):
+        assert len(
+            item) + int(self.checkboxes) == self.body_layout.cols, f"program_error: len(item):{len(item)} != {self.cols}"
 
         # add checkbox
         if self.checkboxes:
@@ -144,7 +145,7 @@ class DataTable(BoxLayout):
                     width=30
                 )
             )
-        for hint_size, item in zip(self.hint_sizes, dato):
+        for hint_size, item in zip(self.hint_sizes, item):
             self.body_layout.add_widget(
                 Row(
                     row=row if row else self.row,
@@ -164,6 +165,8 @@ class DataTable(BoxLayout):
                 if child.row == self.selected_row:
                     child.color = child.selected_color
                     child.bold = True
+                    if self.scroll.height < self.body_layout.height:
+                        self.scroll.scroll_to(child)
                 else:
                     child.color = child.default_color
                     child.bold = False
