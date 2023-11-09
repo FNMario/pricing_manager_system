@@ -84,7 +84,8 @@ class ManagePrices(Screen):
         prices, fractions, str_unit = calculate_prices_from_costs(
             quantity, unit, cost, surcharge)
         self.ids.prices_tab.prices = prices
-        self.ids.prices_tab.fractions = [f'{fr} {str_unit}' for fr in fractions]
+        self.ids.prices_tab.fractions = [
+            f'{fr} {str_unit}' for fr in fractions]
 
     def calculate_cost(self):
         cost = self.ids.txt_cost.text
@@ -273,8 +274,15 @@ class ManagePrices(Screen):
     # Table
 
     def update_table_items(self, instance, items):
-        self.ids.tbl_products.items = [
-            (p[1], p[0], f"{p[4]} {p[5]}", p[2]) for p in items]
+        self.ids.tbl_products.items = [(
+            p[1],
+            p[0],
+            f"{p[4]} {p[5]}",
+            p[2],
+            str(p[3]).replace('None', '-'),
+            format_numeric_economy(p[6]*p[7]),
+            p[9]
+        ) for p in items]
 
     def on_selected_row(self):
         table = self.ids.tbl_products
