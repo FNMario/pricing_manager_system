@@ -1,9 +1,6 @@
-import logging
-from screens.widgets.messagebox import MessageBox
 from datetime import datetime as dt
-
-import datetime
-import random
+from screens.widgets.messagebox import MessageBox
+import logging
 
 
 class DatabaseError(Exception):
@@ -28,41 +25,12 @@ def update_user_password(username, old_pass, new_pass):
 
 # Products
 
-def get_products_for_sale(product: str = None, local_code: str = None) -> list[str]:
-    products = [
-        ('AAC0001', 'ARGOLLA PARA CARTERA 45MM', '100.0 UC '),
-        ('AAL0001', 'ALAMBRE DE ALPACA 0.5 (5.5 MTS)', '500.0 G10'),
-        ('AAL0002', 'ALAMBRE DE ALPAKA 0.6 (4 MTS)', '500.0 G10'),
-        ('AAL0003', 'ALAMBRE DE ALPAKA 0.7 (3 MTS)', '500.0 G10'),
-        ('AAL0004', 'ALAMBRE DE ALPAKA 0.8(2.25 MTS)', '500.0 G10'),
-        ('AAL0005', 'ALAMBRE DE ALPAKA 1.0 (1.5 MTS)', '500.0 G10'),
-        ('AAL0006', 'ALAMBRE DE ALPAKA 1.2 (0.65 MTS)', '500.0 G10'),
-        ('AAL0007', 'ALAMBRE DE ALPAKA 1/2 CAÑA 2X1 (0.70 MTS)', '500.0 G10'),
-        ('AAL0008', 'ALAMBRE DE ALPAKA 1/2 CAÑA 3X1 ( MTS)', '500.0 G10'),
-        ('AAL0009', 'ALAMBRE ALUMINIO 1 MM (4.35 MTS)', '500.0 G10'),
-        ('AAL0010', 'ALAMBRE ALUMINIO 1.25 MM (2.9 MTS)', '500.0 G10'),
-        ('AAL0011', 'ALAMBRE ALUMINIO 1.5 MM (2.1 MTS)', '500.0 G10'),
-        ('AAL0012', 'ALAMBRE ALUMINIO 2 MM (1.23 MTS)', '500.0 G10'),
-        ('AAL0013', 'ALAMBRE ALUMINIO 2.5 MM (0.75 MTS)', '500.0 G10'),
-        ('AAL0014', 'ALAMBRE DE BRONCE 0.5 (5.5 MTS)', '500.0 G10'),
-        ('AAL0015', 'ALAMBRE DE BRONCE 0.6 (4 MTS)', '500.0 G10'),
-        ('AAL0016', 'ALAMBRE DE BRONCE 0.7 (3 MTS)', '500.0 G10'),
-        ('AAL0017', 'ALAMBRE DE BRONCE 0.8 (2.25 MTS)', '500.0 G10'),
-        ('AAL0018', 'ALAMBRE DE BRONCE 1.0 (1.5 MTS)', '500.0 G10'),
-        ('AAL0019', 'ALAMBRE FORRADO DE ARBORISTERIA NEG-BCO-VERDE NRO23 (3.8MTS EN 10GRS)', '500.0 G10'),
-        ('AAM0002', 'ARGOLLA METAL COMUN 4 MM NIKEL-BRONCE', '500.0 G10'),
-        ('AAM0003', 'ARGOLLA METAL COMUN 6 MM NIKEL-BRONCE', '500.0 G10'),
-        ('AAM0006', 'ARGOLLA METAL COMUN 8 MM NIKEL-BRONCE', '500.0 G10'),
-        ('AAM0007', 'ARGOLLA METAL COMUN 10 MM NIKEL-BRONCE', '500.0 G10'),
-        ('AAM0009', 'ARGOLLA METAL COMUN 12 MM NIKEL-BRONCE', '500.0 G10'),
-        ('AAM0013', 'ARGOLLA METAL COMUN 16 MM NIKEL-BRONCE', '500.0 G10'),
-        ('AAM0015', 'ARGOLLA METAL COMUN 18 MM NIKEL-BRONCE', '500.0 G10'),
-        ('AAM0017', 'ARGOLLA METAL COMUN 20 MM NIKEL-BRONCE', '500.0 G10'),
-        ('AAM0019', 'ARGOLLA METAL COMUN 25 MM NIKEL-BRONCE', '500.0 G10'),
-        ('AAM0021', 'ARGOLLA METAL COMUN 30 MM NIKEL-BRONCE', '500.0 G10'),
-    ]
+def get_products_for_sale(product: str = None, local_code: str = None, supplier_code: str = None) -> list[str]:
+    global _list_of_products_for_sale
     if not product:
-        products = products[20:24]
+        products = _list_of_products_for_sale[20:24]
+    else:
+        products = _list_of_products_for_sale
     return products
 
 
@@ -359,33 +327,49 @@ def _apply_discount(surcharge_level, fraction, category):
         return None
 
 
-def calculate_prices_from_costs(quantity: float, unit: str, cost: float, surcharge: float = None, surcharge_level: int = None):
+def calculate_prices(quantity: float, unit: str, cost: float = None, price: float = None, surcharge: float = None, discount_level: int = None):
+    "return de prices for different clients"
+
+    prices = [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+    ]
+    fractions = [0, 0, 0]
+    str_unit = ''
+
+    if (price and discount_level is not None) or (cost and surcharge):
+        pass
+    else:
+        return prices, fractions, str_unit
 
     if surcharge is not None:
         if surcharge >= 0 and surcharge < 1.70:
-            surcharge_level = 0
+            discount_level = 0
         elif surcharge < 2.00:
-            surcharge_level = 1
+            discount_level = 1
         elif surcharge < 2.20:
-            surcharge_level = 2
+            discount_level = 2
         elif surcharge < 2.50:
-            surcharge_level = 3
+            discount_level = 3
         elif surcharge < 3.50:
-            surcharge_level = 4
+            discount_level = 4
         elif surcharge < 4.50:
-            surcharge_level = 5
+            discount_level = 5
         elif surcharge >= 4.50:
-            surcharge_level = 6
+            discount_level = 6
         else:
             raise (ValueError("Surcharge must be bigger than 0"))
-    elif surcharge_level is not None:
-        if surcharge_level not in range(7):
+    elif discount_level is not None:
+        if discount_level not in range(7):
             raise ValueError(
-                "Invalid surcharge level. It must be between 0 and 6")
+                "Invalid discount level. It must be between 0 and 6")
     else:
-        raise (TypeError("You must provide surcharge or surcharge_level"))
+        raise (TypeError("You must provide surcharge or discount_level"))
 
-    unitary_cost = cost / quantity
+    if price is None:
+        price = cost * surcharge
+    unit_price = price / quantity
 
     try:
         fractions_list = get_fractions()
@@ -397,20 +381,12 @@ def calculate_prices_from_costs(quantity: float, unit: str, cost: float, surchar
         fractions = [1, -1, 0]
         str_unit = unit
 
-    price = unitary_cost * surcharge
-
-    prices = [
-        [0, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0],
-    ]
-
     for category in range(3):
         for fraction in range(3):
             if fractions[fraction] == -1:
                 fractions[fraction] = quantity
-            prices[fraction][category] = price * fractions[fraction] * \
-                _apply_discount(surcharge_level, fraction, category)
+            prices[fraction][category] = unit_price * fractions[fraction] * \
+                _apply_discount(discount_level, fraction, category)
 
     return prices, fractions, str_unit
 
@@ -420,18 +396,15 @@ def round_prices(prices):
 
 
 def get_product_prices(product_code):
-    prices = [
-        [250.25, 242, 225],
-        [4000, 3970, 3925],
-        [7000, 6800, 6500],
-    ]
-    quantities = [
-        "LOS 25 GRAMOS",
-        "LOS 500 GRAMOS",
-        "EL kILO"
-    ]
-    date = dt.strftime(
-        dt.today() - datetime.timedelta(random.randrange(40)), "%d/%m/%Y")
+
+    quantity, unit, price, discount_level, date = (
+        1005, "G10", 1044.5058, 3, "2020-02-06")  # db.get_product_prices(product_code)
+
+    prices, fractions, str_unit = calculate_prices(
+        quantity=quantity, unit=unit, price=price, discount_level=discount_level)
+
+    quantities = [f"{_} {str_unit}" for _ in fractions]
+
     return round_prices(prices), quantities, date
 
 
@@ -528,6 +501,8 @@ _fractions = [
     (8, "T  ", "Tiras: x1/x10", "Yardas", 1, 10, 0),
 ]
 
+import datetime
+
 _list_of_products_with_costs = [
     ('ALAMBRE DE ALPAKA 1/2 CAÑA 2X1 (0.70 MTS)', 'AAL0007', 'BISCUIT', None,
      500.0, 'G10', 570.0, 2.51, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
@@ -589,4 +564,46 @@ _list_of_products_with_costs = [
      1197.0, 2.5, 'ARMADOR', datetime.date(2019, 8, 24), 57.0, None),
     ('PELOTA METAL 4 MM', 'APM0002', 'JR', 'NIK X KG.', 6000.0, 'UC ',
      798.0, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None)
+]
+
+_list_of_products_for_sale = [
+    ('ACC1003', 'CORDON 8 MM RASTA COSIDO', '10 Metros', 'ARMADOR', '\\Image11.bmp', None),
+    ('ACM0048', 'CADENA MALLA PLANA 8.0', '10 Metros', 'ARMADOR', None, '1382454'),
+    ('ACR1004', 'CRUZ CHICA PALITO DORADA', '200 Unidades', 'ARMADOR', None, '17214-51'),
+    ('ACR2002', 'CENTRO DE ROSARIO MEDIANAS BR Y NIK.', '100 Unidades', 'ARMADOR', None, ' 13211-53'),
+    ('ADS0004', 'DIJE C/STRASS DIJE DE LA PAZ', '20 Unidades', 'ARMADOR', None, None),
+    ('AFD0061', 'FUNDICION DIJE CHICO ESTRELLA LISA 25 MM', '287 Unidades', 'ARMADOR', None, None),
+    ('AFD0069', 'FUNDICION DIJE CHICO CRUZ C/JESUS Y S. BENITO', '375 Unidades', 'ARMADOR', None, 'K3093'),
+    ('AKR0022', 'MEDALLA ESPIRITU SANTO METAL SOLO 40MM', '10 Unidades', 'ARMADOR', '\\20170517_091439.jpg', None),
+    ('AKR0026', 'MEDALLA ITALIANA OVAL 16X22MM', '10 Unidades', 'ARMADOR', None, None),
+    ('APA1003', 'PIEDRA ENGARZADA PICOS', '10 Unidades', 'ARMADOR', '\\20170514_193235.jpg', None),
+    ('APE0006', 'PERLA ACRILICA 12 MM', '500 Gramos', 'ARMADOR', None, None),
+    ('APF1003', 'PELOTA FILIGRANADA 8 MM', '2000 Unidades', 'ARMADOR', None, '10130-NIK,10130-DOR,POR KG.'),
+    ('APM0006', 'PELOTA METAL 10 MM', '1000 Unidades', 'ARMADOR', None, 'NIK,11007-520 PL,11007-53 NK,NIK X KG.,LISA'),
+    ('APM0007', 'PELOTA METAL 12 MM', '500 Unidades', 'ARMADOR', None, 'LISA,NIK X KG.'),
+    ('APM1006', 'PLASTICO METALIZADO CAPUCHON 10 MM C/PUNTOS X 500 GRS.', '824 Unidades', 'ARMADOR', None, 'W1237'),
+    ('ATP0005', 'TACHA PARA PEGAR 8MM 2000 UNID', '2000 Unidades', 'ARMADOR', None, None),
+    ('ATP0006', 'TACHA PARA PEGAR 10X10 2000 UNID', '2000 Unidades', 'ARMADOR', None, None),
+    ('BPL1009', 'PIEDRA P/COSER LASER OVAL 30X40 MM ALOE', '50 Unidades', 'BRILLO', None, 'C30X40'),
+    ('BPN1017', 'PIEDRA P/COSER NOLITA OVAL 10X14 MM', '1000 Unidades', 'BRILLO', None, 'A3205  S$U 10.81 X 20.5'),
+    ('BPP0003', 'PIEDRAS P/PEGAR 7MM X 5000U.', '5000 Unidades', 'BRILLO', None, None),
+    ('BPV1005', 'PIEDRA CRISTAL 4MM COLOR # CRYSTAL', '144 Unidades', 'BRILLO', None, None),
+    ('LGE0002', 'GOMA EVA CON BRILLO', '10 Unidades', 'LIBRERIA', None, None),
+    ('LPG0028', 'ECOLE X 9 GRS.', '10 Unidades', 'LIBRERIA', None, None),
+    ('LPG1001', 'SUPRABOND ADHESIVO DE CONTACTO TRANSPARENTE X 25ML.', '6 Unidades', 'LIBRERIA', None, None),
+    ('MAM0007', 'CARRETEL METALICO MAQ.', '10 Unidades', 'MERCERIA', None, '100060'),
+    ('MAM0008', 'AGUJA CANASTITA CHINA', '12 Unidades', 'MERCERIA', None, '040045'),
+    ('MAP0303', 'APLIQUES DE STRASS TERMOAHDESIVO A6515', '10 Unidades', 'MERCERIA', None, 'A6515 2D A $30'),
+    ('MBR0007', 'OJAL BRONCE BHYN N°20', '144 Unidades', 'MERCERIA', None, None),
+    ('MCB0002', 'CIERRE BRONCE YKK 12 CM', '12 Unidades', 'MERCERIA', None, '11-0034'),
+    ('MCB0006', 'CIERRE BRONCE YKK 20 CM', '12 Unidades', 'MERCERIA', None, '11-0038'),
+    ('MCD0013', 'CIERRE DESMONTABLE 6 MM X 85 CM', '12 Unidades', 'MERCERIA', None, None),
+    ('MCD1004', 'CIERRE DIENTE PERRO DESMONTABLE X 45 CM', '12 Unidades', 'MERCERIA', None, '120091'),
+    ('MCL1021', 'CINTA LUREX CHINA 20 MM X 50YDS', '10 Unidades', 'MERCERIA', None, None),
+    ('MCL2002', 'CORDON DE LUREX CHINO GRUESO', '10 Metros', 'MERCERIA', None, None),
+    ('MFL0013', 'GALON  DE FLECO', '42 Metros', 'MERCERIA', None, '1526292'),
+    ('MGA0102', 'GALON 50253 DE LENT CUAD DE 2.5CM 5 HIL. DE LENT.', '18.28 Metros', 'BRILLO', None, '50253'),
+    ('MGA0172', 'GALON CON PIEDRA GAT A8-1007-1', '10 Yardas', 'BRILLO', None, 'A8-1007-1'),
+    ('MTE4002', 'TELA LAME BONDEADO XMTS', '10 Metros', 'MERCERIA', None, None),
+    ('PRG0004', 'RABO DE GALLO BLANCO 30/35CM AL', '1000 Gramos', 'RABO GA', None, 'PLCH71001'),
 ]

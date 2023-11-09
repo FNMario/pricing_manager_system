@@ -1,6 +1,6 @@
 from kivy.uix.screenmanager import Screen
 from kivy.uix.textinput import TextInput
-from kivy.properties import ObjectProperty
+from kivy.properties import ObjectProperty, ListProperty
 from kivy.lang import Builder
 from screens.widgets.optionpopup import OptionPopup
 
@@ -12,22 +12,32 @@ Builder.load_file('screens/buy_screen.kv')
 
 
 class Buy(Screen):
+    products = ListProperty()
     searching_text_input = ObjectProperty()
     prices = [0, 0, 0]
     fractions = ['-', '-', '-']
     category = 0
+
+    def __init__(self, **kw):
+        super(Buy, self).__init__(**kw)
+        self.bind(products=self.update_table_items)
 
     # Form
 
     def btn_search_product_on_press(self):
         self.searching_text_input = self.ids.txt_product
         product = self.ids.txt_product.text
-        self.ids.tbl_products.items = get_products_for_sale(product=product)
+        self.products = get_products_for_sale(product=product)
 
     def btn_search_local_code_on_press(self):
         self.searching_text_input = self.ids.txt_local_code
         code = self.ids.txt_local_code.text
-        self.ids.tbl_products.items = get_products_for_sale(local_code=code)
+        self.products = get_products_for_sale(local_code=code)
+
+    def btn_search_supplier_code_on_press(self):
+        self.searching_text_input = self.ids.txt_supplier_code
+        code = self.ids.txt_supplier_code.text
+        self.products = get_products_for_sale(supplier_code=code)
 
     def on_category_change(self, instance):
         self.category = instance.selected_option
@@ -115,12 +125,21 @@ class Buy(Screen):
 
     # Table
 
+    def update_table_items(self, instance, items):
+        self.ids.tbl_products.items = [(
+            p[0],
+            p[1],
+            p[2],
+            p[3],
+        ) for p in items]
+
     def on_selected_row(self):
         table = self.ids.tbl_products
         if table.items:
-            product = table.items[table.selected_row]
+            product = self.products[table.selected_row]
             self.ids.txt_product.text = product[1]
             self.ids.txt_local_code.text = product[0]
+            self.ids.txt_supplier_code.text = str(product[5])
             self.ids.lbl_quantity.text = product[2]
             self.prices, self.fractions, date = get_product_prices(
                 product_code=product[0])

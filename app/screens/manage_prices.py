@@ -5,7 +5,7 @@ from kivy.properties import BooleanProperty, ListProperty, ObjectProperty
 from kivy.lang import Builder
 from KivyCalendar import DatePicker
 
-from interface import calculate_prices_from_costs, delete_product, format_numeric_economy, get_date, get_dollar_price, get_dollars, get_fractions, get_ivas, get_last_code, get_products, get_sections, get_suppliers, save_product
+from interface import calculate_prices, delete_product, format_numeric_economy, get_date, get_dollar_price, get_dollars, get_fractions, get_ivas, get_last_code, get_products, get_sections, get_suppliers, save_product
 
 import logging
 
@@ -81,8 +81,8 @@ class ManagePrices(Screen):
         surcharge = float(surcharge) / 100
         quantity = float(quantity)
 
-        prices, fractions, str_unit = calculate_prices_from_costs(
-            quantity, unit, cost, surcharge)
+        prices, fractions, str_unit = calculate_prices(
+            quantity=quantity, unit=unit, cost=cost, surcharge=surcharge)
         self.ids.prices_tab.prices = prices
         self.ids.prices_tab.fractions = [
             f'{fr} {str_unit}' for fr in fractions]

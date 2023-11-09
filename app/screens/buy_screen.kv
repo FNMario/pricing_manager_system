@@ -49,28 +49,51 @@
                     on_release:
                         txt_product.focus = True
                         root.btn_search_product_on_press()
+            # Codes
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint_y: None
+                height: dp(35)
+                spacing: dp(8)
+                # Local code
+                TextField:
+                    Icon:
+                        source: './assets/icons/barcode.png'
+                    SearchTextInput:
+                        id: txt_local_code
+                        hint_text: "Local code"
+                        on_text_validate: root.btn_search_local_code_on_press()
+                        text_validate_unfocus: False
+                        table: tbl_products
+                    IconButton:
+                        id: btn_search_local_code
+                        source: './assets/icons/search_1.png'
+                        on_release:
+                            txt_local_code.focus = True
+                            root.btn_search_local_code_on_press()
+                # Supplier code
+                TextField:
+                    Icon:
+                        source: './assets/icons/barcode.png'
+                    SearchTextInput:
+                        id: txt_supplier_code
+                        hint_text: "Supplier's code"
+                        on_text_validate: root.btn_search_supplier_code_on_press()
+                        text_validate_unfocus: False
+                        table: tbl_products
+                    IconButton:
+                        id: btn_search_supplier_code
+                        source: './assets/icons/search_1.png'
+                        on_release:
+                            txt_supplier_code.focus = True
+                            root.btn_search_supplier_code_on_press()
+            # Info
             BoxLayout:
                 orientation: 'horizontal'
                 spacing: dp(8)
                 BoxLayout:
                     orientation: 'vertical'
                     size_hint_x: 0.5
-                    # Local code
-                    TextField:
-                        Icon:
-                            source: './assets/icons/barcode.png'
-                        SearchTextInput:
-                            id: txt_local_code
-                            hint_text: "Local code"
-                            on_text_validate: root.btn_search_local_code_on_press()
-                            text_validate_unfocus: False
-                            table: tbl_products
-                        IconButton:
-                            id: btn_search_local_code
-                            source: './assets/icons/search_1.png'
-                            on_release:
-                                txt_local_code.focus = True
-                                root.btn_search_local_code_on_press()
                     # Quantity
                     BoxLayout:
                         orientation: 'horizontal'
@@ -265,6 +288,6 @@
         DataTable:
             id: tbl_products
             header_background_color: (1, 1, 1, 0.5)
-            hint_sizes: (0.1, 0.7, 0.2)
-            header: ["Local code", "Product", "Quantity"]
+            hint_sizes: (0.1, 0.7, 0.2, 0.2)
+            header: ["Local code", "Product", "Quantity", "Section"]
             on_selected_row: root.on_selected_row()
