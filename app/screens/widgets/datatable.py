@@ -17,14 +17,17 @@ class Header(Label):
     def on_touch_up(self, touch):
         if self.collide_point(*touch.pos) and not touch.is_mouse_scrolling:
             root = self.parent.parent
-            index = root.header.index(self.text)
-            raw_items_dict = {row: item for row, item in enumerate(root.items)}
-            sorted_items_dict = dict(
-                sorted(raw_items_dict.items(), key=lambda x: x[1][index]))
-            root.row = 0
-            root.body_layout.clear_widgets()
-            for row, item in sorted_items_dict.items():
-                root.add_item(item, row)
+            if root.items:
+                index = root.header.index(self.text)
+                raw_items_dict = {row: item for row, item in enumerate(root.items)}
+                sorted_items_dict = dict(
+                    sorted(raw_items_dict.items(), key=lambda x: x[1][index]))
+                root.row = 0
+                root.rows_index.clear()
+                root.body_layout.clear_widgets()
+                for row, item in sorted_items_dict.items():
+                    root.add_item(item, row)
+                root.selected_row = root.rows_index[0]
 
 
 class Row(Label):
@@ -44,6 +47,7 @@ class DataTable(BoxLayout):
     checkboxes = BooleanProperty(False)
     items = ListProperty([])
     row = 0
+    rows_index = []
     selected_row = NumericProperty(0)
 
     def __init__(self, **kwargs):
@@ -67,14 +71,24 @@ class DataTable(BoxLayout):
 
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
         if keycode[1] == 'up':
-            self.selected_row = max(0, self.selected_row - 1)
+            try:
+                index = self.rows_index.index(self.selected_row) - 1
+                if index >= 0:
+                    self.selected_row = self.rows_index[index]
+            except IndexError:
+                pass
         elif keycode[1] == 'down':
-            self.selected_row = min(len(self.items) - 1, self.selected_row + 1)
+            try:
+                index = self.rows_index.index(self.selected_row) + 1
+                self.selected_row = self.rows_index[index]
+            except IndexError:
+                pass
         return True
 
     def update_table(self, *args):
         self.clear_widgets()
         self.row = 0
+        self.rows_index.clear()
         self.header_layout = GridLayout()
         self.header_layout.cols = len(self.header) + int(self.checkboxes)
         self.body_layout = GridLayout(size_hint_y=None)
@@ -134,7 +148,7 @@ class DataTable(BoxLayout):
 
     def add_item(self, item: tuple, row: list = None):
         assert len(
-            item) + int(self.checkboxes) == self.body_layout.cols, f"program_error: len(item):{len(item)} != {self.cols}"
+            item) + int(self.checkboxes) == self.body_layout.cols, f"program_error: len(item):{len(item)} != {self.body_layout.cols - int(self.checkboxes)}"
 
         # add checkbox
         if self.checkboxes:
@@ -145,10 +159,14 @@ class DataTable(BoxLayout):
                     width=30
                 )
             )
+
+        if row == None:
+            row = self.row
+
         for hint_size, item in zip(self.hint_sizes, item):
             self.body_layout.add_widget(
                 Row(
-                    row=row if row else self.row,
+                    row=row,
                     text=str(item),
                     background=bool(self.row % 2 == 1),
                     size_hint_x=hint_size,
@@ -156,7 +174,7 @@ class DataTable(BoxLayout):
                     height=20,
                 )
             )
-
+        self.rows_index.append(row)
         self.row += 1
 
     def update_selected_row(self, *args):
