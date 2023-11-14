@@ -142,7 +142,7 @@ class SettingsScreen(Screen):
             self.ids.tbl_iva.items = self.get_iva_items()
             self.clear_form(self.ids.lyt_form_iva)
         except AssertionError as e:
-            logging.error(f"Error saving iva: {e}")
+            logging.error(f"Error adding iva: {e}")
 
     def btn_save_dollar(self, row: int, value: float):
         try:
@@ -158,7 +158,7 @@ class SettingsScreen(Screen):
             self.ids.tbl_dollar.items = self.get_dollar_items()
             self.clear_form(self.ids.lyt_form_dollar)
         except AssertionError as e:
-            logging.error(f"Error saving dollar: {e}")
+            logging.error(f"Error adding dollar: {e}")
 
     def clear_form(self, form):
         for field in form.children:
@@ -166,3 +166,8 @@ class SettingsScreen(Screen):
                 for widget in field.children:
                     if isinstance(widget, TextInput):
                         widget.text = ""
+
+    def all_upper_case(self, instance, max_length: int = None):
+        instance.text = instance.text.upper()
+        if type(max_length) == int:
+            instance.text = instance.text[:max_length]

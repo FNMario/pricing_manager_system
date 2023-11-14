@@ -1,61 +1,36 @@
 #:kivy 2.2.1
 #:import IconButton screens.widgets.iconbutton
-#:import InfoLabel screens.widgets.infolabel
-#:import FilledButton screens.widgets.filledbutton
-#:import EmptyButton screens.widgets.emptybutton
 #:import TextField screens.widgets.textfield
 #:import DataTable screens.widgets.datatable
 
-<IconButton_@IconButton>:
-    size: dp(25), dp(25)
-<Table@DataTable>:
-    size_hint_x: 0.98
-    pos_hint: {'center_x': 0.5}
-    size_hint_y: None
-    height: dp(150)
-
-<Title@Label>:
-    font_size: 20
+<AccordionItemTitle>:
     bold: True
-    color: (.13, .14, .19, 1)
-    halign: 'center'
-    valign: 'middle'
-    text_size: self.size
-    size_hint_y: None
-    height: dp(30)
-    canvas.before:
-        Color:
-            rgba: (.2, .64, .81, 1)
-        Rectangle:
-            size: self.size
-            pos: self.pos
+    markup: True
+    font_size: 20
+
+<BigIconButton@IconButton>:
+    size: dp(25), dp(25)
 
 <Space@Label>:
     text: ""
+
 <SettingsScreen>:
-    ScrollView:
-        do_scroll_x: False
-        do_scroll_y: True
-        bar_color: (1, 1, 1, .3)
-        bar_width: dp(15)
-        scroll_type: ['bars']
-        scroll_wheel_distance: 0
-        BoxLayout:
-            orientation: 'vertical'
-            size_hint_y: None
-            height: self.minimum_height
-            spacing: dp(20)
-            padding: 0, 0, self.parent.bar_width, 0
-            # Fractions
+    Accordion:
+        orientation: 'vertical'
+        # Fractions
+        AccordionItem:
+            title: "[color=222431]Fractions[/color]"
             BoxLayout:
                 orientation: 'vertical'
+                pos_hint: {'top': 1}
                 size_hint_y: None
                 height: self.minimum_height
+                padding: 0, dp(8)
                 spacing: dp(5)
-                Title:
-                    text: "Fractions"
-                Table:
+                DataTable:
                     id: tbl_fractions
+                    size_hint_y: None
+                    height: dp(450)
                     hint_sizes: [0.15, 0.3, 1, 0.5, 0.4, 0.4, 0.4]
                     header: ["id", "Name", "Description", "Unit", "Fraction 1", "Fraction 2", "Fraction 3"]
                     items: root.get_fractions_items()
@@ -80,6 +55,7 @@
                         TextInput:
                             id: txt_alias
                             hint_text: "Name"
+                            on_text: root.all_upper_case(self, 3)
                     TextField:
                         size_hint_x: 1
                         TextInput:
@@ -103,30 +79,42 @@
                             hint_text: "Fraction 2"
                             input_filter: 'float'
                     TextField:
-                        size_hint_x: 0.5
+                        size_hint_x: 0.4
                         TextInput:
                             id: txt_fraction_3
                             hint_text: "Fraction 3"
                             input_filter: 'float'
-                    IconButton_:
+                    BigIconButton:
                         source: './assets/icons/save-disk_c.png'
                         on_press: root.btn_save_fraction(lyt_form_fractions)
-                    IconButton_:
+                    BigIconButton:
                         source: './assets/icons/big-plus_c.png'
                         on_press: root.btn_add_fraction(lyt_form_fractions)
-                    IconButton_:
+                    BigIconButton:
                         source: './assets/icons/big-cross_c.png'
                         on_press: root.clear_form(lyt_form_fractions)
-            # Supliers
+                Label:
+                    text: "* Fraction = -1 represents a closed package"
+                    pos_hint: {'center_x': 0.5}
+                    size_hint_y: None
+                    height: dp(30)
+                    size_hint_x: 0.98
+                    text_size: self.size
+                    font_size: dp(13)
+        # Supliers
+        AccordionItem:
+            title: "[color=222431]Supliers[/color]"
             BoxLayout:
                 orientation: 'vertical'
+                pos_hint: {'top': 1}
                 size_hint_y: None
                 height: self.minimum_height
+                padding: 0, dp(8)
                 spacing: dp(5)
-                Title:
-                    text: "Suppliers"
-                Table:
+                DataTable:
                     id: tbl_suppliers
+                    size_hint_y: None
+                    height: dp(450)
                     hint_sizes: [0.2, 1, 1, 0.8, 0.8]
                     header: ["id", "Name", "Phone", "Email", "Address"]
                     items: root.get_suppliers_items()
@@ -151,10 +139,11 @@
                         TextInput:
                             id: txt_alias
                             hint_text: "Name"
+                            on_text: root.all_upper_case(self)
                     TextField:
                         size_hint_x: 0.8
                         TextInput:
-                            id: txt_description
+                            id: txt_phone
                             hint_text: "Phone"
                     TextField:
                         size_hint_x: 1
@@ -164,27 +153,31 @@
                     TextField:
                         size_hint_x: 0.8
                         TextInput:
-                            id: txt_unit
+                            id: txt_adress
                             hint_text: "Address"
-                    IconButton_:
+                    BigIconButton:
                         source: './assets/icons/save-disk_c.png'
                         on_press: root.btn_save_supplier(lyt_form_suppliers)
-                    IconButton_:
+                    BigIconButton:
                         source: './assets/icons/big-plus_c.png'
                         on_press: root.btn_add_supplier(lyt_form_suppliers)
-                    IconButton_:
+                    BigIconButton:
                         source: './assets/icons/big-cross_c.png'
                         on_press: root.clear_form(lyt_form_suppliers)
-            # Sections
+        # Sections
+        AccordionItem:
+            title: "[color=222431]Sections[/color]"
             BoxLayout:
                 orientation: 'vertical'
+                pos_hint: {'top': 1}
                 size_hint_y: None
                 height: self.minimum_height
+                padding: 0, dp(8)
                 spacing: dp(5)
-                Title:
-                    text: "Sections"
-                Table:
+                DataTable:
                     id: tbl_sections
+                    size_hint_y: None
+                    height: dp(450)
                     hint_sizes: [0.1, 1]
                     header: ["id", "Name"]
                     items: root.get_sections_items()
@@ -209,20 +202,25 @@
                         TextInput:
                             id: txt_alias
                             hint_text: "Name"
-                    IconButton_:
+                            on_text: root.all_upper_case(self)
+                    BigIconButton:
                         source: './assets/icons/save-disk_c.png'
                         on_press: root.btn_save_section(lyt_form_sections)
-                    IconButton_:
+                    BigIconButton:
                         source: './assets/icons/big-plus_c.png'
                         on_press: root.btn_add_section(lyt_form_sections)
-                    IconButton_:
+                    BigIconButton:
                         source: './assets/icons/big-cross_c.png'
                         on_press: root.clear_form(lyt_form_sections)
                     Space
-            # dollar and iva
+        # dollar and iva
+        AccordionItem:
+            title: "[color=222431]IVA and Dollar[/color]"
             BoxLayout:
+                pos_hint: {'top': 1}
                 size_hint_y: None
                 height: self.minimum_height
+                padding: 0, dp(8)
                 spacing: dp(10)
                 # Iva
                 BoxLayout:
@@ -230,10 +228,10 @@
                     size_hint_y: None
                     height: self.minimum_height
                     spacing: dp(5)
-                    Title:
-                        text: "IVA"
-                    Table:
+                    DataTable:
                         id: tbl_iva
+                        size_hint_y: None
+                        height: dp(450)
                         header: ["IVA"]
                         items: root.get_iva_items()
                         on_selected_row: root.on_selected_row(lyt_form_iva, self.items[self.selected_row])
@@ -250,13 +248,13 @@
                                 id: txt_iva
                                 hint_text: "IVA"
                                 input_filter: 'float'
-                        IconButton_:
+                        BigIconButton:
                             source: './assets/icons/save-disk_c.png'
                             on_press: root.btn_save_iva(tbl_iva.selected_row, float(txt_iva.text))
-                        IconButton_:
+                        BigIconButton:
                             source: './assets/icons/big-plus_c.png'
                             on_press: root.btn_add_iva(float(txt_iva.text))
-                        IconButton_:
+                        BigIconButton:
                             source: './assets/icons/big-cross_c.png'
                             on_press: root.clear_form(lyt_form_iva)
                         Space:
@@ -266,10 +264,10 @@
                     size_hint_y: None
                     height: self.minimum_height
                     spacing: dp(5)
-                    Title:
-                        text: "Dollar"
-                    Table:
+                    DataTable:
                         id: tbl_dollar
+                        size_hint_y: None
+                        height: dp(450)
                         header: ["Dollar"]
                         items: root.get_dollar_items()
                         on_selected_row: root.on_selected_row(lyt_form_dollar, self.items[self.selected_row])
@@ -286,13 +284,13 @@
                                 id: txt_dollar
                                 hint_text: "Dollar"
                                 input_filter: 'float'
-                        IconButton_:
+                        BigIconButton:
                             source: './assets/icons/save-disk_c.png'
                             on_press: root.btn_save_dollar(tbl_dollar.selected_row - 1, float(txt_dollar.text))
-                        IconButton_:
+                        BigIconButton:
                             source: './assets/icons/big-plus_c.png'
                             on_press: root.btn_add_dollar(float(txt_dollar.text))
-                        IconButton_:
+                        BigIconButton:
                             source: './assets/icons/big-cross_c.png'
                             on_press: root.clear_form(lyt_form_dollar)
-                        Space:
+                        Space
