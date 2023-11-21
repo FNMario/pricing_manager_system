@@ -8,6 +8,7 @@
 #:import DataTable screens.widgets.datatable
 #:import DoubleClickLabel screens.widgets.doubleclicklabel
 #:import SearchTextInput screens.widgets.searchtextinput
+#:import SelectOptionDropDown screens.widgets.selectoptiondropdown
 
 <DatePicker>:
     pHint: .25, .3
@@ -202,7 +203,6 @@
                                 icon: './assets/icons/down.png'
                                 options: root.get_suppliers()
                                 hint_text: "Supplier"
-                                icon: './assets/icons/down.png'
                                 on_text: root.all_upper_case(self)
                         # Supplier's code
                         TextField:
@@ -242,7 +242,6 @@
                                     icon: './assets/icons/down.png'
                                     options: root.get_units()
                                     hint_text: "Unit"
-                                    icon: './assets/icons/down.png'
                                     on_select: root.update_prices()
                                     on_text: root.all_upper_case(self)
                         # Cost
@@ -327,7 +326,6 @@
                                 icon: './assets/icons/down.png'
                                 options: root.get_sections()
                                 hint_text: "Section"
-                                icon: './assets/icons/down.png'
                                 on_text: root.all_upper_case(self)
                         # Date
                         TextField:

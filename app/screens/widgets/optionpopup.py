@@ -1,4 +1,4 @@
-from kivy.properties import ObjectProperty, ListProperty, NumericProperty, ColorProperty
+from kivy.properties import StringProperty, ListProperty, NumericProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
 from kivy.lang.builder import Builder
@@ -8,7 +8,7 @@ Builder.load_file('screens/widgets/optionpopup.kv')
 
 class OptionItem(BoxLayout):
     item = NumericProperty(-1)
-    text = ObjectProperty('Option')
+    text = StringProperty("Option")
 
     def __init__(self, **kwargs):
         super(OptionItem, self).__init__(**kwargs)
@@ -23,7 +23,6 @@ class OptionItem(BoxLayout):
 
 
 class OptionPopup(Popup):
-    exit_focus = ObjectProperty()
     options = ListProperty()
     selected_option = None
 

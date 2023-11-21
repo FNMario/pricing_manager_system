@@ -1,6 +1,6 @@
 #:kivy 2.2.1
 
-<Header>:
+<_Header>:
     canvas.before:
         Color:
             rgba: (1, 1, 1, .1)
@@ -9,7 +9,7 @@
             pos: self.pos
             radius: [8]
 
-<Row>:
+<_Row>:
     halign: 'left'
     valign: 'center'
     text_size: self.size[0], None
@@ -28,6 +28,6 @@
         Color:
             rgba: (1, 1, 1, .1)
         RoundedRectangle:
-            size: self.size
-            pos: self.pos
+            size: self.size[0]-16, self.size[1]
+            pos: self.pos[0]+8, self.pos[1]
             radius: [8]

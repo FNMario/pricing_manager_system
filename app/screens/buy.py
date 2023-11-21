@@ -54,14 +54,12 @@ class Buy(Screen):
                     enter_quantity(self.selected_option)
 
             popup = OptionPopup(
-                exit_focus=self.ids.txt_product,
                 options=[_ for _ in self.fractions if _ != '-']
             )
             popup.bind(on_dismiss=popup_exit)
             popup.open()
 
         def enter_quantity(fraction):
-            # print(f'fraction selected: {fraction}')
             input_quantity = [
                 self.ids.sm_add_fraction_1,
                 self.ids.sm_add_fraction_2,

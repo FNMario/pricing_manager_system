@@ -9,7 +9,7 @@
     height: 40
     canvas.after:
         Color:
-            rgba: (.2, .64, .81, 1) if not self.disabled else (.3, .3, .3, 1)
+            rgba: self.color if not self.disabled else (.3, .3, .3, 1)
         Line:
             rounded_rectangle: (self.pos[0] ,self.pos[1]+2 ,self.size[0],self.size[1]-2, 4)
             width: 1.3

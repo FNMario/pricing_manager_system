@@ -1,6 +1,4 @@
 from kivy.uix.modalview import ModalView
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.lang.builder import Builder
 

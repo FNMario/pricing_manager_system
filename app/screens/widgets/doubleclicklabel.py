@@ -1,5 +1,5 @@
 from kivy.uix.label import Label
-from kivy.properties import NumericProperty, ObjectProperty
+from kivy.properties import NumericProperty
 
 
 class DoubleClickLabel(Label):
