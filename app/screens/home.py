@@ -5,6 +5,7 @@ from kivy.lang import Builder
 
 from screens.buy import Buy
 from screens.manage_prices import ManagePrices
+from screens.print_tables import PrintTables
 from screens.settings_screen import SettingsScreen
 
 import logging
@@ -18,7 +19,7 @@ class HomeWindow(Screen):
     maximized = False
 
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+        super(HomeWindow, self).__init__(**kwargs)
         self.ids.home_screen_manager.transition = NoTransition()
         Window.bind(on_key_down=self.on_key_down_home)
 

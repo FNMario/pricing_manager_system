@@ -1,0 +1,372 @@
+#:kivy 2.2.1
+#:import TextField screens.widgets.textfield
+#:import Icon screens.widgets.icon
+#:import IconButton screens.widgets.iconbutton
+#:import FilledButton screens.widgets.filledbutton
+#:import DataTable screens.widgets.datatable
+#:import SearchTextInput screens.widgets.searchtextinput
+#:import SelectOptionDropDown screens.widgets.selectoptiondropdown
+#:import VerticalSectionHeader screens.widgets.verticalsectionheader
+#:import CheckboxWithText screens.widgets.checkboxwithtext
+
+<PrintTables>:
+    id: print_tables_screen
+    ScreenManager:
+        id: print_tables_screen_manager
+        Screen:
+            name: "title"
+            BoxLayout:
+                orientation: 'vertical'
+                RelativeLayout:
+                    size_hint_y: None
+                    height: dp(60)
+                    canvas.before:
+                        Color:
+                            rgba: (1, 1, 1, .2)
+                        Rectangle:
+                            size: self.size
+                            pos: 0,0
+                    Label:
+                        color: (.8, .8, .83, 1)
+                        font_size: dp(20)
+                        bold: True
+                        text: "Select table"
+                        pos_hint: {'center_x': 0.5}
+                    # Siguiente
+                    Button:
+                        pos_hint: {'right': 1}
+                        size_hint_x: None
+                        width: dp(170)
+                        background_color: (.3, .31, .35, 1)
+                        background_normal: ''
+                        background_down: 'atlas://data/images/defaulttheme/button'
+                        on_press: print_tables_screen_manager.current = "print"
+                        BoxLayout:
+                            size: self.parent.size
+                            pos: self.parent.pos
+                            Label:
+                                color: (.8, .8, .83, 1)
+                                font_size: dp(16)
+                                bold: True
+                                text: "Edit table & print"
+                            Image:
+                                source: './assets/icons/right.png'
+                BoxLayout:
+                    orientation: 'vertical'
+                    padding: dp(10)
+                    spacing: dp(10)
+                    # Section
+                    TextField:
+                        SelectOptionDropDown:
+                            id: optxt_section
+                            readonly: False
+                            icon: './assets/icons/down.png'
+                            on_text: root.all_upper_case(self)
+                            options: root.get_sections()
+                            hint_text: "Section"
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        spacing: dp(10)
+                        size_hint_y: None
+                        height: self.minimum_height
+                        TextField:
+                            SearchTextInput:
+                                id: txt_table_name
+                                hint_text: "Table name"
+                                on_text_validate: root.btn_search_table_name_on_press()
+                                text_validate_unfocus: False
+                                on_text: root.all_upper_case(self)
+                                table: tbl_table_name
+                            IconButton:
+                                id: btn_search_table_name
+                                source: './assets/icons/search_1.png'
+                                on_release: root.btn_search_table_name_on_press()
+                        IconButton:
+                            id: btn_save_table_name
+                            size: dp(25), dp(25)
+                            source: './assets/icons/save-disk_c.png'
+                            on_release: root.btn_save_table_name_on_press()
+                        IconButton:
+                            id: btn_add_table_name
+                            size: dp(25), dp(25)
+                            source: './assets/icons/big-plus_c.png'
+                            on_release: root.btn_add_table_name_on_press()
+                    DataTable:
+                        id: tbl_table_name
+                        header: ["Tables"]
+                        on_selected_row: root.on_selected_row_table_name()
+                    FilledButton:
+                        id: btn_select_table
+                        text: "Select table"
+                        pos_hint: {'center_x': 0.5}
+                        disabled: False if tbl_table_name.items else True
+                        size_hint_x: 0.6
+                        font_size: 18
+                        on_release: root.btn_select_table_on_press()
+        Screen:
+            name: "print"
+            BoxLayout:
+                orientation: 'vertical'
+                spacing: dp(8)
+                RelativeLayout:
+                    size_hint_y: None
+                    height: dp(60)
+                    canvas.before:
+                        Color:
+                            rgba: (1, 1, 1, .2)
+                        Rectangle:
+                            size: self.size
+                            pos: 0,0
+                    # Atras
+                    Button:
+                        pos_hint: {'left': 1}
+                        size_hint_x: None
+                        width: dp(140)
+                        background_color: (.3, .31, .35, 1)
+                        background_normal: ''
+                        background_down: 'atlas://data/images/defaulttheme/button'
+                        on_press: print_tables_screen_manager.current = "title"
+                        BoxLayout:
+                            size: self.parent.size
+                            pos: self.parent.pos
+                            Image:
+                                source: './assets/icons/left.png'
+                            Label:
+                                color: (.8, .8, .83, 1)
+                                font_size: dp(16)
+                                bold: True
+                                text: "Select Table"
+                    Label:
+                        color: (.8, .8, .83, 1)
+                        font_size: dp(20)
+                        bold: True
+                        text: "Edit table"
+                        pos_hint: {'center_x': 0.5}
+                # Add items
+                BoxLayout:
+                    orientation: 'horizontal'
+                    size_hint_y: 0.45
+                    padding: dp(8), 0
+                    spacing: dp(8)
+                    VerticalSectionHeader:
+                        text: "Add Items"
+                        size_hint_x: None
+                        width: dp(35)
+                    BoxLayout:
+                        orientation: 'vertical'
+                        # Products
+                        TextField:
+                            Icon:
+                                source: './assets/icons/box.png'
+                            SearchTextInput:
+                                id: txt_product
+                                hint_text: "Product"
+                                on_text_validate: root.btn_search_product_on_press()
+                                text_validate_unfocus: False
+                                on_text: root.all_upper_case(self)
+                                table: tbl_products
+                            IconButton:
+                                id: btn_search_product
+                                source: './assets/icons/search_1.png'
+                                on_release:
+                                    txt_product.focus = True
+                                    root.btn_search_product_on_press()
+                        # Codes
+                        BoxLayout:
+                            orientation: 'horizontal'
+                            size_hint_y: None
+                            height: dp(35)
+                            spacing: dp(8)
+                            # Local code
+                            TextField:
+                                Icon:
+                                    source: './assets/icons/barcode.png'
+                                SearchTextInput:
+                                    id: txt_local_code
+                                    hint_text: "Local code"
+                                    on_text_validate: root.btn_search_local_code_on_press()
+                                    text_validate_unfocus: False
+                                    on_text: root.all_upper_case(self)
+                                    table: tbl_products
+                                IconButton:
+                                    id: btn_search_local_code
+                                    source: './assets/icons/search_1.png'
+                                    on_release:
+                                        txt_local_code.focus = True
+                                        root.btn_search_local_code_on_press()
+                            # Supplier code
+                            TextField:
+                                Icon:
+                                    source: './assets/icons/barcode.png'
+                                SearchTextInput:
+                                    id: txt_supplier_code
+                                    hint_text: "Supplier's code"
+                                    on_text_validate: root.btn_search_supplier_code_on_press()
+                                    text_validate_unfocus: False
+                                    on_text: root.all_upper_case(self)
+                                    table: tbl_products
+                                IconButton:
+                                    id: btn_search_supplier_code
+                                    source: './assets/icons/search_1.png'
+                                    on_release:
+                                        txt_supplier_code.focus = True
+                                        root.btn_search_supplier_code_on_press()
+                        DataTable:
+                            id: tbl_products
+                            show_checkboxes: True
+                            checkbox_active_default: True
+                            hint_sizes: (0.15, 0.7, 0.2, 0.2)
+                            header: ["Local code", "Product", "Quantity", "Section"]
+                            on_selected_row: root.on_selected_row_products()
+                # Table
+                BoxLayout:
+                    orientation: 'horizontal'
+                    size_hint_y: 0.45
+                    padding: dp(8), 0
+                    spacing: dp(8)
+                    VerticalSectionHeader:
+                        text: "Table"
+                        size_hint_x: None
+                        width: dp(35)
+                    BoxLayout:
+                        orientation: 'vertical'
+                        spacing: dp(8)
+                        # Buttons
+                        RelativeLayout:
+                            size_hint_y: None
+                            height: dp(40)
+                            BoxLayout:
+                                orientation: 'horizontal'
+                                spacing: dp(10)
+                                pos_hint: {'center_x': 0.4}
+                                size_hint_x: None
+                                width: dp(310)
+                                EmptyButton:
+                                    id: btn_add_products
+                                    text: "     Add items"
+                                    font_size: 16
+                                    size_hint_x: None
+                                    width: dp(150)
+                                    color: (.17, .85, .62, 1)
+                                    disabled: False if tbl_products.items else True
+                                    on_release: root.btn_add_products_on_press()
+                                    RelativeLayout:
+                                        size: self.parent.size
+                                        pos: self.parent.pos
+                                        Icon:
+                                            pos: self.parent.size[0] / 2 - dp(50), dp(10)
+                                            source: './assets/icons/down_arrow.png'
+                                EmptyButton:
+                                    id: btn_remove_products
+                                    text: "     Remove items"
+                                    font_size: 16
+                                    size_hint_x: None
+                                    width: dp(150)
+                                    color: (.64, .01, .12, 1)
+                                    disabled: False if tbl_table_to_print.items else True
+                                    on_release: root.btn_remove_products_on_press()
+                                    RelativeLayout:
+                                        size: self.parent.size
+                                        pos: self.parent.pos
+                                        Icon:
+                                            pos: self.parent.size[0] / 2 - dp(65), dp(10)
+                                            source: './assets/icons/up_arrow.png'
+                            FilledButton:
+                                id: btn_print_table
+                                text: "Print table"
+                                font_size: 16
+                                pos_hint: {'right': 0.95}
+                                size_hint_x: 0.25 # None
+                                # width: dp(200)
+                                disabled: False if tbl_table_to_print.items else True
+                                on_release: root.btn_print_table_on_press()
+                        DataTable:
+                            id: tbl_table_to_print
+                            show_checkboxes: True
+                            checkbox_active_default: True
+                            hint_sizes: [0.3, 1]
+                            header: ["Local code", "Description"]
+                            on_selected_row: root.on_selected_row_table_to_print()
+                        # TextField:
+                        #     size_hint_x: 0.8
+                        #     pos_hint: {'center_x': 0.5}
+                        #     TextInput:
+                        #         id: txt_description
+                        #         hint_text: "Description"
+                        #         on_text_validate: root.btn_save_description_on_press()
+                        #         text_validate_unfocus: False
+                        #         on_text: root.all_upper_case(self)
+                        #     IconButton:
+                        #         id: btn_save_description
+                        #         source: './assets/icons/save-disk.png'
+                        #         on_release: root.btn_save_description_on_press()
+                # Columns
+                BoxLayout:
+                    orientation: 'horizontal'
+                    size_hint_y: None
+                    height: dp(80)
+                    padding: dp(8), 0, dp(8), dp(8)
+                    spacing: dp(8)
+                    VerticalSectionHeader:
+                        text: "Columns"
+                        size_hint_x: None
+                        width: dp(35)
+                    GridLayout:
+                        id: checkboxes_layout
+                        rows: 3
+                        orientation: 'tb-lr'
+                        spacing: dp(6)
+                        size_hint_y: None
+                        height: dp(70)
+                        CheckboxWithText:
+                            id: chk_client_1_fraction_1
+                            text: "VENTA 1"
+                            on_state: root.update_columns(self.active, self.text)
+                        CheckboxWithText:
+                            id: chk_client_1_fraction_2
+                            text: "VENTA 2"
+                            on_state: root.update_columns(self.active, self.text)
+                        CheckboxWithText:
+                            id: chk_client_1_fraction_3
+                            text: "VENTA 3"
+                            on_state: root.update_columns(self.active, self.text)
+                        CheckboxWithText:
+                            id: chk_client_2_fraction_1
+                            text: "DESCUENTO 1"
+                            on_state: root.update_columns(self.active, self.text)
+                        CheckboxWithText:
+                            id: chk_client_2_fraction_2
+                            text: "DESCUENTO 2"
+                            on_state: root.update_columns(self.active, self.text)
+                        CheckboxWithText:
+                            id: chk_client_2_fraction_3
+                            text: "DESCUENTO 3"
+                            on_state: root.update_columns(self.active, self.text)
+                        CheckboxWithText:
+                            id: chk_client_3_fraction_1
+                            text: "MAYORISTA 1"
+                            on_state: root.update_columns(self.active, self.text)
+                        CheckboxWithText:
+                            id: chk_client_3_fraction_2
+                            text: "MAYORISTA 2"
+                            on_state: root.update_columns(self.active, self.text)
+                        CheckboxWithText:
+                            id: chk_client_3_fraction_3
+                            text: "MAYORISTA 3"
+                            on_state: root.update_columns(self.active, self.text)
+                        CheckboxWithText:
+                            id: chk_fraction_1
+                            text: "FRACCIÓN 1"
+                            on_state: root.update_columns(self.active, self.text)
+                        CheckboxWithText:
+                            id: chk_fraction_2
+                            text: "FRACCIÓN 2"
+                            on_state: root.update_columns(self.active, self.text)
+                        CheckboxWithText:
+                            id: chk_fraction_3
+                            text: "FRACCIÓN 3"
+                            on_state: root.update_columns(self.active, self.text)
+                        CheckboxWithText:
+                            id: chk_date
+                            text: "DATE"
+                            on_state: root.update_columns(self.active, self.text)

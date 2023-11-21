@@ -22,7 +22,7 @@
                     rgba: (1, 1, 1, 0.5)
                 Rectangle:
                     size: dp(2), self.size[1]
-                    pos: self.size[0], self.pos[1]
+                    pos: self.size[0]-dp(2), self.pos[1]
             Image:
                 id: img_logo
                 source: './assets/images/logo_big.png'
@@ -54,6 +54,7 @@
                 id: btn_print_tables
                 text: "Print tables"
                 icon: './assets/icons/table_1.png'
+                screen_name: "print"
                 on_press: root.change_category(self)
             # Settings
             CategoryButton:
@@ -115,5 +116,7 @@
                     name: "buy"
                 ManagePrices:
                     name: "manage"
+                PrintTables:
+                    name: "print"
                 SettingsScreen:
                     name: "settings"

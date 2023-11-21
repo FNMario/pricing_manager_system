@@ -1,0 +1,23 @@
+#:kivy 2.2.1
+
+<VerticalSectionHeader>:
+    font_size: dp(16)
+    bold: True
+    color: (.13, .14, .19, 1)
+    halign: 'center'
+    valign: 'middle'
+    text_size: self.size[1], self.size[0]
+    # size_hint_y: None
+    # height: dp(30)
+    canvas.before:
+        Color:
+            rgba: (.70, .70, .70, 1)
+        Rectangle:
+            size: self.size
+            pos: self.pos
+        PushMatrix
+        Rotate:
+            angle: 90
+            origin: self.center
+    canvas.after:
+        PopMatrix

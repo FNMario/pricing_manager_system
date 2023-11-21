@@ -1,0 +1,16 @@
+#:kivy 2.2.1
+
+<CheckboxWithText>:
+    BoxLayout:
+        orientation: 'horizontal'
+        spacing: dp(8)
+        size: root.size
+        pos: root.pos
+        CheckBox:
+            active: root.active
+        Label:
+            text: root.text
+            color: (1, 1, 1, 1) if root.active else (.3, .3, .3, 1)
+            text_size: self.size
+            valign: 'center'
+            halign: 'left'

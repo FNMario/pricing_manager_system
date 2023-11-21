@@ -1,3 +1,4 @@
+import datetime
 from datetime import datetime as dt
 from screens.widgets.messagebox import MessageBox
 import logging
@@ -288,6 +289,37 @@ def save_section(section: dict) -> bool:
     return False
 
 
+def get_tables_to_print_names(section: str, name: str = None) -> list[str]:
+    # db.get_tables_to_print_names(section, name)
+    tables = [('usesrs',), ('orders',)]
+    return tables
+
+
+def get_table_to_print_data(section: str, name: str) -> (list[str], list[str]):
+    delete_this = [('ADS0004', True), ('APA1003', True), ('APM1006', True), ('MAM0007', True), ('MBR0007', True),
+                   ('chk_client_1_fraction_1', False), ('chk_fraction_1', False), ('chk_client_1_fraction_2',  False), ('chk_fraction_2', False), ('chk_date', False)]
+    data = delete_this  # db.get_tables_to_print_data(name)
+    rows = [item for item, is_row in data if is_row]
+    columns = [item for item, is_row in data if not is_row]
+    return rows, columns
+
+
+def add_tables_to_print_name(section: str, name: str):
+    pass
+
+
+def save_tables_to_print_name(section: str, old_name: str, new_name: str):
+    pass
+
+
+def save_table_to_print_data(items_code, headers):
+    pass
+
+
+def print_table(items, header):
+    pass
+
+
 # Prices
 
 def _apply_discount(surcharge_level, fraction, category):
@@ -501,7 +533,6 @@ _fractions = [
     (8, "T  ", "Tiras: x1/x10", "Yardas", 1, 10, 0),
 ]
 
-import datetime
 
 _list_of_products_with_costs = [
     ('ALAMBRE DE ALPAKA 1/2 CAÑA 2X1 (0.70 MTS)', 'AAL0007', 'BISCUIT', None,
@@ -567,43 +598,74 @@ _list_of_products_with_costs = [
 ]
 
 _list_of_products_for_sale = [
-    ('ACC1003', 'CORDON 8 MM RASTA COSIDO', '10 Metros', 'ARMADOR', '\\Image11.bmp', None),
+    ('ACC1003', 'CORDON 8 MM RASTA COSIDO',
+     '10 Metros', 'ARMADOR', '\\Image11.bmp', None),
     ('ACM0048', 'CADENA MALLA PLANA 8.0', '10 Metros', 'ARMADOR', None, '1382454'),
-    ('ACR1004', 'CRUZ CHICA PALITO DORADA', '200 Unidades', 'ARMADOR', None, '17214-51'),
-    ('ACR2002', 'CENTRO DE ROSARIO MEDIANAS BR Y NIK.', '100 Unidades', 'ARMADOR', None, ' 13211-53'),
-    ('ADS0004', 'DIJE C/STRASS DIJE DE LA PAZ', '20 Unidades', 'ARMADOR', None, None),
-    ('AFD0061', 'FUNDICION DIJE CHICO ESTRELLA LISA 25 MM', '287 Unidades', 'ARMADOR', None, None),
-    ('AFD0069', 'FUNDICION DIJE CHICO CRUZ C/JESUS Y S. BENITO', '375 Unidades', 'ARMADOR', None, 'K3093'),
-    ('AKR0022', 'MEDALLA ESPIRITU SANTO METAL SOLO 40MM', '10 Unidades', 'ARMADOR', '\\20170517_091439.jpg', None),
-    ('AKR0026', 'MEDALLA ITALIANA OVAL 16X22MM', '10 Unidades', 'ARMADOR', None, None),
-    ('APA1003', 'PIEDRA ENGARZADA PICOS', '10 Unidades', 'ARMADOR', '\\20170514_193235.jpg', None),
+    ('ACR1004', 'CRUZ CHICA PALITO DORADA',
+     '200 Unidades', 'ARMADOR', None, '17214-51'),
+    ('ACR2002', 'CENTRO DE ROSARIO MEDIANAS BR Y NIK.',
+     '100 Unidades', 'ARMADOR', None, ' 13211-53'),
+    ('ADS0004', 'DIJE C/STRASS DIJE DE LA PAZ',
+     '20 Unidades', 'ARMADOR', None, None),
+    ('AFD0061', 'FUNDICION DIJE CHICO ESTRELLA LISA 25 MM',
+     '287 Unidades', 'ARMADOR', None, None),
+    ('AFD0069', 'FUNDICION DIJE CHICO CRUZ C/JESUS Y S. BENITO',
+     '375 Unidades', 'ARMADOR', None, 'K3093'),
+    ('AKR0022', 'MEDALLA ESPIRITU SANTO METAL SOLO 40MM',
+     '10 Unidades', 'ARMADOR', '\\20170517_091439.jpg', None),
+    ('AKR0026', 'MEDALLA ITALIANA OVAL 16X22MM',
+     '10 Unidades', 'ARMADOR', None, None),
+    ('APA1003', 'PIEDRA ENGARZADA PICOS', '10 Unidades',
+     'ARMADOR', '\\20170514_193235.jpg', None),
     ('APE0006', 'PERLA ACRILICA 12 MM', '500 Gramos', 'ARMADOR', None, None),
-    ('APF1003', 'PELOTA FILIGRANADA 8 MM', '2000 Unidades', 'ARMADOR', None, '10130-NIK,10130-DOR,POR KG.'),
-    ('APM0006', 'PELOTA METAL 10 MM', '1000 Unidades', 'ARMADOR', None, 'NIK,11007-520 PL,11007-53 NK,NIK X KG.,LISA'),
-    ('APM0007', 'PELOTA METAL 12 MM', '500 Unidades', 'ARMADOR', None, 'LISA,NIK X KG.'),
-    ('APM1006', 'PLASTICO METALIZADO CAPUCHON 10 MM C/PUNTOS X 500 GRS.', '824 Unidades', 'ARMADOR', None, 'W1237'),
-    ('ATP0005', 'TACHA PARA PEGAR 8MM 2000 UNID', '2000 Unidades', 'ARMADOR', None, None),
-    ('ATP0006', 'TACHA PARA PEGAR 10X10 2000 UNID', '2000 Unidades', 'ARMADOR', None, None),
-    ('BPL1009', 'PIEDRA P/COSER LASER OVAL 30X40 MM ALOE', '50 Unidades', 'BRILLO', None, 'C30X40'),
-    ('BPN1017', 'PIEDRA P/COSER NOLITA OVAL 10X14 MM', '1000 Unidades', 'BRILLO', None, 'A3205  S$U 10.81 X 20.5'),
-    ('BPP0003', 'PIEDRAS P/PEGAR 7MM X 5000U.', '5000 Unidades', 'BRILLO', None, None),
-    ('BPV1005', 'PIEDRA CRISTAL 4MM COLOR # CRYSTAL', '144 Unidades', 'BRILLO', None, None),
+    ('APF1003', 'PELOTA FILIGRANADA 8 MM', '2000 Unidades',
+     'ARMADOR', None, '10130-NIK,10130-DOR,POR KG.'),
+    ('APM0006', 'PELOTA METAL 10 MM', '1000 Unidades', 'ARMADOR',
+     None, 'NIK,11007-520 PL,11007-53 NK,NIK X KG.,LISA'),
+    ('APM0007', 'PELOTA METAL 12 MM', '500 Unidades',
+     'ARMADOR', None, 'LISA,NIK X KG.'),
+    ('APM1006', 'PLASTICO METALIZADO CAPUCHON 10 MM C/PUNTOS X 500 GRS.',
+     '824 Unidades', 'ARMADOR', None, 'W1237'),
+    ('ATP0005', 'TACHA PARA PEGAR 8MM 2000 UNID',
+     '2000 Unidades', 'ARMADOR', None, None),
+    ('ATP0006', 'TACHA PARA PEGAR 10X10 2000 UNID',
+     '2000 Unidades', 'ARMADOR', None, None),
+    ('BPL1009', 'PIEDRA P/COSER LASER OVAL 30X40 MM ALOE',
+     '50 Unidades', 'BRILLO', None, 'C30X40'),
+    ('BPN1017', 'PIEDRA P/COSER NOLITA OVAL 10X14 MM',
+     '1000 Unidades', 'BRILLO', None, 'A3205  S$U 10.81 X 20.5'),
+    ('BPP0003', 'PIEDRAS P/PEGAR 7MM X 5000U.',
+     '5000 Unidades', 'BRILLO', None, None),
+    ('BPV1005', 'PIEDRA CRISTAL 4MM COLOR # CRYSTAL',
+     '144 Unidades', 'BRILLO', None, None),
     ('LGE0002', 'GOMA EVA CON BRILLO', '10 Unidades', 'LIBRERIA', None, None),
     ('LPG0028', 'ECOLE X 9 GRS.', '10 Unidades', 'LIBRERIA', None, None),
-    ('LPG1001', 'SUPRABOND ADHESIVO DE CONTACTO TRANSPARENTE X 25ML.', '6 Unidades', 'LIBRERIA', None, None),
-    ('MAM0007', 'CARRETEL METALICO MAQ.', '10 Unidades', 'MERCERIA', None, '100060'),
+    ('LPG1001', 'SUPRABOND ADHESIVO DE CONTACTO TRANSPARENTE X 25ML.',
+     '6 Unidades', 'LIBRERIA', None, None),
+    ('MAM0007', 'CARRETEL METALICO MAQ.',
+     '10 Unidades', 'MERCERIA', None, '100060'),
     ('MAM0008', 'AGUJA CANASTITA CHINA', '12 Unidades', 'MERCERIA', None, '040045'),
-    ('MAP0303', 'APLIQUES DE STRASS TERMOAHDESIVO A6515', '10 Unidades', 'MERCERIA', None, 'A6515 2D A $30'),
+    ('MAP0303', 'APLIQUES DE STRASS TERMOAHDESIVO A6515',
+     '10 Unidades', 'MERCERIA', None, 'A6515 2D A $30'),
     ('MBR0007', 'OJAL BRONCE BHYN N°20', '144 Unidades', 'MERCERIA', None, None),
-    ('MCB0002', 'CIERRE BRONCE YKK 12 CM', '12 Unidades', 'MERCERIA', None, '11-0034'),
-    ('MCB0006', 'CIERRE BRONCE YKK 20 CM', '12 Unidades', 'MERCERIA', None, '11-0038'),
-    ('MCD0013', 'CIERRE DESMONTABLE 6 MM X 85 CM', '12 Unidades', 'MERCERIA', None, None),
-    ('MCD1004', 'CIERRE DIENTE PERRO DESMONTABLE X 45 CM', '12 Unidades', 'MERCERIA', None, '120091'),
-    ('MCL1021', 'CINTA LUREX CHINA 20 MM X 50YDS', '10 Unidades', 'MERCERIA', None, None),
-    ('MCL2002', 'CORDON DE LUREX CHINO GRUESO', '10 Metros', 'MERCERIA', None, None),
+    ('MCB0002', 'CIERRE BRONCE YKK 12 CM',
+     '12 Unidades', 'MERCERIA', None, '11-0034'),
+    ('MCB0006', 'CIERRE BRONCE YKK 20 CM',
+     '12 Unidades', 'MERCERIA', None, '11-0038'),
+    ('MCD0013', 'CIERRE DESMONTABLE 6 MM X 85 CM',
+     '12 Unidades', 'MERCERIA', None, None),
+    ('MCD1004', 'CIERRE DIENTE PERRO DESMONTABLE X 45 CM',
+     '12 Unidades', 'MERCERIA', None, '120091'),
+    ('MCL1021', 'CINTA LUREX CHINA 20 MM X 50YDS',
+     '10 Unidades', 'MERCERIA', None, None),
+    ('MCL2002', 'CORDON DE LUREX CHINO GRUESO',
+     '10 Metros', 'MERCERIA', None, None),
     ('MFL0013', 'GALON  DE FLECO', '42 Metros', 'MERCERIA', None, '1526292'),
-    ('MGA0102', 'GALON 50253 DE LENT CUAD DE 2.5CM 5 HIL. DE LENT.', '18.28 Metros', 'BRILLO', None, '50253'),
-    ('MGA0172', 'GALON CON PIEDRA GAT A8-1007-1', '10 Yardas', 'BRILLO', None, 'A8-1007-1'),
+    ('MGA0102', 'GALON 50253 DE LENT CUAD DE 2.5CM 5 HIL. DE LENT.',
+     '18.28 Metros', 'BRILLO', None, '50253'),
+    ('MGA0172', 'GALON CON PIEDRA GAT A8-1007-1',
+     '10 Yardas', 'BRILLO', None, 'A8-1007-1'),
     ('MTE4002', 'TELA LAME BONDEADO XMTS', '10 Metros', 'MERCERIA', None, None),
-    ('PRG0004', 'RABO DE GALLO BLANCO 30/35CM AL', '1000 Gramos', 'RABO GA', None, 'PLCH71001'),
+    ('PRG0004', 'RABO DE GALLO BLANCO 30/35CM AL',
+     '1000 Gramos', 'RABO GA', None, 'PLCH71001'),
 ]
