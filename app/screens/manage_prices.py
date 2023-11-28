@@ -24,7 +24,7 @@ class ManagePrices(Screen):
 
     def btn_search_product_on_press(self):
         self.searching_text_input = self.ids.txt_product
-        self.products = get_products(product_id=self.ids.txt_product.text)
+        self.products = get_products(product=self.ids.txt_product.text)
 
     def btn_next_code_on_press(self):
         local_code = self.ids.txt_local_code.text

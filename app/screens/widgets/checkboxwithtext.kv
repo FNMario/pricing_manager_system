@@ -8,9 +8,15 @@
         pos: root.pos
         CheckBox:
             active: root.active
+            group: root.group
+            size: root.font_size, root.font_size
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            on_state: root.change_state()
         Label:
             text: root.text
             color: (1, 1, 1, 1) if root.active else (.3, .3, .3, 1)
+            font_size: root.font_size
             text_size: self.size
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
             valign: 'center'
             halign: 'left'

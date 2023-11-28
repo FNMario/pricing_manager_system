@@ -49,6 +49,13 @@
                 icon: './assets/icons/edit_1.png'
                 screen_name: "manage"
                 on_press: root.change_category(self)
+            # Group Raise
+            CategoryButton:
+                id: btn_group_raise
+                text: "Group Raise"
+                icon: './assets/icons/surcharges.png'
+                screen_name: "group"
+                on_press: root.change_category(self)
             # Print tables
             CategoryButton:
                 id: btn_print_tables
@@ -116,6 +123,8 @@
                     name: "buy"
                 ManagePrices:
                     name: "manage"
+                GroupRaise:
+                    name: "group"
                 PrintTables:
                     name: "print"
                 SettingsScreen:

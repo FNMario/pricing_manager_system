@@ -35,7 +35,24 @@ def get_products_for_sale(product: str = None, local_code: str = None, supplier_
     return products
 
 
-def get_products(**kwargs) -> list:
+def get_products(
+    product: str = None,
+    local_code: str = None,
+    supplier_code: str = None,
+    section: str = None,
+    supplier: str = None,
+    from_date: str = None,
+    to_date: str = None
+) -> list:
+    search_fields = {
+        'product': product,
+        'local_code': local_code,
+        'supplier_code': supplier_code,
+        'supplier': supplier,
+        'section': section,
+        'from_date': from_date,
+        'to_date': to_date
+    }
     global _list_of_products_with_costs
 
     products = _list_of_products_with_costs  # db.get_complete_items(**kwargs)

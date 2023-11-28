@@ -1,0 +1,270 @@
+#:kivy 2.2.1
+#:import TextField screens.widgets.textfield
+#:import Icon screens.widgets.icon
+#:import IconButton screens.widgets.iconbutton
+#:import InfoLabel screens.widgets.infolabel
+#:import FilledButton screens.widgets.filledbutton
+#:import EmptyButton screens.widgets.emptybutton
+#:import DataTable screens.widgets.datatable
+#:import SearchTextInput screens.widgets.searchtextinput
+#:import SelectOptionDropDown screens.widgets.selectoptiondropdown
+#:import CheckboxWithText screens.widgets.checkboxwithtext
+#:import dp kivy.metrics.dp
+
+<GroupRaise>:
+    id: group_raise_screen
+    BoxLayout:
+        orientation: 'vertical'
+        size: group_raise_screen.size
+        pos_hint: {'right':1}
+        padding: dp(10)
+        spacing: dp(10)
+        # Form
+        BoxLayout:
+            id: form_layout
+            orientation: 'vertical'
+            pos_hint: {'center_x':.5}
+            size_hint_y: None
+            height: self.minimum_height
+            padding: dp(10)
+            canvas.before:
+                Color:
+                    rgba: (1, 1, 1, 0.4)
+                Line:
+                    rounded_rectangle: (self.pos[0], self.pos[1], self.size[0], self.size[1], dp(4))
+                    width: 0.5
+            # Product
+            TextField:
+                Icon:
+                    source: './assets/icons/box.png'
+                SearchTextInput:
+                    id: txt_product
+                    hint_text: "Product"
+                    focus: True
+                    on_text_validate: root.search(self)
+                    text_validate_unfocus: False
+                    table: tbl_products
+                IconButton:
+                    id: btn_search_product
+                    source: './assets/icons/search_1.png'
+                    on_release:
+                        txt_product.focus = True
+                        root.search(txt_product)
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint_y: None
+                height: dp(35)
+                spacing: dp(8)
+                # Local code
+                TextField:
+                    Icon:
+                        source: './assets/icons/barcode.png'
+                    SearchTextInput:
+                        id: txt_local_code
+                        hint_text: "Local code"
+                        on_text_validate: root.search(self)
+                        text_validate_unfocus: False
+                        table: tbl_products
+                    IconButton:
+                        id: btn_search_local_code
+                        source: './assets/icons/search_1.png'
+                        on_release:
+                            txt_local_code.focus = True
+                            root.search(txt_local_code)
+                # Supplier code
+                TextField:
+                    Icon:
+                        source: './assets/icons/barcode.png'
+                    SearchTextInput:
+                        id: txt_supplier_code
+                        hint_text: "Supplier's code"
+                        on_text_validate: root.search(self)
+                        text_validate_unfocus: False
+                        table: tbl_products
+                    IconButton:
+                        id: btn_search_supplier_code
+                        source: './assets/icons/search_1.png'
+                        on_release:
+                            txt_supplier_code.focus = True
+                            root.search(txt_supplier_code)
+                # Section
+                TextField:
+                    Icon:
+                        source: './assets/icons/list.png'
+                    SelectOptionDropDown:
+                        id: optxt_section
+                        readonly: False
+                        icon: './assets/icons/down.png'
+                        options: root.get_sections()
+                        hint_text: "Section"
+                        on_text: root.all_upper_case(self)
+                # Supplier
+                TextField:
+                    Icon:
+                        source: './assets/icons/supplier.png'
+                    SelectOptionDropDown:
+                        id: optxt_supplier
+                        readonly: False
+                        icon: './assets/icons/down.png'
+                        options: root.get_suppliers()
+                        hint_text: "Supplier"
+                        on_text: root.all_upper_case(self)
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint_y: None
+                height: dp(35)
+                spacing: dp(8)
+                # Date
+                TextField:
+                    Icon:
+                        source: './assets/icons/calendar.png'
+                    TextInput:
+                        id: txt_from_date
+                        hint_text: "From date"
+                    IconButton:
+                        id: btn_refresh_date
+                        on_press: root.show_calendar(txt_from_date)
+                        source: './assets/icons/calendar.png'
+                TextField:
+                    Icon:
+                        source: './assets/icons/calendar.png'
+                    TextInput:
+                        id: txt_to_date
+                        hint_text: "To date"
+                    IconButton:
+                        id: btn_refresh_date
+                        on_press: root.show_calendar(txt_to_date)
+                        source: './assets/icons/calendar.png'
+            # Buttons
+            RelativeLayout:
+                size_hint_y: None
+                height: dp(45)
+                padding: 0, dp(16), 0, 0
+                spacing: dp(8)
+                FilledButton:
+                    id: btn_search
+                    size_hint_x: 0.3
+                    text: "Search"
+                    pos_hint: {'center_x': 0.5}
+                    on_release: root.search(txt_product)
+                    disabled: False
+                CheckboxWithText:
+                    id: chk_additive
+                    active: False
+                    # size_hint_x: 0.4
+                    pos_hint: {'x': 0.65, 'y': 0}
+                    text: "Additive mode"
+                EmptyButton:
+                    id: btn_clean_form
+                    size_hint_x: None
+                    width: dp(100)
+                    color: (.64, .01, .12, 1)
+                    text: "Clean"
+                    pos_hint: {'right': 1}
+                    on_release: root.clean_form()
+                    disabled: False
+        # Raises
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: self.minimum_height
+            pos_hint: {'right':1}
+            spacing: dp(10)
+            # Percentage
+            BoxLayout:
+                id: percentage_layout
+                orientation: 'vertical'
+                pos_hint: {'center_x':.5}
+                size_hint_y: None
+                height: dp(90)
+                padding: dp(10)
+                spacing: dp(10)
+                canvas.before:
+                    Color:
+                        rgba: (1, 1, 1, 0.4)
+                    Line:
+                        rounded_rectangle: (self.pos[0], self.pos[1], self.size[0], self.size[1], dp(4))
+                        width: 0.5
+                CheckboxWithText:
+                    id: chk_percentage
+                    text: "Percentage"
+                    group: True
+                    on_state: root.update_costs()
+                TextField:
+                    Icon:
+                        source: './assets/icons/surcharges.png'
+                    TextInput:
+                        id: txt_percentage
+                        hint_text: "10"
+                        text: "10"
+                        disabled: not chk_percentage.active
+                        input_filter: 'float'
+                        on_text_validate: root.update_costs()
+                    BoxLayout:
+                        pos_hint: {'top': 1.1}
+                        orientation: 'vertical'
+                        size_hint_x: None
+                        width: self.minimum_width
+                        IconButton:
+                            id: btn_percentage_plus
+                            on_press: root.btn_percentage_plus_on_press()
+                            pos_hint: {}
+                            disabled: not chk_percentage.active
+                            source: './assets/icons/plus_small.png'
+                        IconButton:
+                            id: btn_percentage_minus
+                            on_press: root.btn_percentage_minus_on_press()
+                            pos_hint: {}
+                            disabled: not chk_percentage.active
+                            source: './assets/icons/minus_small.png'
+            # Dollar
+            BoxLayout:
+                id: dollar_layout
+                orientation: 'vertical'
+                pos_hint: {'center_x':.5}
+                size_hint_y: None
+                height: dp(90)
+                padding: dp(10)
+                spacing: dp(10)
+                canvas.before:
+                    Color:
+                        rgba: (1, 1, 1, 0.4)
+                    Line:
+                        rounded_rectangle: (self.pos[0], self.pos[1], self.size[0], self.size[1], dp(4))
+                        width: 0.5
+                CheckboxWithText:
+                    id: chk_dollar
+                    text: "Dollar"
+                    group: True
+                    active: True
+                    on_state: root.update_costs()
+                TextField:
+                    Icon:
+                        source: './assets/icons/dollar.png'
+                    TextInput:
+                        id: txt_dollar
+                        hint_text: str(root.get_dollar_price())
+                        text: str(root.get_dollar_price())
+                        input_filter: 'float'
+                        disabled: not chk_dollar.active
+                        on_text_validate: root.update_costs()
+        DataTable:
+            id: tbl_products
+            show_checkboxes: True
+            checkbox_active_default: True
+            hint_sizes: [0.3, 1.1, 0.6, 0.4, 0.4, 0.4, 0.4]
+            header: ["Code", "Product", "Supplier", "Dollar", "Date", "Old cost", "New cost"]
+            on_selected_row: root.on_selected_row()
+        # Buttons
+        RelativeLayout:
+            size_hint_y: None
+            height: dp(40)
+            padding: 0, dp(16), 0, 0
+            spacing: dp(8)
+            FilledButton:
+                id: btn_save
+                size_hint_x: 0.3
+                text: "Save"
+                pos_hint: {'center_x': 0.5}
+                on_release: root.btn_save_on_press()
+                disabled: False
