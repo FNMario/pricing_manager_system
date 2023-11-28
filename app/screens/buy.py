@@ -86,7 +86,7 @@ class Buy(Screen):
             except:
                 pass
         logging.info(
-            f"Item added: {total} {fraction_string.split(' ')[-1]} for ${float(self.prices[fraction][self.category]) * float(quantity)}")
+            f"Item added: {total} {fraction_string.split(' ')[-1]} for {format_numeric_economy(float(self.prices[fraction][self.category]) * float(quantity), True)}")
 
     def btn_clean_on_press(self):
         self.clean_variables()
