@@ -459,7 +459,7 @@ def get_product_prices(product_code):
 
 def format_numeric_economy(price: float, show_currency_symbol: bool = False, currency_symbol: str = "$") -> str:
     if show_currency_symbol:
-        return f"{currency_symbol} {price:,.2f}".replace(",", chr(0x2009))
+        return f"{currency_symbol}{chr(0x2009)}{price:,.2f}".replace(",", chr(0x2009))
     else:
         return f"{price:,.2f}".replace(",", chr(0x2009))
 
