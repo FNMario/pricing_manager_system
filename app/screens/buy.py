@@ -1,6 +1,7 @@
 from kivy.uix.screenmanager import Screen
+from kivy.uix.widget import Widget
 from kivy.uix.textinput import TextInput
-from kivy.properties import ObjectProperty, ListProperty
+from kivy.properties import ObjectProperty, ListProperty, StringProperty, NumericProperty
 from kivy.lang import Builder
 from screens.widgets.optionpopup import OptionPopup
 
@@ -14,13 +15,14 @@ Builder.load_file('screens/buy_screen.kv')
 class Buy(Screen):
     products = ListProperty()
     searching_text_input = ObjectProperty()
-    prices = [0, 0, 0]
-    fractions = ['-', '-', '-']
-    category = 0
 
     def __init__(self, **kw):
         super(Buy, self).__init__(**kw)
         self.bind(products=self.update_table_items)
+        self.prices = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+        self.fractions = ['-', '-', '-']
+        self.category = 0
+        self.total_budget = 0
 
     # Form
 
@@ -74,25 +76,35 @@ class Buy(Screen):
 
     def add_item_to_budge(self, fraction, quantity):
         fraction_string = self.fractions[fraction]
-        if float(quantity) < 1 or fraction_string == '-':
-            logging.info("Item not added")
+        price = self.prices[fraction][self.category]
+        quantity = float(quantity)
+
+        if quantity <= 0 or fraction_string == '-' or price <= 0:
+            # logging.error("Item not added")
             return
 
-        total = float(quantity)
+        item = BudgetItem(
+            product=self.ids.txt_product.text,
+            local_code=self.ids.txt_local_code.text,
+            quantity=quantity,
+            fraction=fraction_string,
+            price=price,
+        )
+        item.bind(on_delete_item=self.update_budget_total)
+        self.ids.budget_layout.add_widget(item, 2)
 
-        for s in fraction_string.split(' '):
-            try:
-                total = float(s) * float(quantity)
-            except:
-                pass
-        logging.info(
-            f"Item added: {total} {fraction_string.split(' ')[-1]} for {format_numeric_economy(float(self.prices[fraction][self.category]) * float(quantity), True)}")
+        self.update_budget_total()
+        self.btn_clean_on_press()
 
     def btn_clean_on_press(self):
         self.clean_variables()
         self.clean_forms(self.ids.form_layout)
         self.clean_labels()
         self.clean_table()
+        if self.searching_text_input:
+            self.searching_text_input.focus = True
+        else:
+            self.ids.txt_product.focus = True
 
     def clean_forms(self, parent):
         for child in parent.children:
@@ -105,6 +117,7 @@ class Buy(Screen):
                     child.text = ""
 
     def clean_labels(self):
+        self.ids.lbl_quantity.text = "Quantity"
         self.ids.lbl_date.text = "00/00/0000"
         self.ids.lbl_price_1.text = "0.00"
         self.ids.lbl_price_2.text = "0.00"
@@ -115,10 +128,9 @@ class Buy(Screen):
 
     def clean_table(self):
         self.ids.tbl_products.items = []
-        self.ids.tbl_products.update_table()
 
     def clean_variables(self):
-        self.prices = [0, 0, 0]
+        self.prices = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
         self.fractions = ['-', '-', '-']
 
     # Table
@@ -153,3 +165,64 @@ class Buy(Screen):
             self.ids.lbl_date.text = date
             self.searching_text_input.focus = True
             self.searching_text_input.select_all()
+
+    # Budget
+
+    def update_budget_total(self, *args):
+        budget_layout = self.ids.budget_layout
+        lbl_total_price = self.ids.lbl_total_price
+
+        total = 0
+
+        for child in budget_layout.children:
+            if isinstance(child, BudgetItem):
+                child.ids.lbl_product_name.text = f"{len(child.parent.children) - child.parent.children.index(child)}. {child.product}"
+                total += child.quantity * child.price
+
+        lbl_total_price.text = format_numeric_economy(total, True)
+
+        self.ids.btn_save_budget.disabled = bool(total <= 0)
+
+    def btn_save_budget_on_press(self):
+        pass
+
+    def btn_discard_budget_on_press(self):
+        children = self.ids.budget_layout.children.copy()
+        for child in children:
+            if isinstance(child, BudgetItem):
+                child.delete_item()
+
+
+class BudgetItem(Widget):
+    product = StringProperty()
+    local_code = StringProperty()
+    quantity = NumericProperty()
+    fraction = StringProperty()
+    price = NumericProperty()
+
+    def __init__(self, **kwargs):
+        super(BudgetItem, self).__init__(**kwargs)
+        self.register_event_type('on_delete_item')
+
+    def delete_item(self):
+        budget_layout = self.parent
+        budget_layout.remove_widget(self)
+        self.dispatch('on_delete_item')
+
+    def on_delete_item(self):
+        pass
+
+    # def build(self):
+    #     logging.debug("build")
+    #     self.ids.lbl_unit_price.text = format_numeric_economy(self.price, True)
+    #     # self.ids.lbl_total_quantity.text = f"{self.quantity} X {self.fraction}"
+    #     self.ids.lbl_total_price.text = format_numeric_economy(self.quantity * self.unit_price, True)
+
+    # def total_quantity(self):
+    #     return f'{self.quantity} X {self.fraction}'
+
+    # def unit_price(self):
+    #     return format_numeric_economy(self.unit_price, True)
+
+    # def total_price(self):
+    #     return format_numeric_economy(self.quantity * self.unit_price, True)

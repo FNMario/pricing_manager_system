@@ -10,284 +10,434 @@
 #:import SelectOptionDropDown screens.widgets.selectoptiondropdown
 #:import dp kivy.metrics.dp
 
+<BudgetItem>:
+    size_hint_y: None
+    height: lyt_all.height
+    BoxLayout:
+        id: lyt_all
+        orientation: 'vertical'
+        pos: self.parent.pos
+        width: self.parent.width
+        height: dp(70)
+        # padding: dp(8)
+        BoxLayout:
+            orientation: 'horizontal'
+            height: self.minimum_height
+            Label:
+                id: lbl_product_name
+                text_size: self.size
+                valign: 'center'
+                halign: 'left'
+            IconButton:
+                source: './assets/icons/cross_bold.png'
+                size: dp(14), dp(14)
+                on_release: root.delete_item()
+        BoxLayout:
+            orientation: 'horizontal'
+            height: self.minimum_height
+            Label:
+                id: lbl_total_quantity
+                text: f"{root.quantity} x {root.fraction}   ($ {round(root.price, 2)})"
+                size_hint_x: 0.7
+                text_size: self.size
+                valign: 'center'
+                halign: 'left'
+            Label:
+                id: lbl_total_price
+                text: f"$ {round(root.quantity*root.price, 2)}"
+                bold: True
+                size_hint_x: 0.3
+                text_size: self.size
+                valign: 'center'
+                halign: 'right'
+        BoxLayout:
+            orientation: 'horizontal'
+            height: self.minimum_height
+            Label:
+                id: lbl_local_code
+                text: root.local_code
+                size_hint_x: 0.6
+                text_size: self.size
+                valign: 'center'
+                halign: 'left'
+
 <Buy>:
     id: buy_screen
-    BoxLayout:
-        orientation: 'vertical'
-        size: buy_screen.size
-        pos_hint: {'right':1}
-        padding: buy_screen.size[0]/2-dp(450), dp(10)
-        spacing: dp(10)
-        # Form
+    FloatLayout:
+        size: self.parent.size
+        # Search product
         BoxLayout:
-            id: form_layout
             orientation: 'vertical'
-            pos_hint: {'center_x':.5}
-            size_hint_y: None
-            height: dp(280)
-            padding: dp(100), dp(0)
-            canvas.before:
-                Color:
-                    rgba: (1, 1, 1, 0.4)
-                Line:
-                    rounded_rectangle: (self.pos[0], self.pos[1], self.size[0], self.size[1], dp(4))
-                    width: 0.5
-            # Product
-            TextField:
-                Icon:
-                    source: './assets/icons/box.png'
-                SearchTextInput:
-                    id: txt_product
-                    hint_text: "Product"
-                    focus: True
-                    on_text_validate: root.btn_search_product_on_press()
-                    text_validate_unfocus: False
-                    table: tbl_products
-                IconButton:
-                    id: btn_search_product
-                    source: './assets/icons/search_1.png'
-                    on_release:
-                        txt_product.focus = True
-                        root.btn_search_product_on_press()
-            # Codes
+            size_hint_x: 0.65 if buy_screen.width > 1000 else 1
+            pos_hint: {'x': 0} if buy_screen.width > 1000 else {'center_x': 0.5}
+            padding: 0, dp(10)
+            # size: buy_screen.size
+            # pos_hint: {'x':1}
+            # padding: dp(10), dp(10), (buy_screen.size[0]/2-dp(450))*2, dp(10)
+            spacing: dp(10)
+            # Form
+            BoxLayout:
+                id: form_layout
+                orientation: 'vertical'
+                pos_hint: {'center_x':.5}
+                size_hint_y: None
+                height: dp(280)
+                size_hint_x: 0.8
+                padding: dp(20), dp(3)
+                canvas.before:
+                    Color:
+                        rgba: (1, 1, 1, 0.4)
+                    Line:
+                        rounded_rectangle: (self.pos[0], self.pos[1], self.size[0], self.size[1], dp(4))
+                        width: 0.5
+                # Product
+                TextField:
+                    Icon:
+                        source: './assets/icons/box.png'
+                    SearchTextInput:
+                        id: txt_product
+                        hint_text: "Product"
+                        focus: True
+                        on_text_validate: root.btn_search_product_on_press()
+                        text_validate_unfocus: False
+                        table: tbl_products
+                    IconButton:
+                        id: btn_search_product
+                        source: './assets/icons/search_1.png'
+                        on_release:
+                            txt_product.focus = True
+                            root.btn_search_product_on_press()
+                # Codes
+                BoxLayout:
+                    orientation: 'horizontal'
+                    size_hint_y: None
+                    height: dp(35)
+                    spacing: dp(8)
+                    # Local code
+                    TextField:
+                        Icon:
+                            source: './assets/icons/barcode.png'
+                        SearchTextInput:
+                            id: txt_local_code
+                            hint_text: "Local code"
+                            on_text_validate: root.btn_search_local_code_on_press()
+                            text_validate_unfocus: False
+                            table: tbl_products
+                        IconButton:
+                            id: btn_search_local_code
+                            source: './assets/icons/search_1.png'
+                            on_release:
+                                txt_local_code.focus = True
+                                root.btn_search_local_code_on_press()
+                    # Supplier code
+                    TextField:
+                        Icon:
+                            source: './assets/icons/barcode.png'
+                        SearchTextInput:
+                            id: txt_supplier_code
+                            hint_text: "Supplier's code"
+                            on_text_validate: root.btn_search_supplier_code_on_press()
+                            text_validate_unfocus: False
+                            table: tbl_products
+                        IconButton:
+                            id: btn_search_supplier_code
+                            source: './assets/icons/search_1.png'
+                            on_release:
+                                txt_supplier_code.focus = True
+                                root.btn_search_supplier_code_on_press()
+                # Info
+                BoxLayout:
+                    orientation: 'horizontal'
+                    spacing: dp(8)
+                    BoxLayout:
+                        orientation: 'vertical'
+                        size_hint_x: 0.5
+                        # Quantity
+                        BoxLayout:
+                            orientation: 'horizontal'
+                            spacing: dp(10)
+                            TextField:
+                                size_hint_x: 0.6
+                                Icon:
+                                    source: './assets/icons/hashtag.png'
+                                InfoLabel:
+                                    id: lbl_quantity
+                                    text: "Quantity"
+                        # Space
+                        Label:
+                            size_hint_y: None
+                            height: dp(20)
+                        TextField:
+                            # Category
+                            SelectOptionDropDown:
+                                id: optxt_category
+                                icon: './assets/icons/down.png'
+                                text: "VENTAS"
+                                options: ["VENTAS", "DESCUENTOS", "MAYORISTA"]
+                                on_select: root.on_category_change(self)
+                            # Space
+                            Label:
+                                size_hint_x: 0.2
+                                text: ""
+                            # Date
+                            Icon:
+                                source: './assets/icons/calendar.png'
+                            Label:
+                                size_hint_x: None
+                                width: dp(5)
+                                text: ""
+                            InfoLabel:
+                                id: lbl_date
+                                size_hint_x: 0.6
+                                color: (1, 1, 1, 0.8)
+                                text: "00/00/0000"
+                        # Sell 1
+                        BoxLayout:
+                            orientation: 'horizontal'
+                            spacing: dp(10)
+                            TextField:
+                                size_hint_x: 0.45
+                                Icon:
+                                    source: './assets/icons/dollar.png'
+                                InfoLabel:
+                                    id: lbl_price_1
+                                    text: "0.00"
+                            TextField:
+                                size_hint_x: 0.55
+                                InfoLabel:
+                                    id: lbl_quantity_1
+                                    text: "-"
+                            ScreenManager:
+                                id: sm_add_fraction_1
+                                size_hint_x: None
+                                width: dp(45)
+                                Screen:
+                                    name: "btn"
+                                    AnchorLayout:
+                                        IconButton:
+                                            id: btn_add_price_1
+                                            source: './assets/icons/plus_big.png'
+                                            on_press: root.btn_add_price_on_press(fraction=0)
+                                Screen:
+                                    name: "txt"
+                                    on_enter:
+                                        txt_add_price_1.focus = True
+                                        txt_add_price_1.select_all()
+                                    TextInput:
+                                        id: txt_add_price_1
+                                        text: "1"
+                                        input_filter: 'float'
+                                        background_color: (1, 1, 1, 0.9)
+                                        foreground_color: (0, 0, 0, 1)
+                                        cursor_color: (0, 0, 0, 1)
+                                        on_text_validate:
+                                            sm_add_fraction_1.current = "btn"
+                                            root.add_item_to_budge(0 ,self.text)
+                                            self.text = "1"
+                        # Sell 2
+                        BoxLayout:
+                            orientation: 'horizontal'
+                            spacing: dp(10)
+                            TextField:
+                                size_hint_x: 0.45
+                                Icon:
+                                    source: './assets/icons/dollar.png'
+                                InfoLabel:
+                                    id: lbl_price_2
+                                    text: "0.00"
+                            TextField:
+                                size_hint_x: 0.55
+                                InfoLabel:
+                                    id: lbl_quantity_2
+                                    text: "-"
+                            ScreenManager:
+                                id: sm_add_fraction_2
+                                size_hint_x: None
+                                width: dp(45)
+                                Screen:
+                                    name: "btn"
+                                    AnchorLayout:
+                                        IconButton:
+                                            id: btn_add_price_2
+                                            source: './assets/icons/plus_big.png'
+                                            on_press: root.btn_add_price_on_press(fraction=1)
+                                Screen:
+                                    name: "txt"
+                                    on_enter:
+                                        txt_add_price_2.focus = True
+                                        txt_add_price_2.select_all()
+                                    TextInput:
+                                        id: txt_add_price_2
+                                        text: "1"
+                                        input_filter: 'float'
+                                        background_color: (1, 1, 1, 0.9)
+                                        foreground_color: (0, 0, 0, 1)
+                                        cursor_color: (0, 0, 0, 1)
+                                        on_text_validate:
+                                            sm_add_fraction_2.current = "btn"
+                                            root.add_item_to_budge(1 ,self.text)
+                                            self.text = "1"
+                        # Sell 3
+                        BoxLayout:
+                            orientation: 'horizontal'
+                            spacing: dp(10)
+                            TextField:
+                                size_hint_x: 0.45
+                                Icon:
+                                    source: './assets/icons/dollar.png'
+                                InfoLabel:
+                                    id: lbl_price_3
+                                    text: "0.00"
+                            TextField:
+                                size_hint_x: 0.55
+                                InfoLabel:
+                                    id: lbl_quantity_3
+                                    text: "-"
+                            ScreenManager:
+                                id: sm_add_fraction_3
+                                size_hint_x: None
+                                width: dp(45)
+                                Screen:
+                                    name: "btn"
+                                    AnchorLayout:
+                                        IconButton:
+                                            id: btn_add_price_3
+                                            source: './assets/icons/plus_big.png'
+                                            on_press: root.btn_add_price_on_press(fraction=2)
+                                Screen:
+                                    name: "txt"
+                                    on_enter:
+                                        txt_add_price_3.focus = True
+                                        txt_add_price_3.select_all()
+                                    TextInput:
+                                        id: txt_add_price_3
+                                        text: "1"
+                                        input_filter: 'float'
+                                        background_color: (1, 1, 1, 0.9)
+                                        foreground_color: (0, 0, 0, 1)
+                                        cursor_color: (0, 0, 0, 1)
+                                        on_text_validate:
+                                            sm_add_fraction_3.current = "btn"
+                                            root.add_item_to_budge(2 ,self.text)
+                                            self.text = "1"
+                    # Image
+                    BoxLayout:
+                        size_hint_x: 0.5
+                        Image:
+                            source: './assets/images/DefaultBase.png'
+                            fit_mode: 'cover'
+            # Buttons
+            BoxLayout:
+                orientation: 'horizontal'
+                pos_hint: {'center_x':.5, 'center_y':.5}
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(10)
+                padding: dp(200), dp(0)
+                # Save
+                FilledButton:
+                    id: btn_add_price
+                    text: "Add"
+                    on_press: print(root.width)
+                    on_release: root.btn_add_price_on_press()
+                # Clean
+                EmptyButton:
+                    id: btn_clean
+                    text: "Clean"
+                    on_press: root.btn_clean_on_press()
+                    on_release: txt_product.focus = True
+            # Table
+            DataTable:
+                id: tbl_products
+                header_background_color: (1, 1, 1, 0.5)
+                hint_sizes: (0.1, 0.7, 0.2, 0.2)
+                header: ["Local code", "Product", "Quantity", "Section"]
+                on_selected_row: root.on_selected_row()
+        # Budget
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_x: 0.35
+            pos_hint: {'x': 0.65} if buy_screen.width > 1000 else {'x': 1}
+            padding: dp(10)
+            spacing: dp(10)
+            BoxLayout:
+                orientation: 'vertical'
+                canvas.before:
+                    Color:
+                        rgba: (1, 1, 1, 0.4)
+                    Line:
+                        rounded_rectangle: (self.pos[0], self.pos[1], self.size[0], self.size[1], dp(4))
+                        width: 0.5
+                # Budget encabezado
+                Label:
+                    font_size: dp(20)
+                    color: (.13, .14, .19, 1)
+                    size_hint_y: None
+                    height: self.texture_size[1] * 1.5
+                    text: "Budget"
+                    canvas.before:
+                        Color:
+                            rgba: (1, 1, 1, 0.4)
+                        Rectangle:
+                            size: self.size
+                            pos: self.pos
+                Label:
+                    id: lbl_budget_title
+                    text: "Budget"
+                    font_size: dp(16)
+                    size_hint_y: None
+                    height: self.texture_size[1] * 1.5
+                    
+                    canvas.before:
+                        Color:
+                            rgba: (1, 1, 1, 0.4)
+                        Line:
+                            points: [self.pos[0], self.pos[1], self.pos[0]+self.size[0], self.pos[1]]
+                            width: 0.5
+                # Budget Items
+                BoxLayout:
+                    id: budget_layout
+                    orientation: 'vertical'
+                    padding: dp(10)
+                    spacing: dp(10)
+                    Label:
+                        id: space
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        height: self.minimum_height
+                        Label:
+                            text: "TOTAL"
+                            font_size: 15
+                            bold: True
+                            size_hint_y: None
+                            height: dp(30)
+                            text_size: self.size
+                            valign: 'bottom'
+                            halign: 'left'
+                        Label:
+                            id: lbl_total_price
+                            text: "$ 000.00"
+                            font_size: 15
+                            bold: True
+                            size_hint_y: None
+                            height: dp(30)
+                            text_size: self.size
+                            valign: 'bottom'
+                            halign: 'right'
+            # Budget buttons
             BoxLayout:
                 orientation: 'horizontal'
                 size_hint_y: None
-                height: dp(35)
-                spacing: dp(8)
-                # Local code
-                TextField:
-                    Icon:
-                        source: './assets/icons/barcode.png'
-                    SearchTextInput:
-                        id: txt_local_code
-                        hint_text: "Local code"
-                        on_text_validate: root.btn_search_local_code_on_press()
-                        text_validate_unfocus: False
-                        table: tbl_products
-                    IconButton:
-                        id: btn_search_local_code
-                        source: './assets/icons/search_1.png'
-                        on_release:
-                            txt_local_code.focus = True
-                            root.btn_search_local_code_on_press()
-                # Supplier code
-                TextField:
-                    Icon:
-                        source: './assets/icons/barcode.png'
-                    SearchTextInput:
-                        id: txt_supplier_code
-                        hint_text: "Supplier's code"
-                        on_text_validate: root.btn_search_supplier_code_on_press()
-                        text_validate_unfocus: False
-                        table: tbl_products
-                    IconButton:
-                        id: btn_search_supplier_code
-                        source: './assets/icons/search_1.png'
-                        on_release:
-                            txt_supplier_code.focus = True
-                            root.btn_search_supplier_code_on_press()
-            # Info
-            BoxLayout:
-                orientation: 'horizontal'
-                spacing: dp(8)
-                BoxLayout:
-                    orientation: 'vertical'
-                    size_hint_x: 0.5
-                    # Quantity
-                    BoxLayout:
-                        orientation: 'horizontal'
-                        spacing: dp(10)
-                        TextField:
-                            size_hint_x: 0.6
-                            Icon:
-                                source: './assets/icons/hashtag.png'
-                            InfoLabel:
-                                id: lbl_quantity
-                                text: "Quantity"
-                    # Space
-                    Label:
-                        size_hint_y: None
-                        height: dp(20)
-                    TextField:
-                        # Category
-                        SelectOptionDropDown:
-                            id: optxt_category
-                            icon: './assets/icons/down.png'
-                            text: "VENTAS"
-                            options: ["VENTAS", "DESCUENTOS", "MAYORISTA"]
-                            on_select: root.on_category_change(self)
-                        # Space
-                        Label:
-                            size_hint_x: 0.2
-                            text: ""
-                        # Date
-                        Icon:
-                            source: './assets/icons/calendar.png'
-                        Label:
-                            size_hint_x: None
-                            width: dp(5)
-                            text: ""
-                        InfoLabel:
-                            id: lbl_date
-                            size_hint_x: 0.6
-                            color: (1, 1, 1, 0.8)
-                            text: "00/00/0000"
-                    # Sell 1
-                    BoxLayout:
-                        orientation: 'horizontal'
-                        spacing: dp(10)
-                        TextField:
-                            size_hint_x: 0.45
-                            Icon:
-                                source: './assets/icons/dollar.png'
-                            InfoLabel:
-                                id: lbl_price_1
-                                text: "0.00"
-                        TextField:
-                            size_hint_x: 0.55
-                            InfoLabel:
-                                id: lbl_quantity_1
-                                text: "-"
-                        ScreenManager:
-                            id: sm_add_fraction_1
-                            size_hint_x: None
-                            width: dp(45)
-                            Screen:
-                                name: "btn"
-                                AnchorLayout:
-                                    IconButton:
-                                        id: btn_add_price_1
-                                        source: './assets/icons/plus_big.png'
-                                        on_press: root.btn_add_price_on_press(fraction=0)
-                            Screen:
-                                name: "txt"
-                                on_enter:
-                                    txt_add_price_1.focus = True
-                                    txt_add_price_1.select_all()
-                                TextInput:
-                                    id: txt_add_price_1
-                                    text: "1"
-                                    input_filter: 'float'
-                                    background_color: (1, 1, 1, 0.9)
-                                    foreground_color: (0, 0, 0, 1)
-                                    cursor_color: (0, 0, 0, 1)
-                                    on_text_validate:
-                                        sm_add_fraction_1.current = "btn"
-                                        root.add_item_to_budge(0 ,self.text)
-                    # Sell 2
-                    BoxLayout:
-                        orientation: 'horizontal'
-                        spacing: dp(10)
-                        TextField:
-                            size_hint_x: 0.45
-                            Icon:
-                                source: './assets/icons/dollar.png'
-                            InfoLabel:
-                                id: lbl_price_2
-                                text: "0.00"
-                        TextField:
-                            size_hint_x: 0.55
-                            InfoLabel:
-                                id: lbl_quantity_2
-                                text: "-"
-                        ScreenManager:
-                            id: sm_add_fraction_2
-                            size_hint_x: None
-                            width: dp(45)
-                            Screen:
-                                name: "btn"
-                                AnchorLayout:
-                                    IconButton:
-                                        id: btn_add_price_2
-                                        source: './assets/icons/plus_big.png'
-                                        on_press: root.btn_add_price_on_press(fraction=1)
-                            Screen:
-                                name: "txt"
-                                on_enter:
-                                    txt_add_price_2.focus = True
-                                    txt_add_price_2.select_all()
-                                TextInput:
-                                    id: txt_add_price_2
-                                    text: "1"
-                                    input_filter: 'float'
-                                    background_color: (1, 1, 1, 0.9)
-                                    foreground_color: (0, 0, 0, 1)
-                                    cursor_color: (0, 0, 0, 1)
-                                    on_text_validate:
-                                        sm_add_fraction_2.current = "btn"
-                                        root.add_item_to_budge(1 ,self.text)
-                    # Sell 3
-                    BoxLayout:
-                        orientation: 'horizontal'
-                        spacing: dp(10)
-                        TextField:
-                            size_hint_x: 0.45
-                            Icon:
-                                source: './assets/icons/dollar.png'
-                            InfoLabel:
-                                id: lbl_price_3
-                                text: "0.00"
-                        TextField:
-                            size_hint_x: 0.55
-                            InfoLabel:
-                                id: lbl_quantity_3
-                                text: "-"
-                        ScreenManager:
-                            id: sm_add_fraction_3
-                            size_hint_x: None
-                            width: dp(45)
-                            Screen:
-                                name: "btn"
-                                AnchorLayout:
-                                    IconButton:
-                                        id: btn_add_price_3
-                                        source: './assets/icons/plus_big.png'
-                                        on_press: root.btn_add_price_on_press(fraction=2)
-                            Screen:
-                                name: "txt"
-                                on_enter:
-                                    txt_add_price_3.focus = True
-                                    txt_add_price_3.select_all()
-                                TextInput:
-                                    id: txt_add_price_3
-                                    text: "1"
-                                    input_filter: 'float'
-                                    background_color: (1, 1, 1, 0.9)
-                                    foreground_color: (0, 0, 0, 1)
-                                    cursor_color: (0, 0, 0, 1)
-                                    on_text_validate:
-                                        sm_add_fraction_3.current = "btn"
-                                        root.add_item_to_budge(2 ,self.text)
-                # Image
-                BoxLayout:
-                    size_hint_x: 0.5
-                    Image:
-                        source: './assets/images/DefaultBase.png'
-                        fit_mode: 'cover'
-        # Buttons
-        BoxLayout:
-            orientation: 'horizontal'
-            pos_hint: {'center_x':.5, 'center_y':.5}
-            size_hint_y: None
-            height: self.minimum_height
-            spacing: dp(10)
-            padding: dp(200), dp(0)
-            # Save
-            FilledButton:
-                id: btn_add_price
-                text: "Add"
-                on_release: root.btn_add_price_on_press()
-            # Clean
-            EmptyButton:
-                id: btn_clean
-                text: "Clean"
-                on_press: root.btn_clean_on_press()
-                on_release: txt_product.focus = True
-        # Table
-        DataTable:
-            id: tbl_products
-            header_background_color: (1, 1, 1, 0.5)
-            hint_sizes: (0.1, 0.7, 0.2, 0.2)
-            header: ["Local code", "Product", "Quantity", "Section"]
-            on_selected_row: root.on_selected_row()
+                height: self.minimum_height
+                spacing: dp(10)
+                EmptyButton:
+                    id: btn_save_budget
+                    text: "Save"
+                    disabled: True
+                    on_release: root.btn_save_budget_on_press()
+                EmptyButton:
+                    id: btn_discard_budget
+                    text: "Discard"
+                    color: (.64, .01, .12, 1)
+                    disabled: btn_save_budget.disabled
+                    on_release: root.btn_discard_budget_on_press()
