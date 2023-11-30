@@ -4,6 +4,7 @@ from kivy.uix.screenmanager import NoTransition
 from kivy.lang import Builder
 
 from screens.buy import Buy
+from screens.budgets import Budgets
 from screens.manage_prices import ManagePrices
 from screens.group_raise import GroupRaise
 from screens.print_tables import PrintTables
