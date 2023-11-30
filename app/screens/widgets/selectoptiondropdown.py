@@ -75,3 +75,6 @@ class SelectOptionDropDown(Widget):
             else:
                 if self.ids.txt_option.focus:
                     self.create_dropdown(self.options)
+
+    def get_focus_next(self):
+        return self.ids.txt_option.get_focus_next()
