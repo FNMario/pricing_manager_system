@@ -1,3 +1,232 @@
 #:kivy 2.2.1
+#:import TextField screens.widgets.textfield
+#:import Icon screens.widgets.icon
+#:import IconButton screens.widgets.iconbutton
+#:import InfoLabel screens.widgets.infolabel
+#:import FilledButton screens.widgets.filledbutton
+#:import EmptyButton screens.widgets.emptybutton
+#:import DataTable screens.widgets.datatable
+#:import SearchTextInput screens.widgets.searchtextinput
+#:import SelectOptionDropDown screens.widgets.selectoptiondropdown
+#:import dp kivy.metrics.dp
 
 <Budgets>:
+    BoxLayout:
+        orientation: 'vertical'
+        size: root.size
+        # Budgets list
+        BoxLayout:
+            orientation: 'vertical'
+            padding: dp(8)
+            # Search form
+            BoxLayout:
+                id: lyt_form_search_budgets
+                orientation: 'horizontal'
+                size_hint_y: None
+                height: dp(60)
+                padding: dp(8)
+                spacing: dp(8)
+                # Number
+                TextField:
+                    size_hint_x: 0.3
+                    Icon:
+                        source: './assets/icons/hashtag.png'
+                    SearchTextInput:
+                        id: txt_budget_number
+                        hint_text: "Number"
+                        on_text_validate: root.search_budget()
+                        text_validate_unfocus: False
+                        table: tbl_budgets_list
+                # Name
+                TextField:
+                    Icon:
+                        source: './assets/icons/form_1.png'
+                    SearchTextInput:
+                        id: txt_search_name
+                        hint_text: "Name"
+                        focus: True
+                        on_text_validate: root.search_budget()
+                        text_validate_unfocus: False
+                        table: tbl_budgets_list
+                # From date
+                TextField:
+                    size_hint_x: 0.4
+                    Icon:
+                        source: './assets/icons/calendar.png'
+                    TextInput:
+                        id: txt_from_date
+                        hint_text: "From date"
+                    IconButton:
+                        id: btn_refresh_date
+                        on_press: root.show_calendar(txt_from_date)
+                        source: './assets/icons/calendar.png'
+                # To date
+                TextField:
+                    size_hint_x: 0.4
+                    Icon:
+                        source: './assets/icons/calendar.png'
+                    TextInput:
+                        id: txt_to_date
+                        hint_text: "To date"
+                    IconButton:
+                        id: btn_refresh_date
+                        on_press: root.show_calendar(txt_to_date)
+                        source: './assets/icons/calendar.png'
+                # Search button
+                IconButton:
+                    source: './assets/icons/search_1.png'
+                    size: dp(25), dp(25)
+                    on_press: root.search_budget()
+                # Clean button
+                IconButton:
+                    source: './assets/icons/big-cross_c.png'
+                    size: dp(25), dp(25)
+                    on_press: root.clear_form(lyt_form_search_budgets)
+            # Table budgets
+            DataTable:
+                id: tbl_budgets_list
+                hint_sizes: [0.4, 1, 0.6, 0.6, 0.6]
+                header: ["Number", "Name", "Phone", "Email", "Address"]
+                items: root.search_budget(True)
+                on_selected_row: root.on_tbl_budgets_list_selected_row()
+        # Budget
+        Splitter:
+            sizable_from: 'top'
+            min_size: 330
+            max_size: 550
+            BoxLayout:
+                orientation: 'vertical'
+                padding: dp(8)
+                # Edit header form
+                BoxLayout:
+                    id: lyt_form_edit_header
+                    orientation: 'horizontal'
+                    size_hint_y: None
+                    height: dp(50)
+                    padding: dp(8)
+                    spacing: dp(8)
+                    # Name
+                    TextField:
+                        Icon:
+                            source: './assets/icons/user_1.png'
+                        TextInput:
+                            id: txt_name
+                            hint_text: "Name"
+                            on_text: root.all_upper_case(self, 50)
+                    # Phone
+                    TextField:
+                        Icon:
+                            source: './assets/icons/phone_32x32.png'
+                        TextInput:
+                            id: txt_phone
+                            hint_text: "Phone"
+                            on_text: root.all_upper_case(self, 20)
+                    # Email
+                    TextField:
+                        Icon:
+                            source: './assets/icons/at_32x32.png'
+                        TextInput:
+                            id: txt_email
+                            hint_text: "Email"
+                            on_text: root.all_upper_case(self, 50)
+                    # Address
+                    TextField:
+                        Icon:
+                            source: './assets/icons/marker_32x32.png'
+                        TextInput:
+                            id: txt_address
+                            hint_text: "Address"
+                            on_text: root.all_upper_case(self, 60)
+                    # Save button
+                    IconButton:
+                        source: './assets/icons/save-disk.png'
+                        size: dp(25), dp(25)
+                        on_press: root.btn_save_header()
+                # Budget talbe
+                DataTable:
+                    id: tbl_budget
+                    hint_sizes: [0.2, 1, 0.3, 0.3]
+                    header: ["Quantity", "Product", "Unit price", "Price"]
+                    on_selected_row: root.on_tbl_budget_selected_row()
+                # Edit item form
+                BoxLayout:
+                    id: lyt_edit_item_form
+                    orientation: 'horizontal'
+                    size_hint_y: None
+                    height: dp(50)
+                    padding: dp(8)
+                    spacing: dp(8)
+                    TextField:
+                        size_hint_x: None
+                        width: dp(110)
+                        Icon:
+                            source: './assets/icons/hashtag.png'
+                        TextInput:
+                            id: txt_quantity
+                            hint_text: "Quantity"
+                            input_filter: 'float'
+                            # table: tbl_budget
+                    TextField:
+                        Icon:
+                            source: './assets/icons/box.png'
+                        TextInput:
+                            id: txt_product
+                            hint_text: "Product"
+                            # table: tbl_budget
+                    TextField:
+                        size_hint_x: None
+                        width: max(dp(150), lyt_edit_item_form.width * 0.15)
+                        Icon:
+                            source: './assets/icons/dollar.png'
+                        TextInput:
+                            id: txt_unit_price
+                            hint_text: "Unit price"
+                            input_filter: 'float'
+                            # table: tbl_budget
+                    TextField:
+                        size_hint_x: None
+                        width: max(dp(150), lyt_edit_item_form.width * 0.15)
+                        Icon:
+                            source: './assets/icons/dollar.png'
+                        TextInput:
+                            id: txt_total_price
+                            hint_text: "Total price"
+                            input_filter: 'float'
+                            # table: tbl_budget
+                    # Save button
+                    IconButton:
+                        id: btn_save_item
+                        source: './assets/icons/save-disk.png'
+                        size: dp(25), dp(25)
+                        on_press: root.btn_save_item()
+                    # # Delete item button
+                    # IconButton:
+                    #     id: btn_delete_item
+                    #     source: './assets/icons/big-cross_c.png'
+                    #     size: dp(25), dp(25)
+                    #     on_press: root.btn_delete_item()
+                # Buttons
+                BoxLayout:
+                    orientation: 'horizontal'
+                    size_hint_y: None
+                    height: dp(50)
+                    padding: dp(8)
+                    spacing: dp(10)
+                    EmptyButton:
+                        id: btn_edit_budget
+                        text: "Add/delete products on [u]Buy[/u]"
+                        markup: True
+                        disabled: False
+                        on_release: root.btn_edit_budget_on_press()
+                    EmptyButton:
+                        id: btn_refresh_budget
+                        text: "Refresh prices"
+                        disabled: False
+                        color: (.17, .85, .62, 1)
+                        on_release: root.btn_refresh_budget_on_press()
+                    EmptyButton:
+                        id: btn_discard_budget
+                        text: "Discard budget"
+                        disabled: False
+                        color: (.64, .01, .12, 1)
+                        on_release: root.btn_discard_budget_on_press()
