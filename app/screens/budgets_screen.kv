@@ -18,6 +18,7 @@
         BoxLayout:
             orientation: 'vertical'
             padding: dp(8)
+            size_hint_y: 0.5
             # Search form
             BoxLayout:
                 id: lyt_form_search_budgets
@@ -85,28 +86,40 @@
             # Table budgets
             DataTable:
                 id: tbl_budgets_list
-                hint_sizes: [0.4, 1, 0.6, 0.6, 0.6]
-                header: ["Number", "Name", "Phone", "Email", "Address"]
+                hint_sizes: [0.2, 1, 0.6]
+                header: ["Number", "Name", "Date"]
                 items: root.search_budget(True)
                 on_selected_row: root.on_tbl_budgets_list_selected_row()
         # Budget
         Splitter:
             sizable_from: 'top'
-            min_size: 330
-            max_size: 550
+            min_size: dp(340)
+            max_size: root.height - dp(220)
             BoxLayout:
                 orientation: 'vertical'
-                padding: dp(8)
+                padding: dp(8), 0
                 # Edit header form
-                BoxLayout:
+                StackLayout:
                     id: lyt_form_edit_header
-                    orientation: 'horizontal'
-                    size_hint_y: None
-                    height: dp(50)
                     padding: dp(8)
-                    spacing: dp(8)
+                    spacing: dp(8), 0
+                    size_hint_y: None
+                    height: self.minimum_height
+                    # CUIT_CUIL
+                    TextField:
+                        size_hint_x: 0.3
+                        Icon:
+                            source: './assets/icons/id_32x32.png'
+                        SelectOptionDropDown:
+                            id: txt_cuit_cuil
+                            hint_text: "CUIT / CUIL"
+                            readonly: False
+                            icon: './assets/icons/down.png'
+                            options: root.get_cuit_cuil_list()
+                            on_text: root.all_upper_case(self, 13)
                     # Name
                     TextField:
+                        size_hint_x: 0.7
                         Icon:
                             source: './assets/icons/user_1.png'
                         TextInput:
@@ -115,6 +128,7 @@
                             on_text: root.all_upper_case(self, 50)
                     # Phone
                     TextField:
+                        size_hint_x: 0.33
                         Icon:
                             source: './assets/icons/phone_32x32.png'
                         TextInput:
@@ -123,6 +137,7 @@
                             on_text: root.all_upper_case(self, 20)
                     # Email
                     TextField:
+                        size_hint_x: 0.34
                         Icon:
                             source: './assets/icons/at_32x32.png'
                         TextInput:
@@ -131,22 +146,18 @@
                             on_text: root.all_upper_case(self, 50)
                     # Address
                     TextField:
+                        size_hint_x: 0.33
                         Icon:
                             source: './assets/icons/marker_32x32.png'
                         TextInput:
                             id: txt_address
                             hint_text: "Address"
                             on_text: root.all_upper_case(self, 60)
-                    # Save button
-                    IconButton:
-                        source: './assets/icons/save-disk.png'
-                        size: dp(25), dp(25)
-                        on_press: root.btn_save_header()
                 # Budget talbe
                 DataTable:
                     id: tbl_budget
-                    hint_sizes: [0.2, 1, 0.3, 0.3]
-                    header: ["Quantity", "Product", "Unit price", "Price"]
+                    hint_sizes: [0.2, 1, 0.3, 0.3, 0.3]
+                    header: ["Quantity", "Product", "Category", "Unit price", "Price"]
                     on_selected_row: root.on_tbl_budget_selected_row()
                 # Edit item form
                 BoxLayout:
@@ -175,6 +186,15 @@
                             # table: tbl_budget
                     TextField:
                         size_hint_x: None
+                        width: dp(60)
+                        SelectOptionDropDown:
+                            id: txt_category
+                            readonly: False
+                            icon: './assets/icons/down.png'
+                            options: ["V", "D", "M"]
+                            on_text: root.all_upper_case(self, 13)
+                    TextField:
+                        size_hint_x: None
                         width: max(dp(150), lyt_edit_item_form.width * 0.15)
                         Icon:
                             source: './assets/icons/dollar.png'
@@ -185,7 +205,7 @@
                             # table: tbl_budget
                     TextField:
                         size_hint_x: None
-                        width: max(dp(150), lyt_edit_item_form.width * 0.15)
+                        width: max(dp(60), lyt_edit_item_form.width * 0.15)
                         Icon:
                             source: './assets/icons/dollar.png'
                         TextInput:
@@ -212,6 +232,11 @@
                     height: dp(50)
                     padding: dp(8)
                     spacing: dp(10)
+                    FilledButton:
+                        id: btn_save_changes
+                        text: "Save changes"
+                        disabled: False
+                        on_release: root.btn_save_changes_on_press()
                     EmptyButton:
                         id: btn_edit_budget
                         text: "Add/delete products on [u]Buy[/u]"
@@ -225,8 +250,8 @@
                         color: (.17, .85, .62, 1)
                         on_release: root.btn_refresh_budget_on_press()
                     EmptyButton:
-                        id: btn_discard_budget
-                        text: "Discard budget"
+                        id: btn_discard_changes
+                        text: "Discard changes"
                         disabled: False
                         color: (.64, .01, .12, 1)
-                        on_release: root.btn_discard_budget_on_press()
+                        on_release: root.btn_discard_changes_on_press()

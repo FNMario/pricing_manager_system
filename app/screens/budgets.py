@@ -19,8 +19,8 @@ class Budgets(Screen):
     def on_tbl_budgets_list_selected_row(self):
         pass
 
-    def btn_save_header(self):
-        pass
+    def get_cuit_cuil_list(self):
+        return []
 
     def on_tbl_budget_selected_row(self):
         pass
@@ -28,7 +28,7 @@ class Budgets(Screen):
     def btn_save_item(self):
         pass
 
-    def btn_save_item(self):
+    def btn_save_changes_on_press(sef):
         pass
 
     def btn_edit_budget_on_press(sef):
@@ -37,7 +37,7 @@ class Budgets(Screen):
     def btn_refresh_budget_on_press(sef):
         pass
 
-    def btn_discard_budget_on_press(sef):
+    def btn_discard_changes_on_press(sef):
         pass
 
     def all_upper_case(self, instance, max_length: int = None):
