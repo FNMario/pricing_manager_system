@@ -306,6 +306,125 @@ def save_section(section: dict) -> bool:
     return False
 
 
+def get_clients() -> list[tuple]:
+    global _clients
+    return _clients
+
+
+def get_client(cuit_cuil: str) -> list[tuple]:
+    clients = get_clients()
+    return [client for client in clients if client[0].replace('-', '') == cuit_cuil.replace('-', '')]
+
+
+def save_client(client: dict) -> bool:
+    global _clients
+    assert 'cuit_cuil' in client, "program_error"
+    assert len(client['cuit_cuil'].replace('-', '')
+               ) == 11, "cuit_cuil must be in format XX-XXXXXXXX-X"
+    assert 'name' in client, "program_error."
+    assert client['name'], "Name cannot be empty"
+    assert 'phone' in client, "program_error."
+    assert 'email' in client, "program_error."
+    assert 'address' in client, "program_error."
+    assert 'city' in client, "program_error."
+    assert 'cp' in client, "program_error."
+    client.update(
+        {
+            'cuit_cuil': client['cuit_cuil'].replace('-', ''),
+            'cp': int(client['cp']),
+            'name': client['name'].title()
+        }
+    )
+    try:
+        # db.save_client(data=client)
+        item = (
+            client['cuitcuil'],
+            client['name'],
+            client['email'],
+            client['phone'],
+            client['cp'],
+            client['city'],
+            client['address']
+        )
+        client_cuits = [_[0] for _ in get_clients()]
+        if client['cuit_cuil'] in client_cuits:
+            index = client_cuits.index(client['cuit_cuil'])
+            _clients[index] = item
+            return True
+        else:
+            _clients.append(item)
+    except Exception as e:
+        logging.error(e)
+        return False
+
+
+def get_budgets(budget_number: int, name: str, from_date, to_date) -> list[tuple]:
+    global _budgets
+    return _budgets
+
+
+def get_budget_items(budget_number: int) -> list[tuple]:
+    # items = db.get_budget_items(budget_number)
+    # categories= {1:"V", 2:"D", 3:"M"}
+    # for item in items:
+    #     item = (
+    #         item[0],
+    #         item[1],
+    #         item[2],
+    #         categories[item[3]],
+    #         item[4],
+    #         item[5],
+    #     )
+    # return items
+    global _budget_items
+    categories= {1:"V", 2:"D", 3:"M"}
+    items_to_return = list()
+    for item in _budget_items:
+        if item[1] == budget_number:
+            items_to_return.append((
+                item[0],
+                item[2],
+                item[3],
+                categories[item[4]],
+                item[5],
+                item[6]
+            ))
+    return items_to_return
+
+# product_id, ~budget_id, quantity, unit_price, sales_category_id, description, fraction_level
+
+
+
+def save_budget(budget_data: dict, items: list) -> bool:
+    has_cuit = budget_data['cuit_cuil'] != ""
+    has_name = budget_data['name'] != ""
+    has_budget_number = budget_data['budget_number'] > 0
+    has_items = len(items) > 0
+    assert has_budget_number, "Program error: no valid budget number."
+    assert has_cuit or has_name, "Budget must have a cuit and/or a name."
+    assert has_items, "Budget must have at least one product."
+    budget_data.update({
+        'id': budget_data['budget_number'],
+        'client_cuit_cuil': budget_data['cuit_cuil']
+    })
+    logging.info('Budget: Budget saved!')
+    # saved_items = db.get_budget_items(budget_number=budget_data['budget_number'])
+    # items_to_drop = list()
+    # categories = {"V":1, "D":2, "M":3}
+    # for item in items:
+    #     item[2] = categories[item[2]]
+    # for item in saved_items:
+    #     if item[1:] in items:
+    #         items.remove(item[1:])
+    #     else:
+    #         items_to_drop.append(item)
+                
+    # db.drop_items(items=items_to_drop)
+    # db.save_items(items=items)
+    # db.save_budget(budget_data=budget_data)
+
+
+
 def get_tables_to_print_names(section: str, name: str = None) -> list[str]:
     # db.get_tables_to_print_names(section, name)
     tables = [('usesrs',), ('orders',)]
@@ -334,7 +453,8 @@ def save_table_to_print_data(items_code, headers):
 
 
 def print_table(items, header):
-    pass
+    from tabulate import tabulate
+    print(tabulate(items, headers=header, tablefmt="fancy_outline"))
 
 
 # Prices
@@ -688,4 +808,57 @@ _list_of_products_for_sale = [
     ('MTE4002', 'TELA LAME BONDEADO XMTS', '10 Metros', 'MERCERIA', None, None),
     ('PRG0004', 'RABO DE GALLO BLANCO 30/35CM AL',
      '1000 Gramos', 'RABO GA', None, 'PLCH71001'),
+]
+
+
+_clients = [
+    ("20123456789", "Estefanía Maria Gonzales", "estefania.maria.gonzales@example.com",
+     "1234567890", 1234, "Buenos Aires", "123 Calle Falsa"),
+    ("23234567890", "Juan Carlos Rodriguez", "juan.carlos.rodriguez@example.com",
+     "2345678901", 2345, "Córdoba", "456 Calle Falsa"),
+    ("27345678901", "María Fernández", "maria.fernandez@example.com", "3456789012",
+     3456, "Rosario", "789 Calle Falsa"),
+    ("30456789012", "Carlos Alberto Gómez", "carlos.alberto.gomez@example.com",
+     "4567890123", 4567, "Mendoza", "1011 Calle Falsa"),
+    ("33567890123", "Ana Laura Pérez", "ana.laura.perez@example.com",
+     "5678901234", 5678, "La Plata", "1213 Calle Falsa"),
+    ("20678901234", "Luis Alberto Sánchez", "luis.alberto.sanchez@example.com",
+     "6789012345", 6789, "San Miguel", "1415 Calle Falsa")
+]
+
+_budgets = [
+    # number, name, date, phone, email, address, additional_discount, client—cuit-cuil
+    (105201, "Municipalidad de Concordia", datetime.datetime(
+        2023, 8, 12), "",  "", "Concordia (3200), Argentina", 0, ""),
+    (105202, "Estefanía Gonzales", datetime.datetime(
+        2023, 8, 15), "",  "", "Bolivar 23, Colón, Entre Ríos", 0, "20123456789"),
+    (105203, "Municipalidad de Concordia", datetime.datetime(
+        2023, 8, 23), "",  "", "Concordia (3200), Argentina", 0, ""),
+    (105204, "Federico", datetime.datetime(2023, 8, 23),
+     "",  "", "Concordia (3200), Argentina", 0, ""),
+]
+
+_budget_items = [
+    # product_id, budget_id, quantity, unit_price, sales_category_id, description, fraction_level
+    ('APM0007', 105201, 3, 579, 2, 'PELOTA METAL 12 MM', 2),
+    ('APM1006', 105201, 22, 377, 2, 'PLASTICO METALIZADO CAPUCHON 10 MM C/PUNTOS X 500 GRS.', 1),
+    ('ATP0005', 105201, 25, 190, 2, 'TACHA PARA PEGAR 8MM 2000 UNID', 2),
+    ('ATP0006', 105201, 14, 480, 2, 'TACHA PARA PEGAR 10X10 2000 UNID', 1),
+    ('BPN1017', 105201, 15, 580, 2, 'PIEDRA P/COSER NOLITA OVAL 10X14 MM', 1),
+    ('BPV1005', 105201, 17, 516, 1, 'PIEDRA CRISTAL 4MM COLOR # CRYSTAL', 0),
+    ('ACR1004', 105202, 6, 218, 3, 'CRUZ CHICA PALITO DORADA', 1),
+    ('AFD0069', 105202, 21, 346, 3, 'FUNDICION DIJE CHICO CRUZ C/JESUS Y S. BENITO', 1),
+    ('APE0006', 105202, 17, 505, 3, 'PERLA ACRILICA 12 MM', 1),
+    ('APM1006', 105202, 18, 585, 1, 'PLASTICO METALIZADO CAPUCHON 10 MM C/PUNTOS X 500 GRS.', 2),
+    ('ATP0005', 105202, 18, 614, 1, 'TACHA PARA PEGAR 8MM 2000 UNID', 1),
+    ('AFD0069', 105203, 24, 541, 2, 'FUNDICION DIJE CHICO CRUZ C/JESUS Y S. BENITO', 2),
+    ('APE0006', 105203, 24, 174, 2, 'PERLA ACRILICA 12 MM', 0),
+    ('ATP0006', 105203, 19, 251, 2, 'TACHA PARA PEGAR 10X10 2000 UNID', 1),
+    ('MCD1004', 105203, 14, 314, 2, 'CIERRE DIENTE PERRO DESMONTABLE X 45 CM', 1),
+    ('MCL2002', 105203, 12, 310, 3, 'CORDON DE LUREX CHINO GRUESO', 1),
+    ('APA1003', 105204, 4, 238, 2, 'PIEDRA ENGARZADA PICOS', 2),
+    ('ATP0006', 105204, 15, 464, 3, 'TACHA PARA PEGAR 10X10 2000 UNID', 0),
+    ('BPV1005', 105204, 6, 617, 1, 'PIEDRA CRISTAL 4MM COLOR # CRYSTAL', 2),
+    ('MAM0007', 105204, 25, 244, 1, 'CARRETEL METALICO MAQ.', 2),
+    ('MGA0102', 105204, 32, 298, 1, 'GALON 50253 DE LENT CUAD DE 2.5CM 5 HIL. DE LENT.', 1),
 ]
