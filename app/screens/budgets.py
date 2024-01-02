@@ -5,7 +5,7 @@ from kivy.properties import BooleanProperty, ListProperty, NumericProperty
 from screens.widgets.textfield import TextField
 from screens.widgets.messagebox import MessageBox
 
-from interface import get_budget_items, get_budgets, get_client, get_clients, save_budget
+from interface import get_budget_items, get_budgets, get_client, get_clients, get_product_prices, save_budget
 
 import logging
 
@@ -194,11 +194,11 @@ class Budgets(Screen):
         )
         item = (    # for self.budget_items
             budget_item[0],  # product_id
-            table_item[0],  # quantity
-            table_item[4],  # unit_price
+            float(table_item[0]),  # quantity
+            float(table_item[4]),  # unit_price
             table_item[3],  # sales_category_id
             table_item[2],  # description
-            budget_item[5],  # fraction_level
+            int(budget_item[5]),  # fraction_level
         )
 
         if not all([i != '' for i in table_item]):
@@ -244,9 +244,30 @@ class Budgets(Screen):
         pass
 
     def btn_refresh_budget_on_press(self):
-        table = self.ids.tbl_budget
-        for row in range(len(table.items)):
-            table.selected_row = row
+
+        for row, item in enumerate(self.budget_items):
+            categories = {"V": 0, "D": 1, "M": 2}
+            prices, _, _ = get_product_prices(item[0])
+            # prices[fraction][category]
+            unit_price = prices[item[5]][categories[item[3]]]
+            self.budget_items[row] = (
+                item[0],
+                item[1],
+                unit_price,
+                item[3],
+                item[4],
+                item[5]
+            )
+
+        table_items = [(
+            str(item[1]),
+            str(item[0]),
+            str(item[4]),
+            str(item[3]),
+            str(item[2]),
+            str(item[1] * item[2])
+        ) for item in self.budget_items]
+        self.ids.tbl_budget.items = table_items
 
         self.budget_changed = True
 

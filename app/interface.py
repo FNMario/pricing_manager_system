@@ -377,7 +377,7 @@ def get_budget_items(budget_number: int) -> list[tuple]:
     #     )
     # return items
     global _budget_items
-    categories= {1:"V", 2:"D", 3:"M"}
+    categories = {1: "V", 2: "D", 3: "M"}
     items_to_return = list()
     for item in _budget_items:
         if item[1] == budget_number:
@@ -392,7 +392,6 @@ def get_budget_items(budget_number: int) -> list[tuple]:
     return items_to_return
 
 # product_id, ~budget_id, quantity, unit_price, sales_category_id, description, fraction_level
-
 
 
 def save_budget(budget_data: dict, items: list) -> bool:
@@ -418,11 +417,10 @@ def save_budget(budget_data: dict, items: list) -> bool:
     #         items.remove(item[1:])
     #     else:
     #         items_to_drop.append(item)
-                
+
     # db.drop_items(items=items_to_drop)
     # db.save_items(items=items)
     # db.save_budget(budget_data=budget_data)
-
 
 
 def get_tables_to_print_names(section: str, name: str = None) -> list[str]:
@@ -841,7 +839,8 @@ _budgets = [
 _budget_items = [
     # product_id, budget_id, quantity, unit_price, sales_category_id, description, fraction_level
     ('APM0007', 105201, 3, 579, 2, 'PELOTA METAL 12 MM', 2),
-    ('APM1006', 105201, 22, 377, 2, 'PLASTICO METALIZADO CAPUCHON 10 MM C/PUNTOS X 500 GRS.', 1),
+    ('APM1006', 105201, 22, 377, 2,
+     'PLASTICO METALIZADO CAPUCHON 10 MM C/PUNTOS X 500 GRS.', 1),
     ('ATP0005', 105201, 25, 190, 2, 'TACHA PARA PEGAR 8MM 2000 UNID', 2),
     ('ATP0006', 105201, 14, 480, 2, 'TACHA PARA PEGAR 10X10 2000 UNID', 1),
     ('BPN1017', 105201, 15, 580, 2, 'PIEDRA P/COSER NOLITA OVAL 10X14 MM', 1),
@@ -849,7 +848,8 @@ _budget_items = [
     ('ACR1004', 105202, 6, 218, 3, 'CRUZ CHICA PALITO DORADA', 1),
     ('AFD0069', 105202, 21, 346, 3, 'FUNDICION DIJE CHICO CRUZ C/JESUS Y S. BENITO', 1),
     ('APE0006', 105202, 17, 505, 3, 'PERLA ACRILICA 12 MM', 1),
-    ('APM1006', 105202, 18, 585, 1, 'PLASTICO METALIZADO CAPUCHON 10 MM C/PUNTOS X 500 GRS.', 2),
+    ('APM1006', 105202, 18, 585, 1,
+     'PLASTICO METALIZADO CAPUCHON 10 MM C/PUNTOS X 500 GRS.', 2),
     ('ATP0005', 105202, 18, 614, 1, 'TACHA PARA PEGAR 8MM 2000 UNID', 1),
     ('AFD0069', 105203, 24, 541, 2, 'FUNDICION DIJE CHICO CRUZ C/JESUS Y S. BENITO', 2),
     ('APE0006', 105203, 24, 174, 2, 'PERLA ACRILICA 12 MM', 0),
@@ -860,5 +860,6 @@ _budget_items = [
     ('ATP0006', 105204, 15, 464, 3, 'TACHA PARA PEGAR 10X10 2000 UNID', 0),
     ('BPV1005', 105204, 6, 617, 1, 'PIEDRA CRISTAL 4MM COLOR # CRYSTAL', 2),
     ('MAM0007', 105204, 25, 244, 1, 'CARRETEL METALICO MAQ.', 2),
-    ('MGA0102', 105204, 32, 298, 1, 'GALON 50253 DE LENT CUAD DE 2.5CM 5 HIL. DE LENT.', 1),
+    ('MGA0102', 105204, 32, 298, 1,
+     'GALON 50253 DE LENT CUAD DE 2.5CM 5 HIL. DE LENT.', 1),
 ]
