@@ -275,17 +275,20 @@ class Budgets(Screen):
         def answer_clicked(answer):
             if answer == "Cancel":
                 return
-
-            budget = [item for item in self.budgets if item[0]
-                      == self.selected_budget][0]
-            budget = {
-                'cuit_cuil': budget[7],
-                'name': budget[1],
-                'phone': budget[3],
-                'email': budget[4],
-                'address': budget[5],
-                'budget_number': budget[0]
-            }
+            try:
+                budget = [item for item in self.budgets if item[0]
+                        == self.selected_budget][0]
+                budget = {
+                    'cuit_cuil': budget[7],
+                    'name': budget[1],
+                    'phone': budget[3],
+                    'email': budget[4],
+                    'address': budget[5],
+                    'budget_number': budget[0]
+                }
+            except IndexError:
+                self.clear_budget()
+                return
             self.update_budget(budget_data=budget,
                                items=get_budget_items(budget_number=self.selected_budget))
             self.is_budget = True
