@@ -1,10 +1,11 @@
 from kivy.uix.screenmanager import Screen
 from kivy.uix.textinput import TextInput
 from kivy.lang import Builder
-from kivy.properties import BooleanProperty, ListProperty, NumericProperty
+from kivy.properties import BooleanProperty, ListProperty, ObjectProperty
 from screens.buy import BudgetItem
 from screens.widgets.textfield import TextField
 from screens.widgets.messagebox import MessageBox
+from KivyCalendar import DatePicker
 
 from interface import get_budget_items, get_budgets, get_client, get_clients, get_product_prices, save_budget
 
@@ -19,6 +20,10 @@ class Budgets(Screen):
     is_budget = BooleanProperty(False)
     budgets = ListProperty()
     budget_items = ListProperty()
+
+    def show_calendar(self, instance):
+        datePicker = CustomDatePicker(field=instance)
+        datePicker.show_popup(1, 1)
 
     def search_budget(self, return_items: bool = False):
         self.budgets = get_budgets(
@@ -345,3 +350,15 @@ class Budgets(Screen):
         instance.text = instance.text.upper()
         if type(max_length) == int:
             instance.text = instance.text[:max_length]
+
+
+class CustomDatePicker(DatePicker):
+    field = ObjectProperty()
+
+    def update_value(self, inst):
+        """ Update textinput value on popup close """
+        date = self.cal.active_date
+        date.reverse()
+        self.text = "%d-%02d-%02d" % tuple(date)
+        self.focus = False
+        self.field.text = self.text

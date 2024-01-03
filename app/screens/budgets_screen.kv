@@ -57,6 +57,7 @@
                     TextInput:
                         id: txt_from_date
                         hint_text: "From date"
+                        readonly: True
                     IconButton:
                         id: btn_refresh_date
                         on_press: root.show_calendar(txt_from_date)
@@ -69,6 +70,7 @@
                     TextInput:
                         id: txt_to_date
                         hint_text: "To date"
+                        readonly: True
                     IconButton:
                         id: btn_refresh_date
                         on_press: root.show_calendar(txt_to_date)
@@ -82,7 +84,7 @@
                 IconButton:
                     source: './assets/icons/big-cross_c.png'
                     size: dp(25), dp(25)
-                    color: (.2, .64, .81, 1)
+                    # color: (.2, .64, .81, 1)
                     on_press: root.clear_form(lyt_form_search_budgets)
             # Table budgets
             DataTable:
@@ -282,3 +284,6 @@
                         disabled: not root.budget_changed
                         color: (.64, .01, .12, 1)
                         on_release: root.btn_discard_changes_on_press()
+
+<DatePicker>:
+    pHint: .25, .3
