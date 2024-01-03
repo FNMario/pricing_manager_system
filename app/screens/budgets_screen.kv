@@ -106,6 +106,21 @@
                     spacing: dp(8), 0
                     size_hint_y: None
                     height: self.minimum_height
+                    # Budget number
+                    TextField:
+                        size_hint_x: 0.23
+                        spacing: dp(2)
+                        Icon:
+                            source: './assets/icons/hashtag.png'
+                        TextInput:
+                            id: txt_budget
+                            readonly: True
+                            hint_text: "New budget"
+                        IconButton:
+                            id: btn_refresh_date
+                            on_press:
+                                txt_budget.text = ""
+                            source: './assets/icons/plus_big.png'
                     # CUIT_CUIL
                     TextField:
                         size_hint_x: 0.3
@@ -123,7 +138,7 @@
                             on_select: root.on_cuit_cuil_selected(self.text)
                     # Name
                     TextField:
-                        size_hint_x: 0.7
+                        size_hint_x: 0.47
                         Icon:
                             source: './assets/icons/user_1.png'
                         TextInput:
@@ -134,7 +149,7 @@
                                 root.budget_changed = True
                     # Phone
                     TextField:
-                        size_hint_x: 0.33
+                        size_hint_x: 0.23
                         Icon:
                             source: './assets/icons/phone_32x32.png'
                         TextInput:
@@ -145,7 +160,7 @@
                                 root.budget_changed = True
                     # Email
                     TextField:
-                        size_hint_x: 0.34
+                        size_hint_x: 0.385
                         Icon:
                             source: './assets/icons/at_32x32.png'
                         TextInput:
@@ -156,7 +171,7 @@
                                 root.budget_changed = True
                     # Address
                     TextField:
-                        size_hint_x: 0.33
+                        size_hint_x: 0.385
                         Icon:
                             source: './assets/icons/marker_32x32.png'
                         TextInput:

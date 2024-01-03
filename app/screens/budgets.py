@@ -18,7 +18,6 @@ class Budgets(Screen):
     is_budget = BooleanProperty(False)
     budgets = ListProperty()
     budget_items = ListProperty()
-    selected_budget = NumericProperty(0)
 
     def search_budget(self, return_items: bool = False):
         self.budgets = get_budgets(
@@ -52,8 +51,8 @@ class Budgets(Screen):
             'address': budget[5],
             'budget_number': budget[0]
         }
-        self.selected_budget = int(budget['budget_number'])
-        items = get_budget_items(budget_number=self.selected_budget)
+        selected_budget = int(budget['budget_number'])
+        items = get_budget_items(budget_number=selected_budget)
         self.update_budget(budget_data=budget,
                            items=items)
         self.is_budget = True
@@ -78,6 +77,7 @@ class Budgets(Screen):
         self.clear_budget()
         # Header
         fields = {
+            'budget_number': self.ids.txt_budget,
             'name': self.ids.txt_name,
             'phone': self.ids.txt_phone,
             'email': self.ids.txt_email,
@@ -95,11 +95,14 @@ class Budgets(Screen):
                 'address': f"{client[6]}, {client[5]}, ({client[4]})"
             }
             for field in fields:
-                fields[field].hint_text = client[field]
-                fields[field].text = budget_data[field]
+                try:
+                    fields[field].hint_text = str(client[field])
+                except KeyError:
+                    pass
+                fields[field].text = str(budget_data[field])
         else:
             for field in fields:
-                fields[field].text = budget_data[field]
+                fields[field].text = str(budget_data[field])
 
         # Items
         # product_id, quantity, unit_price, sales_category_id, description, fraction_level
@@ -222,15 +225,23 @@ class Budgets(Screen):
         self.clear_form(self.ids.lyt_edit_item_form)
 
     def btn_save_changes_on_press(self):
-
+        budget_number = self.ids.txt_budget.text
         budget = {
             'cuit_cuil': self.ids.txt_cuit_cuil.text.replace('-', ''),
             'name': self.ids.txt_name.text,
             'phone': self.ids.txt_phone.text,
             'email': self.ids.txt_email.text,
             'address': self.ids.txt_address.text,
-            'budget_number': self.selected_budget
+            'budget_number': int(budget_number) if budget_number else 0
         }
+        if not (len(budget['cuit_cuil']) == 11 or budget['name']):
+            MessageBox(
+                message="Can't save budget. There must be a cuit/cuil or a name for the budget",
+                kind='warning',
+                title="Can't save budget",
+                buttons='ok_only'
+            )
+            return
         items = self.budget_items
         try:
             save_budget(budget_data=budget, items=items)
@@ -276,8 +287,9 @@ class Budgets(Screen):
             if answer == "Cancel":
                 return
             try:
+                selected_budget = int(self.ids.txt_budget.text)
                 budget = [item for item in self.budgets if item[0]
-                        == self.selected_budget][0]
+                          == selected_budget][0]
                 budget = {
                     'cuit_cuil': budget[7],
                     'name': budget[1],
@@ -286,12 +298,14 @@ class Budgets(Screen):
                     'address': budget[5],
                     'budget_number': budget[0]
                 }
+                self.update_budget(budget_data=budget,
+                                items=get_budget_items(budget_number=selected_budget))
             except IndexError:
                 self.clear_budget()
-                return
-            self.update_budget(budget_data=budget,
-                               items=get_budget_items(budget_number=self.selected_budget))
-            self.is_budget = True
+                self.is_budget = False
+            except ValueError:
+                self.clear_budget()
+                self.is_budget = False
             self.budget_changed = False
 
         msg = MessageBox(

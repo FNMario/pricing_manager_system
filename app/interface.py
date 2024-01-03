@@ -399,7 +399,6 @@ def save_budget(budget_data: dict, items: list) -> bool:
     has_name = budget_data['name'] != ""
     has_budget_number = budget_data['budget_number'] > 0
     has_items = len(items) > 0
-    assert has_budget_number, "Program error: no valid budget number."
     assert has_cuit or has_name, "Budget must have a cuit and/or a name."
     assert has_items, "Budget must have at least one product."
     budget_data.update({
@@ -407,7 +406,13 @@ def save_budget(budget_data: dict, items: list) -> bool:
         'client_cuit_cuil': budget_data['cuit_cuil']
     })
     logging.info('Budget: Budget saved!')
-    # saved_items = db.get_budget_items(budget_number=budget_data['budget_number'])
+    # if has_budget_number:
+    #     db.save_budget(budget_data=budget_data)
+    #     budget_number = budget_data['budget_number']
+    # else:
+    #     budget_number = db.add_budget(budget_data=budget_data)
+        
+    # saved_items = db.get_budget_items(budget_number=budget_number)
     # items_to_drop = list()
     # categories = {"V":1, "D":2, "M":3}
     # for item in items:
@@ -420,7 +425,6 @@ def save_budget(budget_data: dict, items: list) -> bool:
 
     # db.drop_items(items=items_to_drop)
     # db.save_items(items=items)
-    # db.save_budget(budget_data=budget_data)
 
 
 def get_tables_to_print_names(section: str, name: str = None) -> list[str]:
