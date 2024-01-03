@@ -2,6 +2,7 @@ from kivy.uix.screenmanager import Screen
 from kivy.uix.textinput import TextInput
 from kivy.lang import Builder
 from kivy.properties import BooleanProperty, ListProperty, NumericProperty
+from screens.buy import BudgetItem
 from screens.widgets.textfield import TextField
 from screens.widgets.messagebox import MessageBox
 
@@ -252,7 +253,32 @@ class Budgets(Screen):
             logging.error(f'Budget: {e}')
 
     def btn_edit_budget_on_press(self):
-        pass
+        buy_screen = self.parent.get_screen('buy')
+        # header
+        name = self.ids.txt_name.text
+        name = name if name else self.ids.txt_name.hint_text
+        budget_name = f"{self.ids.txt_budget.text} - {name}"
+        buy_screen.ids.lbl_budget_title.text = budget_name
+        # items
+        for item in self.budget_items:
+            prices, quantities, date = get_product_prices(item[0])
+            item = BudgetItem(
+                product=item[4],
+                local_code=item[0],
+                quantity=float(item[1]),
+                fraction_level=int(item[5]),
+                fraction=quantities[item[5]],
+                price=float(item[2]),
+                sales_category=item[3]
+            )
+            # breakpoint()
+            item.bind(on_delete_item=buy_screen.update_budget_total)
+            buy_screen.ids.budget_layout.add_widget(item, 2)
+
+        buy_screen.update_budget_total()
+        # go to budgets_screen
+        self.get_parent_window(
+        ).children[0].current_screen.ids.btn_buy.dispatch('on_press')
 
     def btn_refresh_budget_on_press(self):
 
@@ -299,7 +325,7 @@ class Budgets(Screen):
                     'budget_number': budget[0]
                 }
                 self.update_budget(budget_data=budget,
-                                items=get_budget_items(budget_number=selected_budget))
+                                   items=get_budget_items(budget_number=selected_budget))
             except IndexError:
                 self.clear_budget()
                 self.is_budget = False

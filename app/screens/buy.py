@@ -3,6 +3,7 @@ from kivy.uix.widget import Widget
 from kivy.uix.textinput import TextInput
 from kivy.properties import ObjectProperty, ListProperty, StringProperty, NumericProperty
 from kivy.lang import Builder
+from screens.widgets.messagebox import MessageBox
 from screens.widgets.optionpopup import OptionPopup
 
 from interface import format_numeric_economy, get_product_prices, get_products_for_sale
@@ -74,7 +75,7 @@ class Buy(Screen):
         else:
             enter_quantity(fraction)
 
-    def add_item_to_budge(self, fraction, quantity):
+    def add_item_to_budget(self, fraction, quantity):
         fraction_string = self.fractions[fraction]
         price = self.prices[fraction][self.category]
         quantity = float(quantity)
@@ -87,8 +88,10 @@ class Buy(Screen):
             product=self.ids.txt_product.text,
             local_code=self.ids.txt_local_code.text,
             quantity=quantity,
+            fraction_level=fraction,
             fraction=fraction_string,
             price=price,
+            sales_category=self.ids.optxt_category.text[0]
         )
         item.bind(on_delete_item=self.update_budget_total)
         self.ids.budget_layout.add_widget(item, 2)
@@ -184,10 +187,48 @@ class Buy(Screen):
         self.ids.btn_save_budget.disabled = bool(total <= 0)
 
     def btn_save_budget_on_press(self):
-        pass
+        budgets_screen = self.parent.get_screen('budgets')
+        budgets_screen_table = budgets_screen.ids.tbl_budget
+
+        def transfer_budget_to_budgets_screen(perform="yes"):
+            if perform == "Cancel":
+                return
+            children = self.ids.budget_layout.children.copy()
+            items = [item.to_tuple()
+                     for item in children if isinstance(item, BudgetItem)]
+            budgets_screen.budget_items = items
+            budgets_screen_table.items = [
+                (str(i[1]), i[0], i[4], i[3], str(i[2]), str(i[1]*i[2]))
+                for i in items
+            ]
+            budgets_screen.budget_changed = True
+            budgets_screen.is_budget = True
+            # go to budgets_screen
+            self.get_parent_window(
+            ).children[-1].current_screen.ids.btn_budgets.dispatch('on_press')
+
+            self.btn_discard_budget_on_press()
+
+        if self.ids.lbl_budget_title.text == "New budget":
+            if not budgets_screen.budget_changed:
+                budgets_screen.clear_budget()
+                transfer_budget_to_budgets_screen()
+            else:
+                msg = MessageBox(
+                    message=f"""
+There is already a budget with changes in 'budgets' screen. \
+Are you sure you want to discard those changes \
+and continue with this?""",
+                    kind='question',
+                    buttons=["Continue", "Cancel"],
+                    on_close=transfer_budget_to_budgets_screen
+                )
+        else:
+            transfer_budget_to_budgets_screen()
 
     def btn_discard_budget_on_press(self):
         children = self.ids.budget_layout.children.copy()
+        self.ids.lbl_budget_title.text = "New budget"
         for child in children:
             if isinstance(child, BudgetItem):
                 child.delete_item()
@@ -197,8 +238,10 @@ class BudgetItem(Widget):
     product = StringProperty()
     local_code = StringProperty()
     quantity = NumericProperty()
+    fraction_level = NumericProperty()
     fraction = StringProperty()
     price = NumericProperty()
+    sales_category = StringProperty()
 
     def __init__(self, **kwargs):
         super(BudgetItem, self).__init__(**kwargs)
@@ -211,6 +254,19 @@ class BudgetItem(Widget):
 
     def on_delete_item(self):
         pass
+
+    def to_tuple(self):
+        ''' Return a tuple with this form:
+        (local_code, quantity, unit_price, sales_category, product, fraction)
+        '''
+        return (
+            self.local_code,
+            self.quantity,
+            self.price,
+            self.sales_category,
+            self.product,
+            self.fraction_level,
+        )
 
     # def build(self):
     #     logging.debug("build")

@@ -55,7 +55,7 @@
             height: self.minimum_height
             Label:
                 id: lbl_local_code
-                text: root.local_code
+                text: f"{root.local_code}-{root.sales_category}"
                 size_hint_x: 0.6
                 text_size: self.size
                 valign: 'center'
@@ -232,7 +232,7 @@
                                         cursor_color: (0, 0, 0, 1)
                                         on_text_validate:
                                             sm_add_fraction_1.current = "btn"
-                                            root.add_item_to_budge(0 ,self.text)
+                                            root.add_item_to_budget(0 ,self.text)
                                             self.text = "1"
                         # Sell 2
                         BoxLayout:
@@ -275,7 +275,7 @@
                                         cursor_color: (0, 0, 0, 1)
                                         on_text_validate:
                                             sm_add_fraction_2.current = "btn"
-                                            root.add_item_to_budge(1 ,self.text)
+                                            root.add_item_to_budget(1 ,self.text)
                                             self.text = "1"
                         # Sell 3
                         BoxLayout:
@@ -318,7 +318,7 @@
                                         cursor_color: (0, 0, 0, 1)
                                         on_text_validate:
                                             sm_add_fraction_3.current = "btn"
-                                            root.add_item_to_budge(2 ,self.text)
+                                            root.add_item_to_budget(2 ,self.text)
                                             self.text = "1"
                     # Image
                     BoxLayout:
@@ -338,7 +338,6 @@
                 FilledButton:
                     id: btn_add_price
                     text: "Add"
-                    on_press: print(root.width)
                     on_release: root.btn_add_price_on_press()
                 # Clean
                 EmptyButton:
@@ -383,7 +382,7 @@
                             pos: self.pos
                 Label:
                     id: lbl_budget_title
-                    text: "Budget"
+                    text: "New budget"
                     font_size: dp(16)
                     size_hint_y: None
                     height: self.texture_size[1] * 1.5
@@ -437,7 +436,7 @@
                     on_release: root.btn_save_budget_on_press()
                 EmptyButton:
                     id: btn_discard_budget
-                    text: "Discard"
+                    text: "Discard changes"
                     color: (.64, .01, .12, 1)
                     disabled: btn_save_budget.disabled
                     on_release: root.btn_discard_budget_on_press()
