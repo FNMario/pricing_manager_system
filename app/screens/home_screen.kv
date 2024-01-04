@@ -16,6 +16,7 @@
             size_hint: None, None
             size: dp(280), root.size[1]
             pos_hint: {'center_y':.5, 'left':1}
+            padding: 0, 0, 0, dp(10)
             spacing: dp(5)
             canvas.before:
                 Color:
@@ -40,14 +41,21 @@
             CategoryButton:
                 id: btn_budgets
                 text: "Budgets"
-                icon: './assets/icons/form_1.png'
+                icon: './assets/icons/budget_64x64.png'
                 screen_name: "budgets"
+                on_press: root.change_category(self)
+            # Print tables
+            CategoryButton:
+                id: btn_print_tables
+                text: "Print tables"
+                icon: './assets/icons/printer_64x64.png'
+                screen_name: "print"
                 on_press: root.change_category(self)
             # Manage Prices
             CategoryButton:
                 id: btn_manage_prices
                 text: "Manage Prices"
-                icon: './assets/icons/edit_1.png'
+                icon: './assets/icons/price-edit_64x64.png'
                 screen_name: "manage"
                 on_press: root.change_category(self)
             # Group Raise
@@ -57,13 +65,8 @@
                 icon: './assets/icons/surcharges.png'
                 screen_name: "group"
                 on_press: root.change_category(self)
-            # Print tables
-            CategoryButton:
-                id: btn_print_tables
-                text: "Print tables"
-                icon: './assets/icons/table_1.png'
-                screen_name: "print"
-                on_press: root.change_category(self)
+            Label:
+                id: spc_categories
             # Settings
             CategoryButton:
                 id: btn_settings
@@ -71,14 +74,11 @@
                 icon: './assets/icons/settings_1.png'
                 screen_name: "settings"
                 on_press: root.change_category(self)
-            Label:
-                id: spc_categories
             # Log out
             CategoryButton:
                 id: btn_log_out
                 text: "Log out"
                 icon: './assets/icons/log_out.png'
-                height: dp(70)
                 on_release: root.log_out()
         # Home
         BoxLayout:
@@ -124,11 +124,11 @@
                     name: "buy"
                 Budgets:
                     name: "budgets"
+                PrintTables:
+                    name: "print"
                 ManagePrices:
                     name: "manage"
                 GroupRaise:
                     name: "group"
-                PrintTables:
-                    name: "print"
                 SettingsScreen:
                     name: "settings"

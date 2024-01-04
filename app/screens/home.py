@@ -40,13 +40,16 @@ class HomeWindow(Screen):
             elif text == '2' or keycode == 90 and 'numlock' in modifiers:
                 self.ids.btn_budgets.dispatch('on_press')
                 return True
-            elif text == '3' or keycode == 91 and 'numlock' in modifiers:
-                self.ids.btn_manage_prices.dispatch('on_press')
-                return True
             elif text == '4' or keycode == 92 and 'numlock' in modifiers:
                 self.ids.btn_print_tables.dispatch('on_press')
                 return True
             elif text == '5' or keycode == 93 and 'numlock' in modifiers:
+                self.ids.btn_manage_prices.dispatch('on_press')
+                return True
+            elif text == '6' or keycode == 94 and 'numlock' in modifiers:
+                self.ids.btn_group_raise.dispatch('on_press')
+                return True
+            elif text == '9' or keycode == 97 and 'numlock' in modifiers:
                 self.ids.btn_settings.dispatch('on_press')
                 return True
 
