@@ -4,3 +4,8 @@
     size_hint: None, None
     size: 20, 20
     pos_hint: {'center_y':.5}
+    disabled: True
+    color: (1, 1, 1, 1)
+    canvas.before:
+        Color:
+            rgba: self.color if not self.disabled else (.3, .3, 0, 1)
