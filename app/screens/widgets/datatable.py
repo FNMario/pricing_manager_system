@@ -95,7 +95,7 @@ class DataTable(BoxLayout):
         self._checkboxes.clear()
         self.header_layout = GridLayout(padding=(8, 0))
         self.header_layout.cols = len(self.header) + int(self.show_checkboxes)
-        self.body_layout = GridLayout(size_hint_y=None, padding=(8, 0))
+        self.body_layout = GridLayout(size_hint_y=None, padding=(8, 0), row_default_height=36)
         self.body_layout.bind(minimum_height=self.body_layout.setter('height'))
         self.body_layout.cols = self.header_layout.cols
 
@@ -163,8 +163,9 @@ class DataTable(BoxLayout):
         # add checkbox
         if self.show_checkboxes:
             checkbox = CheckBox(
-                size_hint=(None, None),
-                height=20,
+                # size_hint=(None, None),
+                # height=20,
+                size_hint_x=None,
                 width=30,
                 active=self.checkbox_all.active
             )
@@ -175,16 +176,15 @@ class DataTable(BoxLayout):
             row = self._row
 
         for hint_size, item in zip(self.hint_sizes, item):
-            self.body_layout.add_widget(
-                _Row(
-                    row=row,
-                    text=str(item),
-                    background=bool(self._row % 2 == 1),
-                    size_hint_x=hint_size,
-                    size_hint_y=None,
-                    height=20,
-                )
+            _value = _Row(
+                row=row,
+                text=str(item),
+                background=bool(self._row % 2 == 1),
+                size_hint_x=hint_size,
+                # size_hint_y=None,
+                # height=20,
             )
+            self.body_layout.add_widget(_value)
         self._rows_index.append(row)
         self._row += 1
 
@@ -199,14 +199,19 @@ class DataTable(BoxLayout):
                 else:
                     child.color = child.default_color
                     child.bold = False
+                # if child.texture_size[1] > 20:
+                #     self.body_layout.rows_minimum[child.row] = child.texture_size[1]
+                #     logging.debug(f'datatable.py: {child.text_size} {child.texture_size} {child.size}col: {child.text}')
+                # # if child.texture_size[0] > child.size[0]:
+                # #     logging.debug(f'datatable.py: {child.text_size} {child.texture_size} {child.size}col: {child.text}')
         self.dispatch('on_selected_row')
 
     def on_selected_row(self, *args):
         pass
 
-    def switch_checkbox_state(self, selected_row):
-        if self._checkboxes and selected_row in range(self._row):
-            checkbox = self._checkboxes[self._rows_index.index(selected_row)]
+    def switch_checkbox_state(self, row):
+        if self._checkboxes and row in range(self._row):
+            checkbox = self._checkboxes[self._rows_index.index(row)]
             checkbox.active = not checkbox.active
             return True
         return False
