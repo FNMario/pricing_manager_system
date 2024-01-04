@@ -46,6 +46,8 @@ class MessageBox(ModalView):
         super(MessageBox, self).__init__()
         if not title:
             self.title = kind[0].upper() + kind[1:]
+        else:
+            self.title = title
         self.kind = kind
         self.message = message
         if isinstance(buttons, str):
