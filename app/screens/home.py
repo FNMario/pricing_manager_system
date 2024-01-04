@@ -5,8 +5,9 @@ from kivy.lang import Builder
 
 from screens.buy import Buy
 from screens.budgets import Budgets
-from screens.manage_prices import ManagePrices
+from screens.clients import Clients
 from screens.group_raise import GroupRaise
+from screens.manage_prices import ManagePrices
 from screens.print_tables import PrintTables
 from screens.settings_screen import SettingsScreen
 
@@ -39,6 +40,9 @@ class HomeWindow(Screen):
                 return True
             elif text == '2' or keycode == 90 and 'numlock' in modifiers:
                 self.ids.btn_budgets.dispatch('on_press')
+                return True
+            elif text == '3' or keycode == 91 and 'numlock' in modifiers:
+                self.ids.btn_clients.dispatch('on_press')
                 return True
             elif text == '4' or keycode == 92 and 'numlock' in modifiers:
                 self.ids.btn_print_tables.dispatch('on_press')

@@ -44,6 +44,13 @@
                 icon: './assets/icons/budget_64x64.png'
                 screen_name: "budgets"
                 on_press: root.change_category(self)
+            # Clients
+            CategoryButton:
+                id: btn_clients
+                text: "Clients"
+                icon: './assets/icons/clients_64x64.png'
+                screen_name: "clients"
+                on_press: root.change_category(self)
             # Print tables
             CategoryButton:
                 id: btn_print_tables
@@ -124,6 +131,8 @@
                     name: "buy"
                 Budgets:
                     name: "budgets"
+                Clients:
+                    name: "clients"
                 PrintTables:
                     name: "print"
                 ManagePrices:
