@@ -814,26 +814,20 @@ _list_of_products_for_sale = [
 
 
 _clients = [
-    ("20123456789", "Estefanía Maria Gonzales", "estefania.maria.gonzales@example.com",
-     "1234567890", 1234, "Buenos Aires", "123 Calle Falsa"),
-    ("23234567890", "Juan Carlos Rodriguez", "juan.carlos.rodriguez@example.com",
-     "2345678901", 2345, "Córdoba", "456 Calle Falsa"),
-    ("27345678901", "María Fernández", "maria.fernandez@example.com", "3456789012",
-     3456, "Rosario", "789 Calle Falsa"),
-    ("30456789012", "Carlos Alberto Gómez", "carlos.alberto.gomez@example.com",
-     "4567890123", 4567, "Mendoza", "1011 Calle Falsa"),
-    ("33567890123", "Ana Laura Pérez", "ana.laura.perez@example.com",
-     "5678901234", 5678, "La Plata", "1213 Calle Falsa"),
-    ("20678901234", "Luis Alberto Sánchez", "luis.alberto.sanchez@example.com",
-     "6789012345", 6789, "San Miguel", "1415 Calle Falsa")
+    ('20231439389', 'Alejandro Mario', None, None, 3200, None, 'Italia 1576'),
+    ('20480287631', 'Valentino Benicio Coronel', 'moralessantiago-benjamin@example.com', '+54 15 2456 9652', 3600, 'Corrientes', 'Av. 7 N° 74 Local 96'),
+    ('33254973403', 'Victoria Juan Martin Gomez', 'mcabrera@example.net', '+54 9 3618 2662', 5300, 'Resistencia', 'Calle Pte. Perón N° 265'),
+    ('33350364078', 'Santiago Nicolas Tomàs Gimenez', 'catalina34@example.com', '+54 9 3194 5056', 5400, 'Paraná', 'Av. San Luis N° 83 Piso 4 Dto. 1'),
+    ('20121451752', 'Julia Emilia Perez', 'manuelaguero@example.com', '+54 15 2243 4830', 1900, 'La Rioja', 'Avenida Alem N° 955'),
+    ('33371453860', 'Sr(a). Mateo Escobar', 'camilo27@example.org', '+54 15 2901 4786', 4600, 'Paraná', 'Diagonal Rawson N° 153')
 ]
 
 _budgets = [
     # number, name, date, phone, email, address, additional_discount, client—cuit-cuil
     (105201, "Municipalidad de Concordia", datetime.datetime(
         2023, 8, 12), "",  "", "Concordia (3200), Argentina", 0, ""),
-    (105202, "Estefanía Gonzales", datetime.datetime(
-        2023, 8, 15), "",  "", "Bolivar 23, Colón, Entre Ríos", 0, "20123456789"),
+    (105202, "Julia Emilia Perez", datetime.datetime(
+        2023, 8, 15), "",  "", "Bolivar 23, Colón, Entre Ríos", 0, "20121451752"),
     (105203, "Municipalidad de Concordia", datetime.datetime(
         2023, 8, 23), "",  "", "Concordia (3200), Argentina", 0, ""),
     (105204, "Federico", datetime.datetime(2023, 8, 23),

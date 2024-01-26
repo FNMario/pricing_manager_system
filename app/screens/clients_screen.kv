@@ -1,5 +1,170 @@
 #:kivy 2.2.1
+#:import DataTable screens.widgets.datatable
+#:import TextField screens.widgets.textfield
 
 <Clients>:
-    Label:
-        text: "Clients"
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(8)
+        spacing: dp(5)
+        DataTable:
+            id: tbl_clients
+            hint_sizes: [0.5, 1, 1, 1, 0.4, 0.8, 0.8]
+            header: ["CUIT/CUIL", "name", "email", "phone", "cp", "city", "address"]
+            items: root.get_clients_items()
+            on_selected_row: root.on_selected_row(self.items[self.selected_row])
+        # Form
+        StackLayout:
+            id: lyt_form_edit_header
+            padding: dp(8)
+            spacing: dp(8), 0
+            size_hint_y: None
+            height: self.minimum_height
+            # CUIT_CUIL
+            TextField:
+                size_hint_x: 0.25
+                Icon:
+                    source: './assets/icons/id_32x32.png'
+                TextInput:
+                    id: txt_cuit_cuil
+                    hint_text: "CUIT / CUIL"
+                    on_text: root.max_length(self, 13)
+                    on_text_validate: root.btn_search_client_on_press()
+                IconButton:
+                    id: btn_search_product
+                    source: './assets/icons/search_1.png'
+                    on_press: root.btn_search_client_on_press()
+            # Name
+            TextField:
+                size_hint_x: 0.375
+                Icon:
+                    source: './assets/icons/user_1.png'
+                TextInput:
+                    id: txt_name
+                    hint_text: "Name"
+                    on_text: root.max_length(self, 50)
+            # Phone
+            TextField:
+                size_hint_x: 0.375
+                Icon:
+                    source: './assets/icons/phone_32x32.png'
+                TextInput:
+                    id: txt_phone
+                    hint_text: "Phone"
+                    on_text: root.max_length(self, 20)
+            # Email
+            TextField:
+                size_hint_x: 0.35
+                Icon:
+                    source: './assets/icons/at_32x32.png'
+                TextInput:
+                    id: txt_email
+                    hint_text: "Email"
+                    on_text: root.max_length(self, 50)
+            # Address
+            TextField:
+                size_hint_x: 0.32
+                Icon:
+                    source: './assets/icons/marker_32x32.png'
+                TextInput:
+                    id: txt_address
+                    hint_text: "Address"
+                    on_text: root.max_length(self, 60)
+            Label:
+                text: ","
+                font_size: dp(20)
+                size_hint: None, None
+                size: dp(3), 40
+                padding: 2, 0, 4, 0
+            # city
+            TextField:
+                size_hint_x: 0.2
+                TextInput:
+                    id: txt_city
+                    hint_text: "City"
+                    on_text: root.max_length(self, 45)
+            Label:
+                text: "("
+                font_size: dp(20)
+                size_hint: None, None
+                size: dp(3), 40
+                padding: 2, 0, 4, 0
+            # zip code
+            TextField:
+                size_hint_x: 0.1
+                TextInput:
+                    id: txt_zip_code
+                    hint_text: "Zip code"
+                    input_filter: 'int'
+            Label:
+                text: ")"
+                font_size: dp(20)
+                size_hint: None, None
+                size: dp(3), 40
+                padding: 2, 0, 4, 0
+        # Buttons
+        BoxLayout:
+            id: lyt_form_clients
+            orientation: 'horizontal'
+            size_hint: None, None
+            height: self.minimum_height
+            width: dp(650)
+            pos_hint: {'center_x': 0.5}
+            spacing: dp(10)
+            # FilledButton:
+            #     id: btn_add_client
+            #     background_color: (.17, .85, .62, 1)
+            #     background_normal: ''
+            #     BoxLayout:
+            #         pos: self.parent.pos
+            #         size: self.parent.size
+            #         spacing: dp(8)
+            #         Label:
+            #         Icon:
+            #             source: './assets/icons/plus_big.png'
+            #             color: (.13, .14, .19, 1)
+            #         Label:
+            #             text: "Add client"
+            #             bold: True
+            #             color: (.13, .14, .19, 1)
+            #             size_hint_x: None
+            #             size: self.texture_size
+            #         Label:
+            FilledButton:
+                id: btn_save_client
+                on_press: root.btn_save_client_on_press()
+                BoxLayout:
+                    pos: self.parent.pos
+                    size: self.parent.size
+                    spacing: dp(8)
+                    Label:
+                    Icon:
+                        source: './assets/icons/save-disk_c.png'
+                        color: (.13, .14, .19, 1)
+                    Label:
+                        text: "Save"
+                        bold: True
+                        color: (.13, .14, .19, 1)
+                        size_hint_x: None
+                        size: self.texture_size
+                    Label:
+            FilledButton:
+                id: btn_clear_form
+                background_color: (.64, .01, .12, 1)
+                background_normal: ''
+                on_press: root.clear_form_on_press()
+                BoxLayout:
+                    pos: self.parent.pos
+                    size: self.parent.size
+                    spacing: dp(8)
+                    Label:
+                    Icon:
+                        source: './assets/icons/broom_32x32.png'
+                        color: (.13, .14, .19, 1)
+                    Label:
+                        text: "Clear form"
+                        bold: True
+                        color: (.13, .14, .19, 1)
+                        size_hint_x: None
+                        size: self.texture_size
+                    Label:
