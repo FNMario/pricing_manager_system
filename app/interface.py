@@ -327,22 +327,22 @@ def save_client(client: dict) -> bool:
     assert 'email' in client, "program_error."
     assert 'address' in client, "program_error."
     assert 'city' in client, "program_error."
-    assert 'cp' in client, "program_error."
+    assert 'zip_code' in client, "program_error."
     client.update(
         {
             'cuit_cuil': client['cuit_cuil'].replace('-', ''),
-            'cp': int(client['cp']),
+            'zip_code': int(client['zip_code']),
             'name': client['name'].title()
         }
     )
     try:
         # db.save_client(data=client)
         item = (
-            client['cuitcuil'],
+            client['cuit_cuil'],
             client['name'],
             client['email'],
             client['phone'],
-            client['cp'],
+            client['zip_code'],
             client['city'],
             client['address']
         )

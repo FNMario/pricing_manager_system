@@ -1,6 +1,7 @@
 from kivy.uix.screenmanager import Screen
+from kivy.uix.textinput import TextInput
 from kivy.lang import Builder
-from interface import get_clients
+from interface import get_clients, save_client
 
 import logging
 
@@ -16,7 +17,6 @@ class Clients(Screen):
         return clients
 
     def on_selected_row(self, items):
-        table = self.ids.tbl_clients
         self.ids.txt_cuit_cuil.text = items[0] if items[0] else ""
         self.ids.txt_name.text = items[1] if items[1] else ""
         self.ids.txt_phone.text = items[3] if items[3] else ""
@@ -30,10 +30,43 @@ class Clients(Screen):
             instance.text = instance.text[:max_length]
     
     def btn_search_client_on_press(self):
-        pass
+        search_term = str(self.ids.txt_cuit_cuil.text)
+        if not search_term:
+            return
+        
+        table = self.ids.tbl_clients
+        items = self.get_clients_items()
+        # table.items = items
+        cuits = [item[0] for item in items]
+        for cuit in cuits:
+            if search_term.replace('-', '') in cuit.replace('-', ''):
+                table.selected_row = cuits.index(cuit)
+                return
+        self.clear_form_on_press()
+        self.ids.txt_cuit_cuil.text = search_term
+        self.ids.txt_cuit_cuil.select_all()
 
     def btn_save_client_on_press(self):
-        pass
+        client = {
+        'cuit_cuil': self.ids.txt_cuit_cuil.text,
+        'name': self.ids.txt_name.text,
+        'phone': self.ids.txt_phone.text,
+        'email': self.ids.txt_email.text,
+        'address': self.ids.txt_address.text,
+        'city': self.ids.txt_city.text,
+        'zip_code': self.ids.txt_zip_code.text,
+        }
+
+        try:
+            save_client(client)
+            self.ids.tbl_clients.items = self.get_clients_items()
+            self.clear_form_on_press()
+        except AssertionError as e:
+            logging.error(e)
 
     def clear_form_on_press(self):
-        pass
+        for obj in self.ids.values():
+            if isinstance(obj, TextInput):
+                obj.text = ""
+        self.ids.txt_cuit_cuil.focus = True
+

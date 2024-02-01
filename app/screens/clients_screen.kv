@@ -29,11 +29,13 @@
                     id: txt_cuit_cuil
                     hint_text: "CUIT / CUIL"
                     on_text: root.max_length(self, 13)
+                    text_validate_unfocus: False
                     on_text_validate: root.btn_search_client_on_press()
                 IconButton:
                     id: btn_search_product
                     source: './assets/icons/search_1.png'
                     on_press: root.btn_search_client_on_press()
+                    on_release: txt_cuit_cuil.focus = True
             # Name
             TextField:
                 size_hint_x: 0.375
@@ -152,7 +154,7 @@
                 id: btn_clear_form
                 background_color: (.64, .01, .12, 1)
                 background_normal: ''
-                on_press: root.clear_form_on_press()
+                on_release: root.clear_form_on_press()
                 BoxLayout:
                     pos: self.parent.pos
                     size: self.parent.size
