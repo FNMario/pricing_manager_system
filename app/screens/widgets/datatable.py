@@ -22,7 +22,7 @@ class _Header(Label):
                 raw_items_dict = {row: item for row,
                                   item in enumerate(root.items)}
                 sorted_items_dict = dict(
-                    sorted(raw_items_dict.items(), key=lambda x: x[1][index]))
+                    sorted(raw_items_dict.items(), key=lambda x: str(x[1][index])))
                 root._row = 0
                 root._rows_index.clear()
                 root._checkboxes.clear()
