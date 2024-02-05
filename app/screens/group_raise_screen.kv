@@ -155,13 +155,13 @@
                     pos_hint: {'x': 0.65, 'y': 0}
                     text: "Additive mode"
                 EmptyButton:
-                    id: btn_clean_form
+                    id: btn_clear_form
                     size_hint_x: None
                     width: dp(100)
                     color: (.64, .01, .12, 1)
-                    text: "Clean"
+                    text: "Clear"
                     pos_hint: {'right': 1}
-                    on_release: root.clean_form()
+                    on_release: root.clear_form()
                     disabled: False
         # Raises
         BoxLayout:

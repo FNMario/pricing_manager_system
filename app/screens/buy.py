@@ -97,29 +97,29 @@ class Buy(Screen):
         self.ids.budget_layout.add_widget(item, 2)
 
         self.update_budget_total()
-        self.btn_clean_on_press()
+        self.btn_clear_on_press()
 
-    def btn_clean_on_press(self):
-        self.clean_variables()
-        self.clean_forms(self.ids.form_layout)
-        self.clean_labels()
-        self.clean_table()
+    def btn_clear_on_press(self):
+        self.clear_variables()
+        self.clear_forms(self.ids.form_layout)
+        self.clear_labels()
+        self.clear_table()
         if self.searching_text_input:
             self.searching_text_input.focus = True
         else:
             self.ids.txt_product.focus = True
 
-    def clean_forms(self, parent):
+    def clear_forms(self, parent):
         for child in parent.children:
             if child.children:
-                self.clean_forms(child)
+                self.clear_forms(child)
             else:
                 if isinstance(child, TextInput):
                     if child.readonly:
                         continue
                     child.text = ""
 
-    def clean_labels(self):
+    def clear_labels(self):
         self.ids.lbl_quantity.text = "Quantity"
         self.ids.lbl_date.text = "00/00/0000"
         self.ids.lbl_price_1.text = "0.00"
@@ -129,10 +129,10 @@ class Buy(Screen):
         self.ids.lbl_quantity_2.text = "-"
         self.ids.lbl_quantity_3.text = "-"
 
-    def clean_table(self):
+    def clear_table(self):
         self.ids.tbl_products.items = []
 
-    def clean_variables(self):
+    def clear_variables(self):
         self.prices = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
         self.fractions = ['-', '-', '-']
 

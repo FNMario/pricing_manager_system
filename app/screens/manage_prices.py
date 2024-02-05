@@ -74,7 +74,7 @@ class ManagePrices(Screen):
         unit = self.ids.optxt_unit.text
 
         if not cost or not surcharge or not quantity or not unit:
-            self.ids.prices_tab.clean_prices()
+            self.ids.prices_tab.clear_prices()
             return
 
         cost = float(cost)
@@ -248,28 +248,28 @@ class ManagePrices(Screen):
         try:
             delete_product(data, all_costs=True)
             save_product(data)
-            self.btn_clean_on_press()
+            self.btn_clear_on_press()
         except Exception as e:
             logging.error(e)
 
     def btn_compare_on_press(self):
         pass
 
-    def btn_clean_on_press(self):
-        self.clean_form()
+    def btn_clear_on_press(self):
+        self.clear_form()
         self.products = []
 
-    def clean_form(self):
-        def clean_text_input(parent):
+    def clear_form(self):
+        def clear_text_input(parent):
             for child in parent.children:
                 if child.children:
-                    clean_text_input(child)
+                    clear_text_input(child)
                 else:
                     if isinstance(child, TextInput):
                         child.text = ""
 
-        clean_text_input(self.ids.form_layout)
-        self.ids.prices_tab.clean_prices()
+        clear_text_input(self.ids.form_layout)
+        self.ids.prices_tab.clear_prices()
 
     # Table
 
@@ -324,7 +324,7 @@ class PricesTab(BoxLayout):
         if self.collide_point(*touch.pos):
             self.hidden = not self.hidden
 
-    def clean_prices(self):
+    def clear_prices(self):
         self.prices = [
             [0, 0, 0],
             [0, 0, 0],

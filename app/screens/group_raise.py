@@ -69,7 +69,7 @@ class GroupRaise(Screen):
             if self.searching_text_input:
                 self.searching_text_input.focus = True
 
-    def clean_form(self):
+    def clear_form(self):
         self.ids.txt_product.text = ''
         self.ids.txt_local_code.text = ''
         self.ids.txt_supplier_code.text = ''
@@ -147,7 +147,7 @@ class GroupRaise(Screen):
     def btn_save_on_press(self):
         self.products.clear()
         self.update_table(None, [])
-        self.clean_form()
+        self.clear_form()
 
 
 class CustomDatePicker(DatePicker):
