@@ -57,21 +57,21 @@ class HomeWindow(Screen):
                 self.ids.btn_settings.dispatch('on_press')
                 return True
 
-    # Categories
+    # Tabs
 
-    def change_category(self, instance):
+    def change_tab(self, instance):
         if instance.active:
             instance.active = False
             self.ids.home_screen_manager.current = "none"
         else:
-            for child in self.ids.categories_layout.children:
+            for child in self.ids.tabs_layout.children:
                 child.active = False
             instance.active = True
             self.ids.home_screen_manager.current = instance.screen_name
 
     def log_out(self):
         Window.unbind(on_key_down=self.on_key_down_home)
-        for child in self.ids.categories_layout.children:
+        for child in self.ids.tabs_layout.children:
             child.active = False
         self.ids.home_screen_manager.current = "none"
         self.parent.current = "login"

@@ -1,6 +1,6 @@
 #:kivy 2.2.1
 #:include screens/widgets/widgets_styles.kv
-#:import CategoryButton screens.widgets.categorybutton
+#:import TabButton screens.widgets.tabbutton
 #:import IconButton screens.widgets.iconbutton
 #:import dp kivy.metrics.dp
 
@@ -9,9 +9,9 @@
     BoxLayout:
         orientation: 'horizontal'
         size: root.size
-        # Categories
+        # Tabs
         BoxLayout:
-            id: categories_layout
+            id: tabs_layout
             orientation: 'vertical'
             size_hint: None, None
             size: dp(280), root.size[1]
@@ -31,58 +31,58 @@
                 size_hint_y: None
                 height: dp(130)
             # Buy
-            CategoryButton:
+            TabButton:
                 id: btn_buy
                 text: "Buy"
                 icon: './assets/icons/shopping_cart.png'
                 screen_name: "buy"
-                on_press: root.change_category(self)
+                on_press: root.change_tab(self)
             # Budgets
-            CategoryButton:
+            TabButton:
                 id: btn_budgets
                 text: "Budgets"
                 icon: './assets/icons/budget_64x64.png'
                 screen_name: "budgets"
-                on_press: root.change_category(self)
+                on_press: root.change_tab(self)
             # Clients
-            CategoryButton:
+            TabButton:
                 id: btn_clients
                 text: "Clients"
                 icon: './assets/icons/clients_64x64.png'
                 screen_name: "clients"
-                on_press: root.change_category(self)
+                on_press: root.change_tab(self)
             # Print tables
-            CategoryButton:
+            TabButton:
                 id: btn_print_tables
                 text: "Print tables"
                 icon: './assets/icons/printer_64x64.png'
                 screen_name: "print"
-                on_press: root.change_category(self)
+                on_press: root.change_tab(self)
             # Manage Prices
-            CategoryButton:
+            TabButton:
                 id: btn_manage_prices
                 text: "Manage Prices"
                 icon: './assets/icons/price-edit_64x64.png'
                 screen_name: "manage"
-                on_press: root.change_category(self)
+                on_press: root.change_tab(self)
             # Group Raise
-            CategoryButton:
+            TabButton:
                 id: btn_group_raise
                 text: "Group Raise"
                 icon: './assets/icons/surcharges.png'
                 screen_name: "group"
-                on_press: root.change_category(self)
+                on_press: root.change_tab(self)
             Label:
-                id: spc_categories
+                id: spc_tabs
             # Settings
-            CategoryButton:
+            TabButton:
                 id: btn_settings
                 text: "Settings"
                 icon: './assets/icons/settings_1.png'
                 screen_name: "settings"
-                on_press: root.change_category(self)
+                on_press: root.change_tab(self)
             # Log out
-            CategoryButton:
+            TabButton:
                 id: btn_log_out
                 text: "Log out"
                 icon: './assets/icons/log_out.png'
