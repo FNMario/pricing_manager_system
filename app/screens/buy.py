@@ -205,7 +205,7 @@ class Buy(Screen):
             budgets_screen.is_budget = True
             # go to budgets_screen
             self.get_parent_window(
-            ).children[-1].current_screen.ids.btn_budgets.dispatch('on_press')
+            ).children[-1].current_screen.ids.tab_budgets.dispatch('on_press')
 
             self.btn_discard_budget_on_press()
 

@@ -26,10 +26,13 @@ class HomeWindow(Screen):
     def __init__(self, **kwargs):
         super(HomeWindow, self).__init__(**kwargs)
         self.ids.home_screen_manager.transition = NoTransition()
+
+    # Keyboard handling
+    def on_enter(self, *args):
+        """Called when this screen is displayed to the user."""
         Window.bind(on_key_down=self.on_key_down_home)
 
     def on_key_down_home(self, instance, keyboard, keycode, text, modifiers):
-        # print(self, instance, keyboard, keycode, text, modifiers, sep='\t')
         if keycode == 41:   # Esc
             if self.get_root_window():
                 self.log_out()
@@ -38,29 +41,49 @@ class HomeWindow(Screen):
             if keycode == 43:   # tab
                 self.ids.home_screen_manager.current = self.ids.home_screen_manager.next()
             elif text == '1' or keycode == 89 and 'numlock' in modifiers:
-                self.ids.btn_buy.dispatch('on_press')
+                try:
+                    self.ids.tab_buy.dispatch('on_press')
+                except:
+                    logging.error("tab: No tab in 1 position.")
                 return True
             elif text == '2' or keycode == 90 and 'numlock' in modifiers:
-                self.ids.btn_budgets.dispatch('on_press')
+                try:
+                    self.ids.tab_budgets.dispatch('on_press')
+                except:
+                    logging.error("tab: No tab in 2 position.")
                 return True
             elif text == '3' or keycode == 91 and 'numlock' in modifiers:
-                self.ids.btn_clients.dispatch('on_press')
+                try:
+                    self.ids.tab_clients.dispatch('on_press')
+                except:
+                    logging.error("tab: No tab in 3 position.")
                 return True
             elif text == '4' or keycode == 92 and 'numlock' in modifiers:
-                self.ids.btn_print_tables.dispatch('on_press')
+                try:
+                    self.ids.tab_print_tables.dispatch('on_press')
+                except:
+                    logging.error("tab: No tab in 4 position.")
                 return True
             elif text == '5' or keycode == 93 and 'numlock' in modifiers:
-                self.ids.btn_manage_prices.dispatch('on_press')
+                try:
+                    self.ids.tab_manage_prices.dispatch('on_press')
+                except:
+                    logging.error("tab: No tab in 5 position.")
                 return True
             elif text == '6' or keycode == 94 and 'numlock' in modifiers:
-                self.ids.btn_group_raise.dispatch('on_press')
+                try:
+                    self.ids.tab_group_raise.dispatch('on_press')
+                except:
+                    logging.error("tab: No tab in 6 position.")
                 return True
             elif text == '9' or keycode == 97 and 'numlock' in modifiers:
-                self.ids.btn_settings.dispatch('on_press')
+                try:
+                    self.ids.tab_settings.dispatch('on_press')
+                except:
+                    logging.error("tab: No tab in 9 position.")
                 return True
 
     # Tabs
-
     def refresh_tabs(self, permissions):
         if permissions['access_to_buy']:
             self.add_tab('tab_buy', "Buy",
@@ -96,9 +119,11 @@ class HomeWindow(Screen):
         self.ids[id] = weakref.ref(tab)
 
     def remove_tabs(self):
-        for id in self.ids:
+        ids = list(self.ids.keys())
+        for id in ids:
             if 'tab_' in id:
                 self.ids.tabs_layout.remove_widget(self.ids[id]())
+                self.ids.pop(id)
 
     def change_tab(self, instance):
         if instance.active:
@@ -119,6 +144,7 @@ class HomeWindow(Screen):
         self.parent.current = "login"
         self.parent.get_screen("login").ids.txt_username.focus = True
 
+    # Window's control buttons
     def minimize(self):
         Window.minimize()
 

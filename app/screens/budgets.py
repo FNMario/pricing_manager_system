@@ -283,7 +283,7 @@ class Budgets(Screen):
         buy_screen.update_budget_total()
         # go to budgets_screen
         self.get_parent_window(
-        ).children[0].current_screen.ids.btn_buy.dispatch('on_press')
+        ).children[0].current_screen.ids.tab_buy.dispatch('on_press')
 
     def btn_refresh_budget_on_press(self):
 
