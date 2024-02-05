@@ -12,7 +12,33 @@ class DatabaseError(Exception):
 
 def login(username, password):
     # Call the database function to fetch user data
-    return True
+    # db.login(username, password)
+    if username == 'asd' and password == 'asdf':
+        permissions = {
+            'access_to_buy': True,
+            'access_to_budgets': True,
+            'access_to_clients': True,
+            'access_to_print': True,
+            'access_to_manage': True,
+            'access_to_raise': True,
+            'access_to_settings': True,
+            'username': 'postgres'
+        }
+        return permissions
+    elif username == 'asda' and password == 'asdf':
+        permissions = {
+            'access_to_buy': True,
+            'access_to_budgets': True,
+            'access_to_clients': True,
+            'access_to_print': False,
+            'access_to_manage': False,
+            'access_to_raise': False,
+            'access_to_settings': False,
+            'username': 'postgres'
+        }
+        return permissions
+    else:
+        raise ConnectionError()
 
 
 def create_new_user(username, password):

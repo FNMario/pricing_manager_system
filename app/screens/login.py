@@ -27,18 +27,18 @@ class LoginWindow(Screen):
             return
 
         try:
-            logged = login(username.text, password.text)
-            if not logged:
-                raise ConnectionError
+            user_permissions = login(username.text, password.text)
+            logging.info(f"Login: Logged in as '{username.text}'")
             lbl_info.text = ""
             username.text = ""
-            logging.info(f"Logged in as {username.text}")
+            password.text = ""
+            self.parent.get_screen("home").refresh_tabs(user_permissions)
             self.parent.current = "home"
         except ConnectionError as e:
-            logging.error("Username and password do not match.")
+            logging.error("Login: Username and password do not match.")
             lbl_info.text = "[color=ff6666]Username and password do not match.[/color]"
         except Exception as e:
-            logging.error(e)
+            logging.error(f"Login: {e}")
             lbl_info.text = f"[color=ff6666]{e}[/color]"
 
         password.text = ""

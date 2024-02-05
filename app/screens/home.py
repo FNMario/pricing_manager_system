@@ -1,7 +1,9 @@
+import weakref
 from kivy.uix.screenmanager import Screen
 from kivy.core.window import Window
 from kivy.uix.screenmanager import NoTransition
 from kivy.lang import Builder
+from screens.widgets.tabbutton import TabButton
 
 from screens.buy import Buy
 from screens.budgets import Budgets
@@ -59,6 +61,45 @@ class HomeWindow(Screen):
 
     # Tabs
 
+    def refresh_tabs(self, permissions):
+        if permissions['access_to_buy']:
+            self.add_tab('tab_buy', "Buy",
+                         './assets/icons/shopping_cart.png', 'buy', 2)
+        if permissions['access_to_budgets']:
+            self.add_tab('tab_budgets', "Budgets",
+                         './assets/icons/budget_64x64.png', 'budgets', 2)
+        if permissions['access_to_clients']:
+            self.add_tab('tab_clients', "Clients",
+                         './assets/icons/clients_64x64.png', 'clients', 2)
+        if permissions['access_to_print']:
+            self.add_tab('tab_print_tables', "Print tables",
+                         './assets/icons/printer_64x64.png', 'print', 2)
+        if permissions['access_to_manage']:
+            self.add_tab('tab_manage_prices', "Manage Prices",
+                         './assets/icons/price-edit_64x64.png', 'manage', 2)
+        if permissions['access_to_raise']:
+            self.add_tab('tab_group_raise', "Group Raise",
+                         './assets/icons/surcharges.png', 'group', 2)
+        if permissions['access_to_settings']:
+            self.add_tab('tab_settings', "Settings",
+                         './assets/icons/settings_1.png', 'settings', 1)
+
+    def add_tab(self, id: str, text: str, icon: str, screen_name: str, pos: int):
+        ly = self.ids.tabs_layout
+        tab = TabButton(
+            text=text,
+            icon=icon,
+            on_press=self.change_tab,
+            screen_name=screen_name,
+        )
+        ly.add_widget(tab, pos)
+        self.ids[id] = weakref.ref(tab)
+
+    def remove_tabs(self):
+        for id in self.ids:
+            if 'tab_' in id:
+                self.ids.tabs_layout.remove_widget(self.ids[id]())
+
     def change_tab(self, instance):
         if instance.active:
             instance.active = False
@@ -74,6 +115,7 @@ class HomeWindow(Screen):
         for child in self.ids.tabs_layout.children:
             child.active = False
         self.ids.home_screen_manager.current = "none"
+        self.remove_tabs()
         self.parent.current = "login"
         self.parent.get_screen("login").ids.txt_username.focus = True
 
