@@ -166,3 +166,5 @@ cython_debug/
 create_environment_variables.sh
 
 downloads/
+
+pruebas*
