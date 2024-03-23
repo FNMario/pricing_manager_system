@@ -1,7 +1,7 @@
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.core.window import Window
-
+from interface import logout
 from kivy.uix.screenmanager import ScreenManager
 
 from screens.home import HomeWindow
@@ -22,9 +22,13 @@ class MainWindow(ScreenManager):
 
 
 class MainApp(App):
+
     def build(self):
         Window.clearcolor = (.13, .14, .19, 1)
         return MainWindow()
+
+    def on_stop(self):
+        logout()
 
 
 if __name__ == '__main__':

@@ -29,17 +29,17 @@ class Buy(Screen):
 
     def btn_search_product_on_press(self):
         self.searching_text_input = self.ids.txt_product
-        product = self.ids.txt_product.text
+        product = self.ids.txt_product.text.strip()
         self.products = get_products_for_sale(product=product)
 
     def btn_search_local_code_on_press(self):
         self.searching_text_input = self.ids.txt_local_code
-        code = self.ids.txt_local_code.text
+        code = self.ids.txt_local_code.text.strip()
         self.products = get_products_for_sale(local_code=code)
 
     def btn_search_supplier_code_on_press(self):
         self.searching_text_input = self.ids.txt_supplier_code
-        code = self.ids.txt_supplier_code.text
+        code = self.ids.txt_supplier_code.text.strip()
         self.products = get_products_for_sale(supplier_code=code)
 
     def on_category_change(self, instance):
@@ -165,7 +165,7 @@ class Buy(Screen):
                 self.prices[1][self.category])
             self.ids.lbl_price_3.text = format_numeric_economy(
                 self.prices[2][self.category])
-            self.ids.lbl_date.text = date
+            self.ids.lbl_date.text = date.strftime('%d/%m/%Y')
             self.searching_text_input.focus = True
             self.searching_text_input.select_all()
 

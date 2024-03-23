@@ -1,7 +1,7 @@
 from kivy.properties import BooleanProperty, ListProperty, ObjectProperty
 from kivy.uix.screenmanager import Screen
 from kivy.lang import Builder
-from interface import format_numeric_economy, get_dollar_price, get_products, get_sections, get_suppliers
+from interface import change_price, format_numeric_economy, get_dollar_price, get_products, get_sections, get_suppliers
 from KivyCalendar import DatePicker
 
 import logging
@@ -42,22 +42,22 @@ class GroupRaise(Screen):
     def search(self, instance=None):
         self.searching_text_input = instance
         search_fields = {
-            'product': self.ids.txt_product.text,
-            'local_code': self.ids.txt_local_code.text,
-            'supplier_code': self.ids.txt_supplier_code.text,
-            'section': self.ids.optxt_section.text,
-            'supplier': self.ids.optxt_supplier.text,
-            'from_date': self.ids.txt_from_date.text,
-            'to_date': self.ids.txt_to_date.text
+            'product': self.ids.txt_product.text.strip(),
+            'local_code': self.ids.txt_local_code.text.strip(),
+            'supplier_code': self.ids.txt_supplier_code.text.strip(),
+            'section': self.ids.optxt_section.text.strip(),
+            'supplier': self.ids.optxt_supplier.text.strip(),
+            'from_date': self.ids.txt_from_date.text.strip(),
+            'to_date': self.ids.txt_to_date.text.strip()
         }
         search_fields = {key: value for key,
                          value in search_fields.items() if value}
 
         products_match = get_products(**search_fields)
-        products_match = [
-            product for product in products_match if product not in self.products]
 
         if self.ids.chk_additive.active:
+            products_match = [
+                product for product in products_match if product not in self.products]
             checked_rows = self.ids.tbl_products.get_checked_rows()
             products = [self.products[row] for row in checked_rows]
             self.products = products + products_match
@@ -122,10 +122,11 @@ class GroupRaise(Screen):
                 p[1],
                 p[0],
                 p[2],
-                format_numeric_economy(p[10], True),
+                format_numeric_economy(p[10], True) if p[10] else '---',
                 p[9],
-                format_numeric_economy(p[6], True),
-                format_numeric_economy(float(p[6])/float(p[10])*dollar_price, True)
+                format_numeric_economy(p[6], True) if p[6] else '---',
+                format_numeric_economy(
+                    float(p[6])/float(p[10])*dollar_price, True) if p[10] and p[6] else '---'
             ) for p in items]
         elif self.ids.chk_percentage.active and self.ids.txt_percentage.text:
             percentage = 1 + float(self.ids.txt_percentage.text) / 100
@@ -145,6 +146,21 @@ class GroupRaise(Screen):
         # table.switch_checkbox_state(table.selected_row)
 
     def btn_save_on_press(self):
+        for p in self.products:
+            if self.ids.chk_dollar.active and self.ids.txt_dollar.text:
+                dollar_price = float(self.ids.txt_dollar.text)
+                change_price(*p[1:4], p[6]/p[10]*dollar_price,
+                             p[7], dollar_price=dollar_price)
+            elif self.ids.chk_percentage.active and self.ids.txt_percentage.text:
+                percentage = 1 + float(self.ids.txt_percentage.text) / 100
+                try:
+                    dollar_price = float(self.ids.txt_dollar.text)
+                except:
+                    dollar_price = None
+                change_price(*p[1:4], p[6]*percentage, p[7],
+                             dollar_price=dollar_price)
+            else:
+                return
         self.products.clear()
         self.update_table(None, [])
         self.clear_form()

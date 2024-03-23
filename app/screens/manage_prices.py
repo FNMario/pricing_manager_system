@@ -42,13 +42,12 @@ class ManagePrices(Screen):
         local_code = self.ids.txt_local_code.text
         if len(local_code) >= 4:
             base = local_code[:4]
-            number = str(int(get_last_code(base)[4:]) + 1)
-            local_code = base + number
-            self.ids.txt_local_code.text = local_code
+            self.ids.txt_local_code.text = get_last_code(base)
 
     def btn_search_local_code_on_press(self):
         self.searching_text_input = self.ids.txt_local_code
-        self.products = get_products(local_code=self.ids.txt_local_code.text)
+        self.products = get_products(
+            local_code=self.ids.txt_local_code.text.strip())
 
     def get_suppliers(self):
         suppliers = [_[1] for _ in get_suppliers()]
@@ -56,7 +55,8 @@ class ManagePrices(Screen):
 
     def btn_search_suppliers_code_on_press(self):
         self.searching_text_input = self.ids.txt_supplier_code
-        self.products = get_products(supplier_code=self.ids.txt_product.text)
+        self.products = get_products(
+            supplier_code=self.ids.txt_supplier_code.text.strip())
 
     def get_units(self):
         fractions = get_fractions()
@@ -92,7 +92,7 @@ class ManagePrices(Screen):
         if cost:
             cost = float(cost)
             iva_active = self.ids.chk_iva.active
-            iva = cost * self.ids.lbl_iva.value / 100 * int(iva_active)
+            iva = cost * self.ids.lbl_iva.value * int(iva_active)
             dollar_active = self.ids.chk_dollar.active
             dollar = self.ids.lbl_dollar.value if dollar_active else 1
             cost = (cost + iva) * dollar
@@ -103,7 +103,7 @@ class ManagePrices(Screen):
         if cost:
             cost = float(cost)
             iva_active = self.ids.chk_iva.active
-            iva = 1 + self.ids.lbl_iva.value / 100
+            iva = 1 + self.ids.lbl_iva.value
             cost = cost * iva if iva_active else cost / iva
             self.ids.txt_cost.text = str(round(cost, 6))
 
@@ -124,7 +124,7 @@ class ManagePrices(Screen):
         except:
             new_index = 0
         instance.value = iva_items[new_index]
-        instance.text = f"IVA ({instance.value}%)"
+        instance.text = f"IVA ({instance.value*100:.2f}%)"
 
     def get_dollar_price(self):
         return get_dollar_price()
@@ -137,8 +137,7 @@ class ManagePrices(Screen):
         except:
             new_index = 0
         instance.value = dollar_items[new_index]
-        instance.text = f"IVA ({instance.value}%)"
-        instance.text = f"Dollar (${instance.value})"
+        instance.text = f"Dollar (${instance.value:.0f})"
 
     def btn_surcharges_plus_on_press(self):
         surcharge = self.ids.txt_surcharge.text
@@ -163,16 +162,16 @@ class ManagePrices(Screen):
 
     def current_data(self) -> dict:
         data = {
-            'product': self.ids.txt_product.text,
-            'local_code': self.ids.txt_local_code.text,
-            'supplier': self.ids.optxt_supplier.text,
-            'supplier_code': self.ids.txt_supplier_code.text,
-            'quantity': float(self.ids.txt_quantity.text) if self.ids.txt_quantity.text else 0,
+            'product': self.ids.txt_product.text.strip(),
+            'local_code': self.ids.txt_local_code.text.strip(),
+            'supplier': self.ids.optxt_supplier.text.strip(),
+            'supplier_code': self.ids.txt_supplier_code.text.strip(),
+            'quantity': float(self.ids.txt_quantity.text.strip()) if self.ids.txt_quantity.text.strip() else 0,
             'unit': self.ids.optxt_unit.text,
-            'cost': float(self.ids.txt_cost.text) if self.ids.txt_cost.text else 0,
-            'surcharge': int(self.ids.txt_surcharge.text)/100 if self.ids.txt_surcharge.text else 0,
-            'section': self.ids.optxt_section.text,
-            'date': self.ids.txt_date.text,
+            'cost': float(self.ids.txt_cost.text.strip()) if self.ids.txt_cost.text.strip() else 0,
+            'surcharge': int(self.ids.txt_surcharge.text.strip())/100 if self.ids.txt_surcharge.text.strip() else 0,
+            'section': self.ids.optxt_section.text.strip(),
+            'date': self.ids.txt_date.text.strip(),
             'iva': float(self.ids.lbl_iva.value) if self.ids.lbl_iva.value else 0,
             'dollar': float(self.ids.lbl_dollar.value) if self.ids.lbl_dollar.value else 0,
         }
@@ -211,8 +210,12 @@ class ManagePrices(Screen):
                 return
         try:
             save_product(data)
-            self.searching_text_input.focus = True
-            self.searching_text_input.select_all()
+            if self.searching_text_input:
+                self.searching_text_input.focus = True
+                self.searching_text_input.select_all()
+            else:
+                self.ids.txt_product.focus = True
+                self.ids.txt_product.focus.select_all()
         except Exception as e:
             logging.error(e)
 
@@ -221,7 +224,7 @@ class ManagePrices(Screen):
 
     def btn_delete_on_press(self):
         data = self.current_data()
-        logging.info(f"Deleting product {data}")
+        logging.info(f"Button: Deleting product {data}")
         if not data['local_code']:
             logging.error("Local code cannot be empty")
             self.get_fields()['local_code'].focus = True
@@ -229,9 +232,8 @@ class ManagePrices(Screen):
 
         try:
             delete_product(data)
-            selected_row = self.ids.tbl_products.selected_row
-            self.products.pop(selected_row)
-            self.ids.tbl_products.selected_row = selected_row
+            self.clear_form()
+            self.products = []
         except Exception as e:
             logging.error(e)
 
@@ -248,7 +250,8 @@ class ManagePrices(Screen):
         try:
             delete_product(data, all_costs=True)
             save_product(data)
-            self.btn_clear_on_press()
+            self.clear_form()
+            self.products = []
         except Exception as e:
             logging.error(e)
 
@@ -280,7 +283,7 @@ class ManagePrices(Screen):
             f"{p[4]} {p[5]}",
             p[2],
             str(p[3]).replace('None', '-'),
-            format_numeric_economy(p[6]*p[7]),
+            format_numeric_economy(p[6]*p[7] if p[6] and p[7] else 0),
             p[9]
         ) for p in items]
 

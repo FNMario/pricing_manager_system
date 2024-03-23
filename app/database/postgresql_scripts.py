@@ -30,15 +30,17 @@ class DatabaseManager:
         host = os.getenv('PRICING_MANAGER_DB_SERVER', 'localhost')
         port = os.getenv('PRICING_MANAGER_DB_PORT', 5432)
         dbname = os.getenv('PRICING_MANAGER_DB_DATABASE', 'pricing_manager')
-
-        self.connection = psycopg2.connect(
-            host=host,
-            port=port,
-            dbname=dbname,
-            user=username,
-            password=password
-        )
-        logging.info(f"Successful connection as {username}.")
+        try:
+            self.connection = psycopg2.connect(
+                host=host,
+                port=port,
+                dbname=dbname,
+                user=username,
+                password=password
+            )
+            logging.info(f"Successful connection as {username}.")
+        except psycopg2.OperationalError as e:
+            raise ConnectionError("Database Error - Login")
 
         cursor = self.connection.cursor(cursor_factory=RealDictCursor)
         query = "SELECT * FROM user_permissions WHERE username = %s;"
@@ -54,11 +56,13 @@ class DatabaseManager:
         "Close connection if exist."
         if not self.connection:
             logging.warning("No active connection")
+            return
         if not self.connection.closed:
             self.connection.close()
             logging.info("Database connection closed.")
         else:
             logging.info("Database connection already closed.")
+        return
 
     # Products and costs
 
@@ -164,7 +168,7 @@ class DatabaseManager:
         cursor.close()
         return data
 
-    def get_last_code(self, base: str) -> str:
+    def get_new_code(self, base: str) -> str:
         """
         Get the last used code for a given base.
 
@@ -185,7 +189,6 @@ class DatabaseManager:
         cursor.execute(query, (base, base+"%"))
         logging.debug(cursor.query)
         data = cursor.fetchone()
-        logging.debug(data)
         cursor.close()
         if data[0] is None:
             return base + "001"

@@ -3,15 +3,8 @@ from kivy.uix.screenmanager import Screen
 from kivy.core.window import Window
 from kivy.uix.screenmanager import NoTransition
 from kivy.lang import Builder
+from interface import logout
 from screens.widgets.tabbutton import TabButton
-
-from screens.buy import Buy
-from screens.budgets import Budgets
-from screens.clients import Clients
-from screens.group_raise import GroupRaise
-from screens.manage_prices import ManagePrices
-from screens.print_tables import PrintTables
-from screens.settings_screen import SettingsScreen
 
 import logging
 
@@ -86,28 +79,35 @@ class HomeWindow(Screen):
     # Tabs
     def refresh_tabs(self, permissions):
         if permissions['access_to_buy']:
-            self.add_tab('tab_buy', "Buy",
+            from screens.buy import Buy
+            self.add_tab('tab_buy', "Buy", Buy,
                          './assets/icons/shopping_cart.png', 'buy', 2)
         if permissions['access_to_budgets']:
-            self.add_tab('tab_budgets', "Budgets",
+            from screens.budgets import Budgets
+            self.add_tab('tab_budgets', "Budgets", Budgets,
                          './assets/icons/budget_64x64.png', 'budgets', 2)
         if permissions['access_to_clients']:
-            self.add_tab('tab_clients', "Clients",
+            from screens.clients import Clients
+            self.add_tab('tab_clients', "Clients", Clients,
                          './assets/icons/clients_64x64.png', 'clients', 2)
         if permissions['access_to_print']:
-            self.add_tab('tab_print_tables', "Print tables",
+            from screens.print_tables import PrintTables
+            self.add_tab('tab_print_tables', "Print tables", PrintTables,
                          './assets/icons/printer_64x64.png', 'print', 2)
         if permissions['access_to_manage']:
-            self.add_tab('tab_manage_prices', "Manage Prices",
+            from screens.manage_prices import ManagePrices
+            self.add_tab('tab_manage_prices', "Manage Prices", ManagePrices,
                          './assets/icons/price-edit_64x64.png', 'manage', 2)
         if permissions['access_to_raise']:
-            self.add_tab('tab_group_raise', "Group Raise",
+            from screens.group_raise import GroupRaise
+            self.add_tab('tab_group_raise', "Group Raise", GroupRaise,
                          './assets/icons/surcharges.png', 'group', 2)
         if permissions['access_to_settings']:
-            self.add_tab('tab_settings', "Settings",
+            from screens.settings_screen import SettingsScreen
+            self.add_tab('tab_settings', "Settings", SettingsScreen,
                          './assets/icons/settings_1.png', 'settings', 1)
 
-    def add_tab(self, id: str, text: str, icon: str, screen_name: str, pos: int):
+    def add_tab(self, id: str, text: str, screen: Screen, icon: str, screen_name: str, pos: int):
         ly = self.ids.tabs_layout
         tab = TabButton(
             text=text,
@@ -117,12 +117,18 @@ class HomeWindow(Screen):
         )
         ly.add_widget(tab, pos)
         self.ids[id] = weakref.ref(tab)
+        self.ids.home_screen_manager.add_widget(screen(name=screen_name))
 
     def remove_tabs(self):
         ids = list(self.ids.keys())
         for id in ids:
             if 'tab_' in id:
-                self.ids.tabs_layout.remove_widget(self.ids[id]())
+                screen_manager = self.ids.home_screen_manager
+                tab = self.ids[id]()
+                screen_manager.remove_widget(
+                    screen_manager.get_screen(tab.screen_name)
+                )
+                self.ids.tabs_layout.remove_widget(tab)
                 self.ids.pop(id)
 
     def change_tab(self, instance):
@@ -141,6 +147,7 @@ class HomeWindow(Screen):
             child.active = False
         self.ids.home_screen_manager.current = "none"
         self.remove_tabs()
+        logout()
         self.parent.current = "login"
         self.parent.get_screen("login").ids.txt_username.focus = True
 

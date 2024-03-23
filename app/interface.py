@@ -1,63 +1,49 @@
 import datetime
 from datetime import datetime as dt
+from database import postgresql_scripts as sql
 from screens.widgets.messagebox import MessageBox
 import logging
 
 
-class DatabaseError(Exception):
-    pass
+db = sql.DatabaseManager()
 
 # Users
 
 
 def login(username, password):
-    # Call the database function to fetch user data
-    # db.login(username, password)
-    if username == 'asd' and password == 'asdf':
-        permissions = {
-            'access_to_buy': True,
-            'access_to_budgets': True,
-            'access_to_clients': True,
-            'access_to_print': True,
-            'access_to_manage': True,
-            'access_to_raise': True,
-            'access_to_settings': True,
-            'username': 'postgres'
-        }
-        return permissions
-    elif username == 'asda' and password == 'asdf':
-        permissions = {
-            'access_to_buy': True,
-            'access_to_budgets': True,
-            'access_to_clients': True,
-            'access_to_print': False,
-            'access_to_manage': False,
-            'access_to_raise': False,
-            'access_to_settings': False,
-            'username': 'postgres'
-        }
-        return permissions
-    else:
-        raise ConnectionError()
+    """
+    Call the database function to fetch user data, create a connection and return user permissions.
+    """
+    permissions = db.login(username=username, password=password)
+    return permissions
 
 
 def create_new_user(username, password):
-    # Call the database function to insert a new user
+    """
+    NOT IMPLEMENTED
+    Call the database function to insert a new user
+    """
     return (username, password)
 
 
 def update_user_password(username, old_pass, new_pass):
+    """
+    NOT IMPLEMENTED
+    Update user password
+    """
     return (username, new_pass)
+
+
+def logout():
+    db.logout()
 
 
 # Products
 
+
 def get_products_for_sale(product: str = None, local_code: str = None, supplier_code: str = None) -> list[str]:
-    global _list_of_products_for_sale
-    if not product:
-        products = _list_of_products_for_sale[20:24]
-    else:
-        products = _list_of_products_for_sale
+    products = db.get_products_for_sale(
+        product=product, local_code=local_code, supplier_code=supplier_code)
     return products
 
 
@@ -76,17 +62,18 @@ def get_products(
         'supplier_code': supplier_code,
         'supplier': supplier,
         'section': section,
-        'from_date': from_date,
-        'to_date': to_date
+        'from_date': dt.strptime(from_date, '%d/%m/%Y') if from_date else None,
+        'to_date': dt.strptime(to_date, '%d/%m/%Y') if to_date else None
     }
-    global _list_of_products_with_costs
 
-    products = _list_of_products_with_costs  # db.get_complete_items(**kwargs)
+    products = db.get_products_with_cost(**search_fields)
+    products = [(*p[:9], p[9].strftime('%d/%m/%Y'), *p[10:]) for p in products]
     return products
 
 
 def get_last_code(base: str) -> str:
-    return base + '158'
+    "Returns the next code in that base to create new product"
+    return db.get_new_code(base)
 
 
 def save_product(data: dict):
@@ -99,7 +86,8 @@ def save_product(data: dict):
         'code_id': data['local_code'],
         'quantity': data['quantity'],
         'fraction_id': units[data['unit']],
-        'section_id': sections[data['section']]
+        'section_id': sections[data['section']],
+        'image_name': ''
     }
 
     new_cost = {
@@ -108,61 +96,77 @@ def save_product(data: dict):
         'supplier_code': data['supplier_code'],
         'cost': data['cost'],
         'surcharge': data['surcharge'],
-        'date': data['date'],
+        'date': dt.strptime(data['date'], '%d/%m/%Y') if data['date'] else dt.today(),
         'dollar_price': data['dollar']
     }
 
-    # old_product = db.get_product(code_id=new_product['code_id'])
+    old_product = db.get_product(code_id=new_product['code_id'])
 
-    # if not old_product:
-    #     db.add_product(new_product)
-    #     db.add_cost(new_cost)
-    #     return
+    if not old_product:
+        db.add_product(**new_product)
+        db.add_cost(**new_cost)
+        return
 
-    # if old_product['quantity'] != new_product['quantity'] or old_product['fraction_id'] != new_product['fraction_id']:
-    #     raise DatabaseError("quantity and/or fraction doesn't match with product code. Try new code or replace it")
-    # else:
-    #     db.alter_product(new_product)
+    if old_product['quantity'] != new_product['quantity'] or old_product['fraction_id'] != new_product['fraction_id']:
+        raise ValueError(
+            "quantity and/or fraction doesn't match with product code. Try new code or replace it")
+    elif old_product != new_product:
+        db.alter_product(**new_product)
 
-    #     old_cost = db.get_cost(product_id=cost['product_id'], supplier_id=cost['supplier_id'])
+    old_cost = db.get_cost(
+        product_id=new_cost['product_id'], supplier_id=new_cost['supplier_id'])
 
-    #     if not old_cost:
-    #         db.add_cost(new_cost)
-    #     else:
-    #         db.alter_cost(new_cost)
+    if not old_cost:
+        db.add_cost(**new_cost)
+    else:
+        db.alter_cost(**new_cost)
+
+
+def change_price(product_code: str, supplier: str, supplier_code: str, new_price: float, surcharge: float, date: str = None, dollar_price: float = None):
+    suppliers = {_[1]: _[0] for _ in get_suppliers()}
+
+    new_cost = {
+        'product_id': product_code,
+        'supplier_id': suppliers[supplier],
+        'supplier_code': supplier_code,
+        'cost': new_price,
+        'surcharge': surcharge,
+        'date':  dt.strptime(date, '%d/%m/%Y') if date else dt.today(),
+        'dollar_price': dollar_price if dollar_price else get_dollar_price
+    }
+
+    db.alter_cost(**new_cost)
 
 
 def delete_product(data: dict, all_costs: bool = False):
-
+    # TODO: refactor fuction: manage messagebox in manage_prices.py
     def answer_clicked(answer):
         print(f'Perform action? {answer}')
         if answer == "Delete all" or answer == "Delete":
             try:
-                # db.delete_cost(product_id=data['local_code'])
-                # db.delete_product(code_id=data['local_code'])
+                for supplier_id in [cost[1] for cost in costs]:
+                    db.delete_cost(
+                        product_id=data['local_code'], supplier_id=supplier_id)
+                db.delete_product(code_id=data['local_code'])
                 pass
             except Exception as e:
                 logging.error(e)
         elif answer == "Only this one":
             try:
-                # db.delete_cost(product_id=data['local_code'], supplier_id=cost['supplier_id'])
+                db.delete_cost(
+                    product_id=data['local_code'], supplier_id=cost[1])
                 pass
             except Exception as e:
                 logging.error(e)
             pass
         else:
             logging.error("Canceled by the user")
-
-    costs = [
-        (21, 'AAM0002', 12, None, 335.8117, datetime.date(2019, 8, 16), 2.53, 60.0),
-        (22, 'AAM0002', 12, None, 133.0, datetime.date(2019, 8, 16), 3.0, 60.0),
-        (23, 'AAM0002', 21, None, 455.0, datetime.date(2019, 8, 16), 2.8, 58.5)
-    ]  # db.get_cost(product_id=data['local_code'])
+    costs = db.get_costs(product_id=data['local_code'])
     if len(costs) > 1:
         message = f"There are {len(costs)} suppliers for this products:"
         suppliers = {_[0]: _[1] for _ in get_suppliers()}
         for cost in costs:
-            message += f"\n- Supplier: {suppliers[cost[2]]:0>15}, Cost: ${cost[4]} "
+            message += f"\n- Supplier: {suppliers[cost[1]]:<15}, Cost: ${cost[3]:.2f} "
         buttons = ["Delete all", "Cancel"] if all_costs else [
             "Delete all", "Only this one", "Cancel"]
         msg = MessageBox(
@@ -186,19 +190,24 @@ def delete_product(data: dict, all_costs: bool = False):
 
 
 def get_ivas() -> list:
-    global _ivas
-    return _ivas
+    return [tax[2] for tax in db.get_table_taxes()]
 
 
 def save_ivas(iva: float, row: int = -1) -> bool:
-    global _ivas
-    if 0 < row and row < len(_ivas):
-        _ivas[row] = float(iva)
-        return True
+    saved = 0
+    added = 0
+    if row > -1:
+        saved = db.save_in_table_taxes(tax_name='', value=iva, id=row)
     else:
-        _ivas.append(iva)
-        return True
-    return False
+        added = db.save_in_table_taxes(tax_name='', value=iva)
+    if saved:
+        logging.info('Saved IVA')
+    elif added:
+        logging.info('Added new IVA')
+    else:
+        logging.error('Error while saving new IVA')
+        return False
+    return True
 
 
 def get_dollars() -> list:
@@ -219,49 +228,52 @@ def save_dollars(dollar: float, row: int = -1) -> bool:
 
 
 def get_suppliers() -> list[tuple]:
-    global _suppliers
-    return _suppliers
+    suppliers = db.get_table_suppliers()
+    for row, supplier in enumerate(suppliers):
+        n_row = list()
+        for col, value in enumerate(supplier):
+            n_row.append(value if value is not None else '')
+        suppliers[row] = tuple(n_row)
+    return suppliers
 
 
 def save_supplier(supplier: dict) -> bool:
-    global _suppliers
     assert 'name' in supplier, "program_error."
     assert supplier['name'], "Name cannot be empty"
     assert 'phone' in supplier, "program_error."
     assert 'email' in supplier, "program_error."
     assert 'address' in supplier, "program_error."
+    saved = 0
+    added = 0
     if 'id' in supplier:
         assert supplier['id'], "id cannot be empty"
         id = int(supplier.pop('id'))
-        # db.save_in_table(table='suppliers', id=id, data=supplier)
-        _suppliers[id] = (
-            id,
-            supplier['name'],
-            supplier['phone'],
-            supplier['email'],
-            supplier['address'],
-        )
-        return True
+        saved = db.save_in_table_suppliers(id=id, **supplier)
     else:
-        # db.save_in_table(table='suppliers', data=supplier)
-        _suppliers.append((
-            _suppliers[-1][0] + 1,
-            supplier['name'],
-            supplier['phone'],
-            supplier['email'],
-            supplier['address'],
-        ))
-        return True
-    return False
+        added = db.save_in_table_suppliers(**supplier)
+
+    if saved:
+        logging.info('Supplier %s has been successfully updated',
+                     supplier['name'])
+    elif added:
+        logging.info('New supplier %s has been created', supplier['name'])
+    else:
+        logging.error('Error while updating/creating the supplier')
+        return False
+    return True
 
 
 def get_fractions() -> list[tuple]:
-    global _fractions
-    return _fractions
+    fractions = db.get_table_fractions()
+    for row, fraction in enumerate(fractions):
+        n_row = list()
+        for col, value in enumerate(fraction):
+            n_row.append(value if value is not None else '')
+        fractions[row] = tuple(n_row)
+    return fractions
 
 
 def save_fraction(fraction: dict) -> bool:
-    global _fractions
     assert 'name' in fraction, "program_error."
     assert fraction['name'], "Name cannot be empty"
     assert 'description' in fraction, "program_error."
@@ -275,69 +287,68 @@ def save_fraction(fraction: dict) -> bool:
     assert 'fraction_3' in fraction, "program_error."
     fraction['fraction_3'] = 0 if not fraction['fraction_3'] else float(
         fraction['fraction_3'])
+    saved = 0
+    added = 0
     if 'id' in fraction:
         assert fraction['id'], "id cannot be empty"
         id = int(fraction.pop('id'))
-        # db.save_in_table(table='fractions', id=id, data=fraction)
-        _fractions[id-1] = (
-            id,
-            fraction['name'],
-            fraction['description'],
-            fraction['unit'],
-            fraction['fraction_1'],
-            fraction['fraction_2'],
-            fraction['fraction_3'],
-        )
-        return True
+        saved = db.save_in_table_fractions(id=id, **fraction)
     else:
-        # db.save_in_table(table='fractions', data=fraction)
-        _fractions.append((
-            _fractions[-1][0] + 1,
-            fraction['name'],
-            fraction['description'],
-            fraction['unit'],
-            fraction['fraction_1'],
-            fraction['fraction_2'],
-            fraction['fraction_3'],
-        ))
-        return True
-    return False
+        added = db.save_in_table_fractions(**fraction)
+
+    if saved:
+        logging.info('Fraction %s has been successfully updated',
+                     fraction['name'])
+    elif added:
+        logging.info('New fraction %s has been created', fraction['name'])
+    else:
+        logging.error('Error while updating/creating the fraction')
+        return False
+    return True
 
 
 def get_sections() -> list[tuple]:
-    global _sections
-    return _sections
+    sections = db.get_table_sections()
+    for row, section in enumerate(sections):
+        n_row = list()
+        for col, value in enumerate(section):
+            n_row.append(value if value is not None else '')
+        sections[row] = tuple(n_row)
+    return sections
 
 
 def save_section(section: dict) -> bool:
-    global _sections
     assert 'name' in section, "program_error."
     assert section['name'], "Name cannot be empty"
+    saved = 0
+    added = 0
     if 'id' in section:
         assert section['id'], "id cannot be empty"
         id = int(section.pop('id'))
-        # db.save_in_table(table='sections', id=id, data=section)
-        _sections[id] = (
-            id,
-            section['name'],
-        )
-        return True
+        saved = db.save_in_table_sections(id=id, name=section['name'])
     else:
-        # db.save_in_table(table='sections', data=section)
-        _sections.append((
-            _sections[-1][0] + 1,
-            section['name'],
-        ))
-        return True
-    return False
+        added = db.save_in_table_sections(name=section['name'])
+
+    if saved:
+        logging.info('Section %s has been successfully updated',
+                     section['name'])
+    elif added:
+        logging.info('New section %s has been created', section['name'])
+    else:
+        logging.error('Error while updating/creating the section')
+        return False
+    return True
 
 
 def get_clients() -> list[tuple]:
     global _clients
+    # db.get_table_clients()
     return _clients
 
 
 def get_client(cuit_cuil: str) -> list[tuple]:
+    # client = db.get_client(cuit_cuil.replace('-', ''))
+    # return client
     clients = get_clients()
     return [client for client in clients if client[0].replace('-', '') == cuit_cuil.replace('-', '')]
 
@@ -386,6 +397,7 @@ def save_client(client: dict) -> bool:
 
 def get_budgets(budget_number: int, name: str, from_date, to_date) -> list[tuple]:
     global _budgets
+    # return db.get_budgets()
     return _budgets
 
 
@@ -417,8 +429,6 @@ def get_budget_items(budget_number: int) -> list[tuple]:
             ))
     return items_to_return
 
-# product_id, ~budget_id, quantity, unit_price, sales_category_id, description, fraction_level
-
 
 def save_budget(budget_data: dict, items: list) -> bool:
     has_cuit = budget_data['cuit_cuil'] != ""
@@ -437,7 +447,7 @@ def save_budget(budget_data: dict, items: list) -> bool:
     #     budget_number = budget_data['budget_number']
     # else:
     #     budget_number = db.add_budget(budget_data=budget_data)
-        
+
     # saved_items = db.get_budget_items(budget_number=budget_number)
     # items_to_drop = list()
     # categories = {"V":1, "D":2, "M":3}
@@ -449,17 +459,21 @@ def save_budget(budget_data: dict, items: list) -> bool:
     #     else:
     #         items_to_drop.append(item)
 
-    # db.drop_items(items=items_to_drop)
-    # db.save_items(items=items)
+    # db.drop_budget_items(budget_number=budget_number, items_codes=[item[0] for item in items_to_drop])
+    # db.save_budget_items(budget_number=budget_number, items=items)
 
 
 def get_tables_to_print_names(section: str, name: str = None) -> list[str]:
-    # db.get_tables_to_print_names(section, name)
+    # sections = get_sections()
+    # section_id = [id for id, _section in sections if _section == section][0]
+    # tables = db.get_tables_to_print_names(section_id, name)
+    # tables =  [(table[1],) for table in tables]
     tables = [('usesrs',), ('orders',)]
     return tables
 
 
-def get_table_to_print_data(section: str, name: str) -> (list[str], list[str]):
+def get_table_to_print_data(section: str, name: str) -> tuple[list[str], list[str]]:
+    # TODO: REFACTOR THIS
     delete_this = [('ADS0004', True), ('APA1003', True), ('APM1006', True), ('MAM0007', True), ('MBR0007', True),
                    ('chk_client_1_fraction_1', False), ('chk_fraction_1', False), ('chk_client_1_fraction_2',  False), ('chk_fraction_2', False), ('chk_date', False)]
     data = delete_this  # db.get_tables_to_print_data(name)
@@ -572,7 +586,7 @@ def calculate_prices(quantity: float, unit: str, cost: float = None, price: floa
         fractions_list = get_fractions()
         fraction_index = [_[1].strip()
                           for _ in fractions_list].index(unit.strip())
-        fractions = list(fractions_list[fraction_index][4:7])
+        fractions = list(map(float, fractions_list[fraction_index][4:7]))
         str_unit = fractions_list[fraction_index][3]
     except ValueError:
         fractions = [1, -1, 0]
@@ -594,8 +608,11 @@ def round_prices(prices):
 
 def get_product_prices(product_code):
 
-    quantity, unit, price, discount_level, date = (
-        1005, "G10", 1044.5058, 3, "2020-02-06")  # db.get_product_prices(product_code)
+    try:
+        quantity, unit, price, discount_level, date = db.get_product_prices(
+            product_code)
+    except:
+        return [[0]*3]*3, ['-']*3, dt.strptime('01-01-1900', '%d-%m-%Y')
 
     prices, fractions, str_unit = calculate_prices(
         quantity=quantity, unit=unit, price=price, discount_level=discount_level)
@@ -606,6 +623,8 @@ def get_product_prices(product_code):
 
 
 def format_numeric_economy(price: float, show_currency_symbol: bool = False, currency_symbol: str = "$") -> str:
+    if not price:
+        price = 0
     if show_currency_symbol:
         return f"{currency_symbol}{chr(0x2009)}{price:,.2f}".replace(",", chr(0x2009))
     else:
@@ -619,233 +638,26 @@ def get_date():
 
 
 def get_dollar_price():
-    return 835
+    return 835  # TODO: scrape dolar price (done and staged)
 
 
 # Listas temporales
 
 _dollars = [800, 900]
 
-_ivas = [10.5, 21.]
-
-_suppliers = [
-    (0, "OTROS", "", "", ""),
-    (1, "A. MANIA", "", "", ""),
-    (2, "ALOE", "", "", ""),
-    (3, "BISANS", "", "", ""),
-    (4, "BISCUIT", "", "", ""),
-    (5, "COCO FIL", "", "", ""),
-    (6, "COTINA", "", "", ""),
-    (7, "EL BOLSERO", "", "", ""),
-    (8, "FERRETERIA", "", "", ""),
-    (9, "GATUVIA", "", "", ""),
-    (10, "IKORSO", "", "", ""),
-    (11, "JR", "", "", ""),
-    (12, "KAIZEN", "", "", ""),
-    (13, "KRAMIR", "", "", ""),
-    (14, "KREY", "", "", ""),
-    (15, "LAINO", "", "", ""),
-    (16, "MARIBELLA", "", "", ""),
-    (17, "MEIR GROUP", "", "", ""),
-    (18, "MERMIL", "", "", ""),
-    (19, "MONICA", "", "", ""),
-    (20, "MOSTACILLA", "", "", ""),
-    (21, "MUNDO A", "", "", ""),
-    (22, "NEPTUNO", "", "", ""),
-    (23, "OSCAR", "", "", ""),
-    (24, "PALACIO", "", "", ""),
-    (25, "PALAIS", "", "", ""),
-    (26, "PAW", "", "", ""),
-    (27, "PEGAMIL", "", "", ""),
-    (28, "SUSESSO", "", "", ""),
-    (29, "TELGOPOR", "", "", ""),
-    (30, "TURCO", "", "", ""),
-    (31, "UNIPOX", "", "", ""),
-    (32, "SANTERIA BELEN", "", "", ""),
-    (33, "SARQUIS Y SEPAG", "", "", ""),
-    (34, "MODA SHOP", "", "", ""),
-    (35, "PUNTO BIJOU", "", "", ""),
-    (36, "GERERDO", "", "", ""),
-    (37, "GASTON", "", "", ""),
-]
-
-_sections = [
-    (0, "ARMADOR"),
-    (1, "BRILLO"),
-    (2, "MERCERIA"),
-    (3, "LIBRERIA"),
-    (4, "ELECTRONICA"),
-    (5, "PEGAMENTOS"),
-    (6, "PLUMAS"),
-    (7, "AMAZONA"),
-    (8, "BOA"),
-    (9, "ESPIGADA"),
-    (10, "FAISAN CEBRA"),
-    (11, "FAISAN LADY"),
-    (12, "FLEX"),
-    (13, "RABO GA"),
-    (14, "INSTRUMENTO"),
-]
-
-_fractions = [
-    (1, "U  ", "Unidades: x1u/Paquete Cerrado",
-        "Unidades", 1, -1, 0),
-    (2, "UC ", "Unidades: x1u/x100u/", "Unidades", 1, 100, 500),
-    (3, "G10", "Gramos: x10g/x100g/x500g", "Gramos", 10, 100, 500),
-    (4, "G25", "Gramos: x25g/x100g/x500g", "Gramos", 25, 100, 500),
-    (5, "M  ", "Metros: x1m/Paquete Cerrado",
-        "Metros", 1, -1, 0),
-    (6, "MC ", "Metros: x1m/x10m", "Metros", 1, 10, 0),
-    (7, "Y  ", "Yardas: x1m/Paquete Cerrado",
-        "Yardas", 1.0936, -1, 0),
-    (8, "T  ", "Tiras: x1/x10", "Yardas", 1, 10, 0),
-]
-
-
-_list_of_products_with_costs = [
-    ('ALAMBRE DE ALPAKA 1/2 CAÑA 2X1 (0.70 MTS)', 'AAL0007', 'BISCUIT', None,
-     500.0, 'G10', 570.0, 2.51, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
-    ('ALAMBRE DE ALPAKA 1/2 CAÑA 3X1 ( MTS)', 'AAL0008', 'BISCUIT', None, 500.0,
-     'G10', 570.0, 2.51, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
-    ('BUZIO GRANDE MARRON  X 500GR.', 'ABU0008', 'MOSTACILLA', 'AS27261',
-     270.0, 'UC ', 0.0, 0.0, 'ARMADOR', datetime.date(2019, 8, 16), 58.5, None),
-    ('BUZIO MARRON POR 500 GRS. (80 UNID. APROX.)', 'ABU0009', 'MOSTACILLA', None,
-     80.0, 'UC ', 0.0, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 58.5, None),
-    ('CASCABEL 16MM MULTICOLOR', 'ACA4006', 'ALOE', None, 200.0, 'UC ',
-     0.0, 0.0, 'ARMADOR', datetime.date(2019, 8, 16), 58.5, None),
-    ('CAPUCHON DORADOS 10MM', 'ACC0006', 'JR', None, 1000.0, 'UC ',
-     1596.0, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
-    ('CADENA CHICA COD T110-35', 'ACM0008', 'JR', 'T110-35', 10.0, 'M  ',
-     57.323, 2.55, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
-    ('CADENA SHANEL PLANO 1.2 MM', 'ACM0062', 'KREY', '1532195-96', 10.0,
-     'M  ', 0.0, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
-    ('CADENA SHANEL PLANO 1.0 MM', 'ACM0064', 'KREY', '1532197-98', 10.0,
-     'M  ', 0.0, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
-    ('CADENA SHANEL TRIPLE PLANA GRANDE JR', 'ACM0092', 'JR', 'TS20-110/2DC',
-     10.0, 'M  ', 399.0, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
-    ('FUNDICION', 'AFA0000', 'JR', None, 250.0, 'G10', 399.0,
-     2.5, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
-    ('FILIGRANA BUHO', 'AFI0001', 'JR', 'HU-9051', 10.0, 'U  ',
-     399.0, 2.35, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
-    ('FUNDICION PORTA DIJE Nº 22', 'AFP0010', 'JR', None, 89.0, 'U  ',
-     285.285, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
-    ('FUNDICION SEPARADOR Nº 03 C', 'AFS1011', 'JR', 'W-454', 52.0, 'U  ',
-     228.095, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
-    ('FUNDICION SEPARADOR Nº 28', 'AFS1055', 'JR', 'W-325', 61.0, 'U  ',
-     342.475, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
-    ('MOSQUETON P/LLAVERO REDONDEADO 33 MM', 'AGM0018', 'IKORSO', 'SWK20-N', 100.0,
-     'UC ', 1425.0, 2.5, 'ARMADOR', datetime.date(2018, 10, 18), 37.5, None),
-    ('OJOS TURCOS ENGANCHADOS X 10MTS.', 'AOT1002', 'JR', None, 10.0,
-     'M  ', 2394.0, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
-    ('PIEDRA ACRILICA POR KG.', 'APA0001', 'ALOE', '379', 500.0, 'G10',
-     171.3635, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 58.5, None),
-    ('PIEDRA ACRILICA POR KG.', 'APA0001', 'ALOE', '415', 500.0, 'G10',
-     171.3635, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 58.5, None),
-    ('PIEDRA ACRILICA FORMA. CHUPETE. MAMADERA. ETC.', 'APA0002', 'JR', None,
-     500.0, 'G10', 399.0, 3.0, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
-    ('PIEDRA ACRILICA CAIREL GOTA PLANA  DE COLORES METALIZADOS', 'APA0004', 'JR',
-     'S1785', 500.0, 'G10', 399.0, 3.0, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
-    ('PERLA ACRILICA 3 MM', 'APE0001', 'PALACIO', None, 500.0, 'G10',
-     0.0, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 58.5, None),
-    ('PERLA ACRILICA 4 MM', 'APE0002', 'PALACIO', None, 500.0, 'G10',
-     0.0, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 58.5, None),
-    ('PERLA ACRILICA 6 MM', 'APE0003', 'PALACIO', None, 500.0, 'G10',
-     0.0, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 58.5, None),
-    ('PERLA PLASTICA 8 MM', 'APE0004', 'PALACIO', None, 500.0, 'G10',
-     0.0, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 58.5, None),
-    ('PERLA PLASTTICA Nº10 X 500GRS.', 'APE0005', 'PALACIO', None, 500.0,
-     'G10', 0.0, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 58.5, None),
-    ('PERLA JAPONESA POR KG', 'APE1005', 'PAW', None, 500.0, 'G10',
-     456.0, 2.6, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
-    ('PERLA JAPONESA CIEGA POR KG 8MM', 'APE1006', 'PAW', None, 500.0,
-     'G10', 456.0, 2.6, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None),
-    ('PELOTA METAL 4 MM', 'APM0002', 'JR', 'NIK X KG.', 6000.0, 'UC ',
-     1197.0, 2.5, 'ARMADOR', datetime.date(2019, 8, 24), 57.0, None),
-    ('PELOTA METAL 4 MM', 'APM0002', 'JR', 'NIK X KG.', 6000.0, 'UC ',
-     798.0, 2.5, 'ARMADOR', datetime.date(2019, 8, 16), 60.0, None)
-]
-
-_list_of_products_for_sale = [
-    ('ACC1003', 'CORDON 8 MM RASTA COSIDO',
-     '10 Metros', 'ARMADOR', '\\Image11.bmp', None),
-    ('ACM0048', 'CADENA MALLA PLANA 8.0', '10 Metros', 'ARMADOR', None, '1382454'),
-    ('ACR1004', 'CRUZ CHICA PALITO DORADA',
-     '200 Unidades', 'ARMADOR', None, '17214-51'),
-    ('ACR2002', 'CENTRO DE ROSARIO MEDIANAS BR Y NIK.',
-     '100 Unidades', 'ARMADOR', None, ' 13211-53'),
-    ('ADS0004', 'DIJE C/STRASS DIJE DE LA PAZ',
-     '20 Unidades', 'ARMADOR', None, None),
-    ('AFD0061', 'FUNDICION DIJE CHICO ESTRELLA LISA 25 MM',
-     '287 Unidades', 'ARMADOR', None, None),
-    ('AFD0069', 'FUNDICION DIJE CHICO CRUZ C/JESUS Y S. BENITO',
-     '375 Unidades', 'ARMADOR', None, 'K3093'),
-    ('AKR0022', 'MEDALLA ESPIRITU SANTO METAL SOLO 40MM',
-     '10 Unidades', 'ARMADOR', '\\20170517_091439.jpg', None),
-    ('AKR0026', 'MEDALLA ITALIANA OVAL 16X22MM',
-     '10 Unidades', 'ARMADOR', None, None),
-    ('APA1003', 'PIEDRA ENGARZADA PICOS', '10 Unidades',
-     'ARMADOR', '\\20170514_193235.jpg', None),
-    ('APE0006', 'PERLA ACRILICA 12 MM', '500 Gramos', 'ARMADOR', None, None),
-    ('APF1003', 'PELOTA FILIGRANADA 8 MM', '2000 Unidades',
-     'ARMADOR', None, '10130-NIK,10130-DOR,POR KG.'),
-    ('APM0006', 'PELOTA METAL 10 MM', '1000 Unidades', 'ARMADOR',
-     None, 'NIK,11007-520 PL,11007-53 NK,NIK X KG.,LISA'),
-    ('APM0007', 'PELOTA METAL 12 MM', '500 Unidades',
-     'ARMADOR', None, 'LISA,NIK X KG.'),
-    ('APM1006', 'PLASTICO METALIZADO CAPUCHON 10 MM C/PUNTOS X 500 GRS.',
-     '824 Unidades', 'ARMADOR', None, 'W1237'),
-    ('ATP0005', 'TACHA PARA PEGAR 8MM 2000 UNID',
-     '2000 Unidades', 'ARMADOR', None, None),
-    ('ATP0006', 'TACHA PARA PEGAR 10X10 2000 UNID',
-     '2000 Unidades', 'ARMADOR', None, None),
-    ('BPL1009', 'PIEDRA P/COSER LASER OVAL 30X40 MM ALOE',
-     '50 Unidades', 'BRILLO', None, 'C30X40'),
-    ('BPN1017', 'PIEDRA P/COSER NOLITA OVAL 10X14 MM',
-     '1000 Unidades', 'BRILLO', None, 'A3205  S$U 10.81 X 20.5'),
-    ('BPP0003', 'PIEDRAS P/PEGAR 7MM X 5000U.',
-     '5000 Unidades', 'BRILLO', None, None),
-    ('BPV1005', 'PIEDRA CRISTAL 4MM COLOR # CRYSTAL',
-     '144 Unidades', 'BRILLO', None, None),
-    ('LGE0002', 'GOMA EVA CON BRILLO', '10 Unidades', 'LIBRERIA', None, None),
-    ('LPG0028', 'ECOLE X 9 GRS.', '10 Unidades', 'LIBRERIA', None, None),
-    ('LPG1001', 'SUPRABOND ADHESIVO DE CONTACTO TRANSPARENTE X 25ML.',
-     '6 Unidades', 'LIBRERIA', None, None),
-    ('MAM0007', 'CARRETEL METALICO MAQ.',
-     '10 Unidades', 'MERCERIA', None, '100060'),
-    ('MAM0008', 'AGUJA CANASTITA CHINA', '12 Unidades', 'MERCERIA', None, '040045'),
-    ('MAP0303', 'APLIQUES DE STRASS TERMOAHDESIVO A6515',
-     '10 Unidades', 'MERCERIA', None, 'A6515 2D A $30'),
-    ('MBR0007', 'OJAL BRONCE BHYN N°20', '144 Unidades', 'MERCERIA', None, None),
-    ('MCB0002', 'CIERRE BRONCE YKK 12 CM',
-     '12 Unidades', 'MERCERIA', None, '11-0034'),
-    ('MCB0006', 'CIERRE BRONCE YKK 20 CM',
-     '12 Unidades', 'MERCERIA', None, '11-0038'),
-    ('MCD0013', 'CIERRE DESMONTABLE 6 MM X 85 CM',
-     '12 Unidades', 'MERCERIA', None, None),
-    ('MCD1004', 'CIERRE DIENTE PERRO DESMONTABLE X 45 CM',
-     '12 Unidades', 'MERCERIA', None, '120091'),
-    ('MCL1021', 'CINTA LUREX CHINA 20 MM X 50YDS',
-     '10 Unidades', 'MERCERIA', None, None),
-    ('MCL2002', 'CORDON DE LUREX CHINO GRUESO',
-     '10 Metros', 'MERCERIA', None, None),
-    ('MFL0013', 'GALON  DE FLECO', '42 Metros', 'MERCERIA', None, '1526292'),
-    ('MGA0102', 'GALON 50253 DE LENT CUAD DE 2.5CM 5 HIL. DE LENT.',
-     '18.28 Metros', 'BRILLO', None, '50253'),
-    ('MGA0172', 'GALON CON PIEDRA GAT A8-1007-1',
-     '10 Yardas', 'BRILLO', None, 'A8-1007-1'),
-    ('MTE4002', 'TELA LAME BONDEADO XMTS', '10 Metros', 'MERCERIA', None, None),
-    ('PRG0004', 'RABO DE GALLO BLANCO 30/35CM AL',
-     '1000 Gramos', 'RABO GA', None, 'PLCH71001'),
-]
-
 
 _clients = [
     ('20231439389', 'Alejandro Mario', None, None, 3200, None, 'Italia 1576'),
-    ('20480287631', 'Valentino Benicio Coronel', 'moralessantiago-benjamin@example.com', '+54 15 2456 9652', 3600, 'Corrientes', 'Av. 7 N° 74 Local 96'),
-    ('33254973403', 'Victoria Juan Martin Gomez', 'mcabrera@example.net', '+54 9 3618 2662', 5300, 'Resistencia', 'Calle Pte. Perón N° 265'),
-    ('33350364078', 'Santiago Nicolas Tomàs Gimenez', 'catalina34@example.com', '+54 9 3194 5056', 5400, 'Paraná', 'Av. San Luis N° 83 Piso 4 Dto. 1'),
-    ('20121451752', 'Julia Emilia Perez', 'manuelaguero@example.com', '+54 15 2243 4830', 1900, 'La Rioja', 'Avenida Alem N° 955'),
-    ('33371453860', 'Sr(a). Mateo Escobar', 'camilo27@example.org', '+54 15 2901 4786', 4600, 'Paraná', 'Diagonal Rawson N° 153')
+    ('20480287631', 'Valentino Benicio Coronel', 'moralessantiago-benjamin@example.com',
+     '+54 15 2456 9652', 3600, 'Corrientes', 'Av. 7 N° 74 Local 96'),
+    ('33254973403', 'Victoria Juan Martin Gomez', 'mcabrera@example.net',
+     '+54 9 3618 2662', 5300, 'Resistencia', 'Calle Pte. Perón N° 265'),
+    ('33350364078', 'Santiago Nicolas Tomàs Gimenez', 'catalina34@example.com',
+     '+54 9 3194 5056', 5400, 'Paraná', 'Av. San Luis N° 83 Piso 4 Dto. 1'),
+    ('20121451752', 'Julia Emilia Perez', 'manuelaguero@example.com',
+     '+54 15 2243 4830', 1900, 'La Rioja', 'Avenida Alem N° 955'),
+    ('33371453860', 'Sr(a). Mateo Escobar', 'camilo27@example.org',
+     '+54 15 2901 4786', 4600, 'Paraná', 'Diagonal Rawson N° 153')
 ]
 
 _budgets = [
