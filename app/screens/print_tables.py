@@ -32,6 +32,10 @@ class PrintTables(Screen):
         sections = [_[1] for _ in get_sections()]
         return sections
 
+    def section_on_select(self):
+        self.ids.txt_table_name.text = ""
+        self.btn_search_table_name_on_press()
+
     def clear_tables(self):
         pass
 
@@ -41,65 +45,83 @@ class PrintTables(Screen):
             self.ids.optxt_section.text, self.ids.txt_table_name.text)
 
     def btn_add_table_name_on_press(self):
-        add_tables_to_print_name(
+        table_id = add_tables_to_print_name(
             self.ids.optxt_section.text, self.ids.txt_table_name.text)
+        if not table_id:
+            logging.error("Table to print: Not able to add the table name.")
+            return
+        else:
+            logging.info(
+                f"Table to print: Added table '{self.ids.txt_table_name.text}'.")
+
         self.btn_search_table_name_on_press()
-        self.table_name = {'section': self.ids.optxt_section.text,
-                           'name': self.ids.txt_table_name.text}
+        table = self.ids.tbl_table_name
+        ids = [item[0] for item in table.items]
+        table.selected_row = ids.index(table_id)
         self.btn_select_table_on_press()
 
     def btn_save_table_name_on_press(self):
         table = self.ids.tbl_table_name
-        save_tables_to_print_name(
-            self.ids.optxt_section.text, table.items[table.selected_row][1], self.ids.txt_table_name.text)
-        self.btn_search_table_name_on_press()
-        self.table_name = {'section': self.ids.optxt_section.text,
-                           'name': self.ids.txt_table_name.text}
-        self.btn_select_table_on_press()
+        saved = save_tables_to_print_name(
+            self.table_name['id'], self.ids.txt_table_name.text)
+        if saved:
+            logging.info(
+                f"Table to print: Updated table name to '{self.ids.txt_table_name.text}'.")
+        else:
+            logging.error("Table to print: Not able to update the table name.")
 
     def btn_select_table_on_press(self):
         self.ids.print_tables_screen_manager.current = "print"
         table = self.ids.tbl_table_name
-        self.table_name = {'section': self.ids.optxt_section.text,
-                           'name': table.items[table.selected_row]}
-        rows, headers = get_table_to_print_data(**self.table_name)
-        self.products_to_print = [(code, "texto") for code in rows]
+        rows, headers = get_table_to_print_data(
+            self.table_name['id'])
+        self.products_to_print = rows
 
         checkboxes_ids = [id for id in self.ids if 'chk_' in id]
         for id in checkboxes_ids:   # deactivate all
             col = self.ids[id]
             if col.active == True:
                 col.active = False
-                self.update_columns(False, col.text)
+                self.update_columns(False, col.text, False)
 
         for id in headers:          # activate
             col = self.ids[id]
             if col.active == False:
                 col.active = True
-                self.update_columns(True, col.text)
+                self.update_columns(True, col.text, False)
+
+        self.update_table_to_print()
 
     def on_selected_row_table_name(self):
-        pass
-
+        table = self.ids.tbl_table_name
+        try:
+            self.table_name = {
+                'section': self.ids.optxt_section.text,
+                'name': table.items[table.selected_row][1],
+                'id': table.items[table.selected_row][0]
+            }
+            self.ids.txt_table_name.text = self.table_name['name']
+        except IndexError:
+            pass  # no row selected
     # Table products
 
     def btn_search_product_on_press(self):
         self.searching_text_input = self.ids.txt_product
-        product = self.ids.txt_product.text
+        product = self.ids.txt_product.text.strip()
         self.products = get_products_for_sale(product=product)
         table = self.ids.tbl_products
         table.selected_row = -1
 
     def btn_search_local_code_on_press(self):
         self.searching_text_input = self.ids.txt_local_code
-        code = self.ids.txt_local_code.text
+        code = self.ids.txt_local_code.text.strip()
         self.products = get_products_for_sale(local_code=code)
         table = self.ids.tbl_products
         table.selected_row = -1
 
     def btn_search_supplier_code_on_press(self):
         self.searching_text_input = self.ids.txt_supplier_code
-        code = self.ids.txt_supplier_code.text
+        code = self.ids.txt_supplier_code.text.strip()
         self.products = get_products_for_sale(supplier_code=code)
         table = self.ids.tbl_products
         table.selected_row = -1
@@ -168,7 +190,7 @@ class PrintTables(Screen):
                     "Fracción 1": quantities[0],
                     "Fracción 2": quantities[1],
                     "Fracción 3": quantities[2],
-                    "Date": date,
+                    "Fecha": date.strftime('%d/%m/%Y')
                 }
 
                 values = [column_value[column] for column in columns]
@@ -184,10 +206,13 @@ class PrintTables(Screen):
             checked_rows = table_to_print.get_checked_rows()
             items_to_print = [table_to_print.items[row]
                               for row in checked_rows]
-            save_table_to_print_data(self.products_to_print, table_to_print.header)
+            if all(save_table_to_print_data(self.table_name['id'], self.products_to_print, table_to_print.header[2:])):
+                logging.info('Table to print: Table saved correctly.')
+            else:
+                logging.error('Table to print: Error saving the table.')
             print_table(items_to_print, table_to_print.header)
         else:
-            logging.error("No products to print.")
+            logging.error("Table to print: No products to print.")
 
     # def btn_save_description_on_press(self):
     #     table = self.ids.tbl_table_to_print
@@ -198,8 +223,8 @@ class PrintTables(Screen):
         # table = self.ids.tbl_table_to_print
         # self.ids.txt_description.text = table.items[table.selected_row][1]
 
-    def update_columns(self, is_on: bool, header: str):
-        header = header[0].upper() + header[1:].lower()
+    def update_columns(self, is_on: bool, header: str, update_table: bool = True):
+        header = header.title()
         table_to_print = self.ids.tbl_table_to_print
         if is_on:
             table_to_print.hint_sizes.append(0.3)
@@ -210,4 +235,5 @@ class PrintTables(Screen):
                 table_to_print.hint_sizes.pop()
             except ValueError as e:
                 logging.error(f'program_error: print_tables.py: {e}')
-        self.update_table_to_print()
+        if update_table:
+            self.update_table_to_print()

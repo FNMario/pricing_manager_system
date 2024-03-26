@@ -1121,28 +1121,28 @@ class DatabaseManager:
             - name (str): Name of the table.
 
         Returns:
-            rowcount (int) the number of rows affected.
+            table_id (int): id of created table.
         """
         cursor = self.connection.cursor()
         query = """
         INSERT INTO tables_to_print_names (section_id, name) 
-        VALUES (%s, %s);
+        VALUES (%s, %s)
+        RETURNING id;
         """
         arguments = (section_id, name)
         cursor.execute(query, arguments)
         logging.debug(cursor.query)
         self.connection.commit()
-        rowcount = cursor.rowcount
+        table_id = cursor.fetchone()[0]
         cursor.close()
-        return rowcount
+        return table_id
 
-    def save_tables_to_print_name(self, section_id: int, old_name: str, new_name: str):
+    def save_tables_to_print_name(self, table_id: int, new_name: str):
         """
         Change table name in the given section.
 
         Args:
-            - section_id (int): Section id where you want to put your table.
-            - old_name (str): Old name of the table.
+            - table_id (int): Section id where you want to put your table.
             - new_name (str): New name of the table.
 
         Returns:
@@ -1152,9 +1152,9 @@ class DatabaseManager:
         query = """
         UPDATE tables_to_print_names 
         SET name = %s
-        WHERE name = %s AND section_id = %s;
+        WHERE id = %s;
         """
-        arguments = (new_name, old_name, section_id)
+        arguments = (new_name, table_id)
         cursor.execute(query, arguments)
         logging.debug(cursor.query)
         self.connection.commit()

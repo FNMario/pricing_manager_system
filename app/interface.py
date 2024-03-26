@@ -139,7 +139,7 @@ def change_price(product_code: str, supplier: str, supplier_code: str, new_price
 
 
 def delete_product(data: dict, all_costs: bool = False):
-    # TODO: refactor fuction: manage messagebox in manage_prices.py
+    # TODO: refactor function: manage messagebox in manage_prices.py
     def answer_clicked(answer):
         print(f'Perform action? {answer}')
         if answer == "Delete all" or answer == "Delete":
@@ -464,34 +464,71 @@ def save_budget(budget_data: dict, items: list) -> bool:
 
 
 def get_tables_to_print_names(section: str, name: str = None) -> list[str]:
-    # sections = get_sections()
-    # section_id = [id for id, _section in sections if _section == section][0]
-    # tables = db.get_tables_to_print_names(section_id, name)
-    # tables =  [(table[1],) for table in tables]
-    tables = [('usesrs',), ('orders',)]
+    sections = get_sections()
+    section_id = [id for id, _section in sections if _section == section][0]
+    tables = db.get_tables_to_print_names(section_id, name)
     return tables
 
 
-def get_table_to_print_data(section: str, name: str) -> tuple[list[str], list[str]]:
-    # TODO: REFACTOR THIS
-    delete_this = [('ADS0004', True), ('APA1003', True), ('APM1006', True), ('MAM0007', True), ('MBR0007', True),
-                   ('chk_client_1_fraction_1', False), ('chk_fraction_1', False), ('chk_client_1_fraction_2',  False), ('chk_fraction_2', False), ('chk_date', False)]
-    data = delete_this  # db.get_tables_to_print_data(name)
-    rows = [item for item, is_row in data if is_row]
-    columns = [item for item, is_row in data if not is_row]
+def get_table_to_print_data(table_id: int) -> tuple[list[str], list[str]]:
+    columns_id = {
+        "venta_1": "chk_client_1_fraction_1",
+        "venta_2": "chk_client_1_fraction_2",
+        "venta_3": "chk_client_1_fraction_3",
+        "descuento_1": "chk_client_2_fraction_1",
+        "descuento_2": "chk_client_2_fraction_2",
+        "descuento_3": "chk_client_2_fraction_3",
+        "mayorista_1": "chk_client_3_fraction_1",
+        "mayorista_2": "chk_client_3_fraction_2",
+        "mayorista_3": "chk_client_3_fraction_3",
+        "fraccion_1": "chk_fraction_1",
+        "fraccion_2": "chk_fraction_2",
+        "fraccion_3": "chk_fraction_3",
+        "fecha": "chk_date"
+    }
+    columns = db.get_tables_to_print_columns(table_id)
+    columns = list(map(lambda _: columns_id[_], columns))
+    rows = db.get_tables_to_print_items(table_id)
     return rows, columns
 
 
 def add_tables_to_print_name(section: str, name: str):
-    pass
+    sections_id = {section: id for id, section in get_sections()}
+    section_id = sections_id[section]
+    try:
+        table_id = db.add_tables_to_print_name(section_id, name)
+        return table_id
+    except:
+        return False
 
 
-def save_tables_to_print_name(section: str, old_name: str, new_name: str):
-    pass
+def save_tables_to_print_name(table_id: int, new_name: str):
+    saved = db.save_tables_to_print_name(table_id, new_name)
+    return saved == 1
 
 
-def save_table_to_print_data(items_code, headers):
-    pass
+def save_table_to_print_data(table_id: int, items: list[tuple], headers: list[str]):
+    # Save columns
+    def header_formatting(string: str) -> str:
+        replacements = {
+            'á': 'a',
+            'é': 'e',
+            'í': 'i',
+            'ó': 'o',
+            'ú': 'u',
+            ' ': '_'
+        }
+        for word, replacement in replacements.items():
+            string = string.replace(word, replacement).lower()
+        return string
+
+    headers = list(map(header_formatting, headers))
+    columns_saved = db.save_tables_to_print_columns(table_id, headers)
+
+    # Save items
+    items_saved = db.save_tables_to_print_items(table_id, items)
+
+    return columns_saved, items_saved
 
 
 def print_table(items, header):
