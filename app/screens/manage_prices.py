@@ -124,7 +124,7 @@ class ManagePrices(Screen):
         except:
             new_index = 0
         instance.value = iva_items[new_index]
-        instance.text = f"IVA ({instance.value*100:.2f}%)"
+        instance.text = f"IVA ({instance.value*100:.1f}%)"
 
     def get_dollar_price(self):
         return get_dollar_price()

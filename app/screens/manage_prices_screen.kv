@@ -277,8 +277,8 @@
                                 width: dp(105)
                                 DoubleClickLabel:
                                     id: lbl_iva
-                                    value: 21.0 # TODO: root.get_iva_items()[]
-                                    text: "IVA (" + self.value_string + "%)"
+                                    value: 0.21
+                                    text: f"IVA ({self.value*100:.1f}%)"
                                     font_size: 14
                                     text_size: self.size
                                     pos_hint: {'left': 1}
