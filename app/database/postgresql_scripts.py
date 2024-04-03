@@ -99,7 +99,8 @@ class DatabaseManager:
         if product is not None:
             filters.append(
                 "to_tsvector('simple', product) @@ to_tsquery('simple', %s)")
-            arguments.append(" & ".join(product.split(" ")))
+            words = [w for w in product.split(" ") if w != '']
+            arguments.append(" & ".join(words))
         if local_code is not None:
             filters.append("local_code LIKE %s")
             arguments.append(local_code + "%")
@@ -152,7 +153,8 @@ class DatabaseManager:
         if product is not None:
             filters.append(
                 "to_tsvector('simple', description) @@ to_tsquery('simple', %s)")
-            arguments.append(" & ".join(product.split(" ")))
+            words = [w for w in product.split(" ") if w != '']
+            arguments.append(" & ".join(words))
         if local_code is not None:
             filters.append("code LIKE %s")
             arguments.append(local_code + "%")
@@ -844,7 +846,8 @@ class DatabaseManager:
         if name is not None:
             filters.append(
                 "to_tsvector('simple', name) @@ to_tsquery('simple', %s)")
-            arguments.append(" & ".join(name.split(" ")))
+            words = [w for w in name.split(" ") if w != '']
+            arguments.append(" & ".join(words))
         if budget_number is not None:
             filters.append("id::text LIKE %s")
             arguments.append("%" + budget_number + "%")
