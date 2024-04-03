@@ -58,11 +58,11 @@ class Clients(Screen):
         }
 
         try:
-            save_client(client)
+            assert save_client(client), 'Error saving client. Please check your data.'
             self.ids.tbl_clients.items = self.get_clients_items()
             self.clear_form_on_press()
         except AssertionError as e:
-            logging.error(e)
+            logging.error(f'Clients: {e}')
 
     def clear_form_on_press(self):
         for obj in self.ids.values():

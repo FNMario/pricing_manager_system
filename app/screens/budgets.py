@@ -67,7 +67,7 @@ class Budgets(Screen):
     def get_cuit_cuil_list(self):
         clients = get_clients()
         cuit_cuil = [client[0] for client in clients]
-        return map(lambda s: '-'.join([s[:2], s[2:10], s[10]]), cuit_cuil)
+        return cuit_cuil
 
     def clear_budget(self):
         self.clear_form(self.ids.lyt_form_edit_header)
@@ -262,7 +262,9 @@ class Budgets(Screen):
         # header
         name = self.ids.txt_name.text
         name = name if name else self.ids.txt_name.hint_text
-        budget_name = f"{self.ids.txt_budget.text} - {name}"
+        budget_number = self.ids.txt_budget.text
+        budget_number = budget_number if budget_number else "New budget"
+        budget_name = f"{budget_number} - {name}"
         buy_screen.ids.lbl_budget_title.text = budget_name
         # items
         for item in self.budget_items:
@@ -312,6 +314,7 @@ class Budgets(Screen):
         self.ids.tbl_budget.items = table_items
 
         self.budget_changed = True
+        self.ids.txt_budget.text = ""    # new budget
 
     def btn_discard_changes_on_press(self):
         def answer_clicked(answer):
@@ -357,8 +360,6 @@ class CustomDatePicker(DatePicker):
 
     def update_value(self, inst):
         """ Update textinput value on popup close """
-        date = self.cal.active_date
-        date.reverse()
-        self.text = "%d-%02d-%02d" % tuple(date)
+        self.text = "%s/%s/%s" % tuple(self.cal.active_date)
         self.focus = False
         self.field.text = self.text

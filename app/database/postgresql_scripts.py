@@ -743,12 +743,12 @@ class DatabaseManager:
             - name (str)
             - email (str)
             - phone (str)
-            - cp (int)
+            - zip_code (int)
             - city (str)
             - address (str)
         """
         cursor = self.connection.cursor()
-        query = "SELECT cuit_cuil, name, email, phone, cp, city, address FROM clients;"
+        query = "SELECT cuit_cuil, name, email, phone, zip_code, city, address FROM clients;"
         cursor.execute(query)
         data = cursor.fetchall()
         cursor.close()
@@ -768,20 +768,20 @@ class DatabaseManager:
             - name (str)
             - email (str)
             - phone (str)
-            - cp (int)
+            - zip_code (int)
             - city (str)
             - address (str)
         """
         if len(cuit_cuil) != 11:
             raise ValueError("cuit_cuil must be 11 characters long.")
         cursor = self.connection.cursor()
-        query = "SELECT cuit_cuil, name, email, phone, cp, city, address FROM clients WHERE cuit_cuil like %s;"
+        query = "SELECT cuit_cuil, name, email, phone, zip_code, city, address FROM clients WHERE cuit_cuil like %s;"
         cursor.execute(query, ("%"+cuit_cuil+"%",))
         data = cursor.fetchall()
         cursor.close()
         return data
 
-    def save_client(self, cuit_cuil: str, name: str, email: str, phone: str, cp: int, city: str, address: str) -> int:
+    def save_client(self, cuit_cuil: str, name: str, email: str, phone: str, zip_code: int, city: str, address: str) -> int:
         """
         Save client information into the 'clients' table. If cuit_cuil already exist in database it will update all other fields.
         Args:
@@ -789,7 +789,7 @@ class DatabaseManager:
             - name (str)
             - email (str)
             - phone (str)
-            - cp (int)
+            - zip_code (int)
             - city (str)
             - address (str)
 
@@ -799,17 +799,17 @@ class DatabaseManager:
         cursor = self.connection.cursor()
         query = """
         INSERT INTO clients 
-        (cuit_cuil, name, email, phone, cp, city, address) 
+        (cuit_cuil, name, email, phone, zip_code, city, address) 
         VALUES (%s, %s, %s, %s, %s, %s, %s)
         ON CONFLICT (cuit_cuil) DO UPDATE SET 
             name=EXCLUDED.name,
             email=EXCLUDED.email,
             phone=EXCLUDED.phone,
-            cp=EXCLUDED.cp,
+            zip_code=EXCLUDED.zip_code,
             city=EXCLUDED.city,
             address=EXCLUDED.address;
         """
-        arguments = (cuit_cuil, name, email, phone, cp, city, address)
+        arguments = (cuit_cuil, name, email, phone, zip_code, city, address)
         cursor.execute(query, arguments)
         logging.debug(cursor.query)
         self.connection.commit()
@@ -846,7 +846,7 @@ class DatabaseManager:
                 "to_tsvector('simple', name) @@ to_tsquery('simple', %s)")
             arguments.append(" & ".join(name.split(" ")))
         if budget_number is not None:
-            filters.append("id LIKE %s")
+            filters.append("id::text LIKE %s")
             arguments.append("%" + budget_number + "%")
         if from_date is not None:
             filters.append("date >= %s")
@@ -855,12 +855,17 @@ class DatabaseManager:
             filters.append("date <= %s")
             arguments.append(to_date)
         if len(filters) == 0:
-            query = "SELECT id, name, date, phone, email, address, \
-                additional_discount, client_cuit_cuil FROM budgets;"
+            query = "SELECT b.id, COALESCE(b.name, cl.name), b.date, \
+                b.phone, b.email, b.address, b.additional_discount, b.client_cuit_cuil \
+                FROM budgets AS b \
+                LEFT JOIN clients AS cl ON b.client_cuit_cuil = cl.cuit_cuil \
+                ORDER BY date DESC;"
         else:
-            query = "SELECT id, name, date, phone, email, address, \
-                additional_discount, client_cuit_cuil FROM budgets WHERE " + \
-                " AND ".join(filters) + ";"
+            query = "SELECT b.id, COALESCE(b.name, cl.name), b.date, \
+                b.phone, b.email, b.address, b.additional_discount, b.client_cuit_cuil \
+                FROM budgets as b \
+                LEFT JOIN clients as cl ON b.client_cuit_cuil == cl.cuit_cuil \
+                WHERE " + " AND ".join(filters) + " ORDER BY date DESC;"
         cursor.execute(query, tuple(arguments))
         logging.debug(cursor.query)
         data = cursor.fetchall()

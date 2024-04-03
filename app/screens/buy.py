@@ -187,6 +187,9 @@ class Buy(Screen):
         self.ids.btn_save_budget.disabled = bool(total <= 0)
 
     def btn_save_budget_on_press(self):
+        if not self.parent.has_screen('budgets'):
+            logging.error('Budget: User can\'t access to budgets')
+            return
         budgets_screen = self.parent.get_screen('budgets')
         budgets_screen_table = budgets_screen.ids.tbl_budget
 
@@ -197,10 +200,16 @@ class Buy(Screen):
             items = [item.to_tuple()
                      for item in children if isinstance(item, BudgetItem)]
             budgets_screen.budget_items = items
-            budgets_screen_table.items = [
-                (str(i[1]), i[0], i[4], i[3], str(i[2]), str(i[1]*i[2]))
-                for i in items
-            ]
+            budgets_screen_table.items = [(
+                str(i[1]),
+                i[0],
+                f'{i[4]} X {i[6].upper()}',
+                i[3],
+                str(i[2]),
+                str(i[1]*i[2])
+            )
+                for i in items]
+            budgets_screen.ids.txt_budget.text = ''
             budgets_screen.budget_changed = True
             budgets_screen.is_budget = True
             # go to budgets_screen
@@ -266,6 +275,7 @@ class BudgetItem(Widget):
             self.sales_category,
             self.product,
             self.fraction_level,
+            self.fraction
         )
 
     # def build(self):

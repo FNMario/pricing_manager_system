@@ -341,16 +341,22 @@ def save_section(section: dict) -> bool:
 
 
 def get_clients() -> list[tuple]:
-    global _clients
-    # db.get_table_clients()
-    return _clients
+    clients = db.get_table_clients()
+    for row, client in enumerate(clients):
+        n_row = list()
+        for col, value in enumerate(client):
+            n_row.append(value if value is not None else '')
+        clients[row] = tuple(n_row)
+    clients = [('-'.join([_[0][:2], _[0][2:10], _[0][10]]), *_[1:])
+               for _ in clients]
+    return clients
 
 
 def get_client(cuit_cuil: str) -> list[tuple]:
-    # client = db.get_client(cuit_cuil.replace('-', ''))
-    # return client
-    clients = get_clients()
-    return [client for client in clients if client[0].replace('-', '') == cuit_cuil.replace('-', '')]
+    clients = db.get_client(cuit_cuil.replace('-', ''))
+    clients = [('-'.join([_[0][:2], _[0][2:10], _[0][10]]), *_[1:])
+               for _ in clients]
+    return clients
 
 
 def save_client(client: dict) -> bool:
@@ -372,62 +378,37 @@ def save_client(client: dict) -> bool:
             'name': client['name'].title()
         }
     )
-    try:
-        # db.save_client(data=client)
-        item = (
-            client['cuit_cuil'],
-            client['name'],
-            client['email'],
-            client['phone'],
-            client['zip_code'],
-            client['city'],
-            client['address']
-        )
-        client_cuits = [_[0] for _ in get_clients()]
-        if client['cuit_cuil'] in client_cuits:
-            index = client_cuits.index(client['cuit_cuil'])
-            _clients[index] = item
-            return True
-        else:
-            _clients.append(item)
-    except Exception as e:
-        logging.error(e)
-        return False
+    saved = db.save_client(**client)
+    return bool(saved)
 
 
-def get_budgets(budget_number: int, name: str, from_date, to_date) -> list[tuple]:
-    global _budgets
-    # return db.get_budgets()
-    return _budgets
+def get_budgets(budget_number: int, name: str, from_date: str, to_date: str) -> list[tuple]:
+    budget_number = budget_number if budget_number else None
+    name = name.strip().lower() if name else None
+    from_date = datetime.strptime(from_date, '%d/%m/%Y') \
+        if from_date else None
+    to_date = datetime.strptime(to_date, '%d/%m/%Y') \
+        if to_date else None
+    budgets = db.get_budgets(budget_number, name, from_date, to_date)
+    for row, budget in enumerate(budgets):
+        new_row = [val if val else '' for val in budget]
+        budgets[row] = tuple(new_row)
+    return budgets
 
 
 def get_budget_items(budget_number: int) -> list[tuple]:
-    # items = db.get_budget_items(budget_number)
-    # categories= {1:"V", 2:"D", 3:"M"}
-    # for item in items:
-    #     item = (
-    #         item[0],
-    #         item[1],
-    #         item[2],
-    #         categories[item[3]],
-    #         item[4],
-    #         item[5],
-    #     )
-    # return items
-    global _budget_items
+    items = db.get_budget_items(budget_number)
     categories = {1: "V", 2: "D", 3: "M"}
-    items_to_return = list()
-    for item in _budget_items:
-        if item[1] == budget_number:
-            items_to_return.append((
-                item[0],
-                item[2],
-                item[3],
-                categories[item[4]],
-                item[5],
-                item[6]
-            ))
-    return items_to_return
+    for row, item in enumerate(items):
+        items[row] = (
+            item[0],
+            item[1],
+            item[2],
+            categories[item[3]],
+            item[4],
+            item[5],
+        )
+    return items
 
 
 def save_budget(budget_data: dict, items: list) -> bool:
@@ -438,29 +419,34 @@ def save_budget(budget_data: dict, items: list) -> bool:
     assert has_cuit or has_name, "Budget must have a cuit and/or a name."
     assert has_items, "Budget must have at least one product."
     budget_data.update({
-        'id': budget_data['budget_number'],
-        'client_cuit_cuil': budget_data['cuit_cuil']
+        'client_cuit_cuil': budget_data['cuit_cuil'] if budget_data['cuit_cuil'] else None
     })
-    logging.info('Budget: Budget saved!')
-    # if has_budget_number:
-    #     db.save_budget(budget_data=budget_data)
-    #     budget_number = budget_data['budget_number']
-    # else:
-    #     budget_number = db.add_budget(budget_data=budget_data)
+    budget_data.pop('cuit_cuil', None)
+    for key, val in budget_data.items():
+        budget_data[key] = val if val else None
+    if has_budget_number:
+        db.save_budget(**budget_data)
+        budget_number = budget_data['budget_number']
+    else:
+        budget_data.pop('budget_number', None)
+        budget_number = db.add_budget(**budget_data)
 
-    # saved_items = db.get_budget_items(budget_number=budget_number)
-    # items_to_drop = list()
-    # categories = {"V":1, "D":2, "M":3}
-    # for item in items:
-    #     item[2] = categories[item[2]]
-    # for item in saved_items:
-    #     if item[1:] in items:
-    #         items.remove(item[1:])
-    #     else:
-    #         items_to_drop.append(item)
+    saved_items = db.get_budget_items(budget_number)
+    items_to_drop = list()
+    categories = {"V": 1, "D": 2, "M": 3}
+    for row, item in enumerate(items):
+        items[row] = (*item[:3], categories[item[3]], *item[4:])
+    for item in saved_items:
+        if item in items:
+            items.remove(item)
+        else:
+            items_to_drop.append(item)
 
-    # db.drop_budget_items(budget_number=budget_number, items_codes=[item[0] for item in items_to_drop])
-    # db.save_budget_items(budget_number=budget_number, items=items)
+    if items_to_drop:
+        items_codes = [item[0] for item in items_to_drop]
+        db.drop_budget_items(budget_number, items_codes)
+    if items:
+        db.save_budget_items(budget_number, items)
 
 
 def get_tables_to_print_names(section: str, name: str = None) -> list[str]:
