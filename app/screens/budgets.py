@@ -130,7 +130,11 @@ class Budgets(Screen):
         self.ids.txt_name.hint_text = client[1]
         self.ids.txt_phone.hint_text = client[3]
         self.ids.txt_email.hint_text = client[2]
-        self.ids.txt_address.hint_text = f"{client[6]}, {client[5]}, ({client[4]})"
+        address = f"{client[6]}" if client[6] else ""
+        address += ", " if client[5] and client[6] else ""
+        address += f"{client[5]}" if client[5] else ""
+        address += f" ({client[4]})" if client[4] else ""
+        self.ids.txt_address.hint_text = address
 
     def on_tbl_budget_selected_row(self, table):
         selected_row = table.selected_row
