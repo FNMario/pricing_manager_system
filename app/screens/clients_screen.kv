@@ -30,7 +30,9 @@
                     hint_text: "CUIT / CUIL"
                     on_text: root.max_length(self, 13)
                     text_validate_unfocus: False
-                    on_text_validate: root.btn_search_client_on_press()
+                    on_text_validate:
+                        root.btn_search_client_on_press()
+                        self.get_focus_next().focus = True
                 IconButton:
                     id: btn_search_product
                     source: './assets/icons/search_1.png'
@@ -45,6 +47,7 @@
                     id: txt_name
                     hint_text: "Name"
                     on_text: root.max_length(self, 50)
+                    on_text_validate: self.get_focus_next().focus = True
             # Phone
             TextField:
                 size_hint_x: 0.375
@@ -54,6 +57,7 @@
                     id: txt_phone
                     hint_text: "Phone"
                     on_text: root.max_length(self, 20)
+                    on_text_validate: self.get_focus_next().focus = True
             # Email
             TextField:
                 size_hint_x: 0.35
@@ -63,6 +67,7 @@
                     id: txt_email
                     hint_text: "Email"
                     on_text: root.max_length(self, 50)
+                    on_text_validate: self.get_focus_next().focus = True
             # Address
             TextField:
                 size_hint_x: 0.32
@@ -72,6 +77,7 @@
                     id: txt_address
                     hint_text: "Address"
                     on_text: root.max_length(self, 60)
+                    on_text_validate: self.get_focus_next().focus = True
             Label:
                 text: ","
                 font_size: dp(20)
@@ -85,6 +91,7 @@
                     id: txt_city
                     hint_text: "City"
                     on_text: root.max_length(self, 45)
+                    on_text_validate: self.get_focus_next().focus = True
             Label:
                 text: "("
                 font_size: dp(20)
@@ -98,6 +105,7 @@
                     id: txt_zip_code
                     hint_text: "Zip code"
                     input_filter: 'int'
+                    on_text_validate: root.btn_save_client_on_press()
             Label:
                 text: ")"
                 font_size: dp(20)
