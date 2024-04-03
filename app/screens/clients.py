@@ -60,6 +60,9 @@ class Clients(Screen):
         try:
             assert save_client(client), 'Error saving client. Please check your data.'
             self.ids.tbl_clients.items = self.get_clients_items()
+            if self.parent.has_screen('budgets'):
+                budgets_screen = self.parent.get_screen('budgets')
+                budgets_screen.ids.txt_cuit_cuil.options = budgets_screen.get_cuit_cuil_list()
             self.clear_form_on_press()
         except AssertionError as e:
             logging.error(f'Clients: {e}')
