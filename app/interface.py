@@ -374,7 +374,7 @@ def save_client(client: dict) -> bool:
     client.update(
         {
             'cuit_cuil': client['cuit_cuil'].replace('-', ''),
-            'zip_code': int(client['zip_code']),
+            'zip_code': int(client['zip_code']) if client['zip_code'] else None,
             'name': client['name'].title()
         }
     )
