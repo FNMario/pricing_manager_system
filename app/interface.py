@@ -435,7 +435,7 @@ def save_budget(budget_data: dict, items: list) -> bool:
     items_to_drop = list()
     categories = {"V": 1, "D": 2, "M": 3}
     for row, item in enumerate(items):
-        items[row] = (*item[:3], categories[item[3]], *item[4:])
+        items[row] = (*item[:3], categories[item[3]], f"{item[4]} X {item[6].upper()}",item[5])
     for item in saved_items:
         if item in items:
             items.remove(item)
