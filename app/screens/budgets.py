@@ -258,6 +258,7 @@ class Budgets(Screen):
             self.clear_budget()
             self.is_budget = False
             self.budget_changed = False
+            self.search_budget()
         except Exception as e:
             logging.error(f'Budget: {e}')
 
