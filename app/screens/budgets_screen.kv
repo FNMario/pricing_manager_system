@@ -270,7 +270,7 @@
                         id: btn_edit_budget
                         text: "Add/delete products on [u]Buy[/u]"
                         markup: True
-                        disabled: not root.is_budget
+                        disabled: not (txt_cuit_cuil.text or txt_name.text)
                         on_release: root.btn_edit_budget_on_press()
                     EmptyButton:
                         id: btn_refresh_budget
