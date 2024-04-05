@@ -875,7 +875,7 @@ class DatabaseManager:
         cursor.close()
         return data
 
-    def save_budget(self, budget_number: int, name: str, phone: str, email: str, address: str, client_cuit_cuil: str, additional_discount: float = 0) -> int:
+    def save_budget(self, budget_number: int, name: str = None, phone: str = None, email: str = None, address: str = None, client_cuit_cuil: str = None, additional_discount: float = 0) -> int:
         """
         Updates the budget information with the given id, in the 'budgets' table.
 
@@ -917,7 +917,7 @@ class DatabaseManager:
         cursor.close()
         return rowcount
 
-    def add_budget(self, name: str, phone: str, email: str, address: str, client_cuit_cuil: str, additional_discount: float = 0) -> int:
+    def add_budget(self, name: str = None, phone: str = None, email: str = None, address: str = None, client_cuit_cuil: str = None, additional_discount: float = 0) -> int:
         """
         Adds a new budget into the database.
 
@@ -1051,7 +1051,7 @@ class DatabaseManager:
             - name (str): table name.
 
         Return:
-            - table_names: list of strings/tuples with table names # TODO: choose one
+            - table_names: list of strings/tuples with table names
         """
         cursor = self.connection.cursor()
         arguments = [section_id]

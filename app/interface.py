@@ -382,7 +382,7 @@ def save_client(client: dict) -> bool:
     return bool(saved)
 
 
-def get_budgets(budget_number: int, name: str, from_date: str, to_date: str) -> list[tuple]:
+def get_budgets(budget_number: int = None, name: str = None, from_date: str = None, to_date: str = None) -> list[tuple]:
     budget_number = budget_number if budget_number else None
     name = name.strip().lower() if name else None
     from_date = datetime.strptime(from_date, '%d/%m/%Y') \
