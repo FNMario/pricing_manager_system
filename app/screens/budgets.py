@@ -264,33 +264,50 @@ class Budgets(Screen):
 
     def btn_edit_budget_on_press(self):
         buy_screen = self.parent.get_screen('buy')
-        # header
-        name = self.ids.txt_name.text
-        name = name if name else self.ids.txt_name.hint_text
-        budget_number = self.ids.txt_budget.text
-        budget_number = budget_number if budget_number else "New budget"
-        budget_name = f"{budget_number} - {name}"
-        buy_screen.ids.lbl_budget_title.text = budget_name
-        # items
-        for item in self.budget_items:
-            prices, quantities, date = get_product_prices(item[0])
-            item = BudgetItem(
-                product=item[4],
-                local_code=item[0],
-                quantity=float(item[1]),
-                fraction_level=int(item[5]),
-                fraction=quantities[item[5]],
-                price=float(item[2]),
-                sales_category=item[3]
-            )
-            # breakpoint()
-            item.bind(on_delete_item=buy_screen.update_budget_total)
-            buy_screen.ids.budget_layout.add_widget(item, 2)
+        def send_budget_to_buy_screen():
+            # header
+            name = self.ids.txt_name.text.title()
+            name = name if name else self.ids.txt_name.hint_text
+            budget_number = self.ids.txt_budget.text
+            budget_number = budget_number if budget_number else "New budget"
+            budget_name = f"{budget_number} - {name}"
+            buy_screen.ids.lbl_budget_title.text = budget_name
+            # items
+            for item in self.budget_items:
+                prices, quantities, date = get_product_prices(item[0])
+                item = BudgetItem(
+                    product=item[4],
+                    local_code=item[0],
+                    quantity=float(item[1]),
+                    fraction_level=int(item[5]),
+                    fraction=quantities[item[5]],
+                    price=float(item[2]),
+                    sales_category=item[3]
+                )
+                item.bind(on_delete_item=buy_screen.update_budget_total)
+                buy_screen.ids.budget_layout.add_widget(item, 2)
 
-        buy_screen.update_budget_total()
-        # go to budgets_screen
-        self.get_parent_window(
-        ).children[0].current_screen.ids.tab_buy.dispatch('on_press')
+            buy_screen.update_budget_total()
+            # go to budgets_screen
+            self.get_parent_window(
+            ).children[-1].current_screen.ids.tab_buy.dispatch('on_press')
+        is_budget = len(buy_screen.ids.budget_layout.children) > 2
+        if is_budget:
+            def answer_clicked(answer):
+                if answer == "Cancel":
+                    return
+                else:
+                    buy_screen.btn_discard_budget_on_press()
+                send_budget_to_buy_screen()
+
+            msg = MessageBox(
+                message="There are already products in the buy tab, if you continue they will be overwritten. Do you wish to continue?",
+                kind='warning',
+                buttons=["Continue", "Cancel"],
+                on_close=answer_clicked
+            )
+        else:
+            send_budget_to_buy_screen()
 
     def btn_refresh_budget_on_press(self):
 
