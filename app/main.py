@@ -1,3 +1,7 @@
+import os
+import sys
+from kivy.resources import resource_add_path
+
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.core.window import Window
@@ -32,4 +36,11 @@ class MainApp(App):
 
 
 if __name__ == '__main__':
-    MainApp().run()
+    try:
+        if hasattr(sys, '_MEIPASS'):
+            resource_add_path(os.path.join(sys._MEIPASS))
+        app = MainApp()
+        app.run()
+    except Exception as e:
+        print(e)
+        input("Press enter.")
