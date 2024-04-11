@@ -867,7 +867,7 @@ class DatabaseManager:
             query = "SELECT b.id, COALESCE(b.name, cl.name), b.date, \
                 b.phone, b.email, b.address, b.additional_discount, b.client_cuit_cuil \
                 FROM budgets as b \
-                LEFT JOIN clients as cl ON b.client_cuit_cuil == cl.cuit_cuil \
+                LEFT JOIN clients as cl ON b.client_cuit_cuil = cl.cuit_cuil \
                 WHERE " + " AND ".join(filters) + " ORDER BY date DESC;"
         cursor.execute(query, tuple(arguments))
         logging.debug(cursor.query)

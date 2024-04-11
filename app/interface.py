@@ -1,4 +1,3 @@
-import datetime
 from datetime import datetime as dt
 from database import postgresql_scripts as sql
 from screens.widgets.messagebox import MessageBox
@@ -385,9 +384,9 @@ def save_client(client: dict) -> bool:
 def get_budgets(budget_number: int = None, name: str = None, from_date: str = None, to_date: str = None) -> list[tuple]:
     budget_number = budget_number if budget_number else None
     name = name.strip().lower() if name else None
-    from_date = datetime.strptime(from_date, '%d/%m/%Y') \
+    from_date = dt.strptime(from_date, '%d/%m/%Y') \
         if from_date else None
-    to_date = datetime.strptime(to_date, '%d/%m/%Y') \
+    to_date = dt.strptime(to_date, '%d/%m/%Y') \
         if to_date else None
     budgets = db.get_budgets(budget_number, name, from_date, to_date)
     for row, budget in enumerate(budgets):
@@ -435,7 +434,8 @@ def save_budget(budget_data: dict, items: list) -> bool:
     items_to_drop = list()
     categories = {"V": 1, "D": 2, "M": 3}
     for row, item in enumerate(items):
-        items[row] = (*item[:3], categories[item[3]], f"{item[4]} X {item[6].upper()}",item[5])
+        items[row] = (*item[:3], categories[item[3]],
+                      f"{item[4]} X {item[6].upper()}", item[5])
     for item in saved_items:
         if item in items:
             items.remove(item)
@@ -667,58 +667,3 @@ def get_dollar_price():
 # Listas temporales
 
 _dollars = [800, 900]
-
-
-_clients = [
-    ('20231439389', 'Alejandro Mario', None, None, 3200, None, 'Italia 1576'),
-    ('20480287631', 'Valentino Benicio Coronel', 'moralessantiago-benjamin@example.com',
-     '+54 15 2456 9652', 3600, 'Corrientes', 'Av. 7 N° 74 Local 96'),
-    ('33254973403', 'Victoria Juan Martin Gomez', 'mcabrera@example.net',
-     '+54 9 3618 2662', 5300, 'Resistencia', 'Calle Pte. Perón N° 265'),
-    ('33350364078', 'Santiago Nicolas Tomàs Gimenez', 'catalina34@example.com',
-     '+54 9 3194 5056', 5400, 'Paraná', 'Av. San Luis N° 83 Piso 4 Dto. 1'),
-    ('20121451752', 'Julia Emilia Perez', 'manuelaguero@example.com',
-     '+54 15 2243 4830', 1900, 'La Rioja', 'Avenida Alem N° 955'),
-    ('33371453860', 'Sr(a). Mateo Escobar', 'camilo27@example.org',
-     '+54 15 2901 4786', 4600, 'Paraná', 'Diagonal Rawson N° 153')
-]
-
-_budgets = [
-    # number, name, date, phone, email, address, additional_discount, client—cuit-cuil
-    (105201, "Municipalidad de Concordia", datetime.datetime(
-        2023, 8, 12), "",  "", "Concordia (3200), Argentina", 0, ""),
-    (105202, "Julia Emilia Perez", datetime.datetime(
-        2023, 8, 15), "",  "", "Bolivar 23, Colón, Entre Ríos", 0, "20121451752"),
-    (105203, "Municipalidad de Concordia", datetime.datetime(
-        2023, 8, 23), "",  "", "Concordia (3200), Argentina", 0, ""),
-    (105204, "Federico", datetime.datetime(2023, 8, 23),
-     "",  "", "Concordia (3200), Argentina", 0, ""),
-]
-
-_budget_items = [
-    # product_id, budget_id, quantity, unit_price, sales_category_id, description, fraction_level
-    ('APM0007', 105201, 3, 579, 2, 'PELOTA METAL 12 MM', 2),
-    ('APM1006', 105201, 22, 377, 2,
-     'PLASTICO METALIZADO CAPUCHON 10 MM C/PUNTOS X 500 GRS.', 1),
-    ('ATP0005', 105201, 25, 190, 2, 'TACHA PARA PEGAR 8MM 2000 UNID', 2),
-    ('ATP0006', 105201, 14, 480, 2, 'TACHA PARA PEGAR 10X10 2000 UNID', 1),
-    ('BPN1017', 105201, 15, 580, 2, 'PIEDRA P/COSER NOLITA OVAL 10X14 MM', 1),
-    ('BPV1005', 105201, 17, 516, 1, 'PIEDRA CRISTAL 4MM COLOR # CRYSTAL', 0),
-    ('ACR1004', 105202, 6, 218, 3, 'CRUZ CHICA PALITO DORADA', 1),
-    ('AFD0069', 105202, 21, 346, 3, 'FUNDICION DIJE CHICO CRUZ C/JESUS Y S. BENITO', 1),
-    ('APE0006', 105202, 17, 505, 3, 'PERLA ACRILICA 12 MM', 1),
-    ('APM1006', 105202, 18, 585, 1,
-     'PLASTICO METALIZADO CAPUCHON 10 MM C/PUNTOS X 500 GRS.', 2),
-    ('ATP0005', 105202, 18, 614, 1, 'TACHA PARA PEGAR 8MM 2000 UNID', 1),
-    ('AFD0069', 105203, 24, 541, 2, 'FUNDICION DIJE CHICO CRUZ C/JESUS Y S. BENITO', 2),
-    ('APE0006', 105203, 24, 174, 2, 'PERLA ACRILICA 12 MM', 0),
-    ('ATP0006', 105203, 19, 251, 2, 'TACHA PARA PEGAR 10X10 2000 UNID', 1),
-    ('MCD1004', 105203, 14, 314, 2, 'CIERRE DIENTE PERRO DESMONTABLE X 45 CM', 1),
-    ('MCL2002', 105203, 12, 310, 3, 'CORDON DE LUREX CHINO GRUESO', 1),
-    ('APA1003', 105204, 4, 238, 2, 'PIEDRA ENGARZADA PICOS', 2),
-    ('ATP0006', 105204, 15, 464, 3, 'TACHA PARA PEGAR 10X10 2000 UNID', 0),
-    ('BPV1005', 105204, 6, 617, 1, 'PIEDRA CRISTAL 4MM COLOR # CRYSTAL', 2),
-    ('MAM0007', 105204, 25, 244, 1, 'CARRETEL METALICO MAQ.', 2),
-    ('MGA0102', 105204, 32, 298, 1,
-     'GALON 50253 DE LENT CUAD DE 2.5CM 5 HIL. DE LENT.', 1),
-]
